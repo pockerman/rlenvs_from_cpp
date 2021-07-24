@@ -74,3 +74,6 @@ MESSAGE(STATUS "Installation destination at: ${CMAKE_INSTALL_PREFIX}")
 
 # Add the examples
 ADD_SUBDIRECTORY(examples)
+
+# Add the tests
+ADD_SUBDIRECTORY(tests)
