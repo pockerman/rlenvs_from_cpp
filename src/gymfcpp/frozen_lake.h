@@ -1,12 +1,16 @@
 #ifndef FROZEN_LAKE_H
 #define FROZEN_LAKE_H
 
-#include "types.h"
-#include <string>
+#include "gymfcpp/types.h"
+#include "gymfcpp/time_step.h"
 
 #include <boost/noncopyable.hpp>
+#include <string>
 
 namespace gymfcpp {
+
+///
+class TimeStep;
 
 ///
 /// \brief The FrozenLake class
@@ -14,6 +18,16 @@ namespace gymfcpp {
 class FrozenLake: private boost::noncopyable
 {
 public:
+
+    ///
+    /// \brief state_t
+    ///
+    typedef uint_t state_t;
+
+    ///
+    /// \brief action_t
+    ///
+    typedef uint_t action_t;
 
     ///
     /// \brief name
@@ -54,6 +68,19 @@ public:
     ///
     bool is_created()const{return is_created_;}
 
+    ///
+    /// \brief reset
+    /// \return
+    ///
+    TimeStep reset();
+
+    ///
+    /// \brief step
+    /// \param action
+    /// \return
+    ///
+    TimeStep step(action_t action, bool query_extra=false);
+
 private:
 
     ///
@@ -75,6 +102,12 @@ private:
     /// \brief world_ The obj populated when make is called
     ///
     obj_t world_;
+
+    ///
+    /// \brief current_state_ Keep tract what the current
+    /// state of the world is
+    ///
+    TimeStep current_state_;
 };
 
 }
