@@ -8,6 +8,7 @@
 #include <any>
 #include <unordered_map>
 #include <stdexcept>
+#include <ostream>
 
 namespace gymfcpp {
 
@@ -52,11 +53,26 @@ public:
     bool last()const{return type_ == TimeStepTp::LAST;}
 
     ///
+    /// \brief type
+    /// \return
+    ///
+    TimeStepTp type()const{return type_;}
+
+    ///
     /// \brief observation
     /// \return
     ///
     uint_t observation()const{return obs_;}
 
+    ///
+    /// \brief reward
+    /// \return
+    ///
+    real_t reward()const{return reward_;}
+
+    ///
+    ///
+    ///
     template<typename T>
     const T& get_extra(std::string name)const;
 
@@ -95,6 +111,15 @@ TimeStep::get_extra(std::string name)const{
     }
 
     return std::any_cast<const T&>(itr->second);
+}
+
+inline
+std::ostream& operator<<(std::ostream& out, const TimeStep& step){
+
+    out<<"Step type.... "<<gymfcpp::to_string(step.type())<<std::endl;
+    out<<"Reward..... .."<<step.reward()<<std::endl;
+    out<<"Observation.. "<<step.observation()<<std::endl;
+    return out;
 }
 
 
