@@ -79,8 +79,8 @@ Step with prob=0.333333
 
 ## Issues
 
-- ```pyconfig.h``` not found
+### ```pyconfig.h``` not found
 
-Run: ```find /usr/include -name pyconfig.h```
-Export: ```export CPLUS_INCLUDE_PATH="$CPLUS_INCLUDE_PATH:/path/to/pyconfig"```
+- Run: ```find /usr/include -name pyconfig.h```
+- Export: ```export CPLUS_INCLUDE_PATH="$CPLUS_INCLUDE_PATH:/path/to/pyconfig"```
 
