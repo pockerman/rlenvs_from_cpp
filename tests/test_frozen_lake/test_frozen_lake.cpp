@@ -1,7 +1,7 @@
 #include "gymfcpp/frozen_lake.h"
 #include "gymfcpp/time_step.h"
 #include "gymfcpp/time_step_type.h"
-#include "gymfcpp/types.h"
+#include "gymfcpp/gymfcpp_types.h"
 
 #include <gtest/gtest.h>
 #include <boost/python.hpp>

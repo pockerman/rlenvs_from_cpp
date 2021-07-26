@@ -1,7 +1,7 @@
 #ifndef FROZEN_LAKE_H
 #define FROZEN_LAKE_H
 
-#include "gymfcpp/types.h"
+#include "gymfcpp/gymfcpp_types.h"
 #include "gymfcpp/time_step.h"
 
 #include <boost/noncopyable.hpp>

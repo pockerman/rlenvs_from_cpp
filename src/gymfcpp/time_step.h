@@ -1,7 +1,7 @@
 #ifndef TIME_STEP_H
 #define TIME_STEP_H
 
-#include "gymfcpp/types.h"
+#include "gymfcpp/gymfcpp_types.h"
 #include "gymfcpp/time_step_type.h"
 
 #include <string>
