@@ -1,5 +1,5 @@
-#ifndef TYPES_H
-#define TYPES_H
+#ifndef GYMFCPP_TYPES_H
+#define GYMFCPP_TYPES_H
 
 #include <boost/python.hpp>
 #include <cstddef>
