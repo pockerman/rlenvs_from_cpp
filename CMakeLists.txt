@@ -22,8 +22,10 @@ SET(CMAKE_CXX_COMPILER /usr/bin/g++-10)
 SET(CMAKE_C_COMPILER /usr/bin/gcc-10)
 SET(CMAKE_CXX_STANDARD 20)
 SET(CMAKE_CXX_STANDARD_REQUIRED True)
-SET(CMAKE_INSTALL_PREFIX /home/alex/qi3/py_from_cpp/install)
+SET(CMAKE_INSTALL_PREFIX /home/alex/qi3/ce_rl/cubic_engine/rl/examples/example_6/gymfcpp/install)
 SET(CMAKE_LINKER_FLAGS "-pthread")
+SET(ENABLE_TESTS_FLAG False)
+SET(ENABLE_EXAMPLES_FLAG False)
 
 
 # find Boost
@@ -72,8 +74,16 @@ SET_TARGET_PROPERTIES(gymfcpplib PROPERTIES LINKER_LANGUAGE CXX)
 INSTALL(TARGETS gymfcpplib DESTINATION ${CMAKE_INSTALL_PREFIX})
 MESSAGE(STATUS "Installation destination at: ${CMAKE_INSTALL_PREFIX}")
 
-# Add the examples
-ADD_SUBDIRECTORY(examples)
+IF(ENABLE_EXAMPLES_FLAG)
+	# Add the examples
+	ADD_SUBDIRECTORY(examples)
+ELSE()
+	MESSAGE(WARNING "Examples have not been enabled")
+ENDIF()
 
-# Add the tests
-ADD_SUBDIRECTORY(tests)
+IF(ENABLE_TESTS_FLAG)
+	# Add the tests
+	ADD_SUBDIRECTORY(tests)
+ELSE()
+	MESSAGE(WARNING "Tests have not been enabled")
+ENDIF()
