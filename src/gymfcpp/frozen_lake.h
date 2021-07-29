@@ -6,6 +6,8 @@
 
 #include <boost/noncopyable.hpp>
 #include <string>
+#include <vector>
+#include <tuple>
 
 namespace gymfcpp {
 
@@ -33,6 +35,16 @@ public:
     /// \brief name
     ///
     static  std::string name;
+
+    ///
+    /// \brief py_env_name
+    ///
+    static std::string py_env_name;
+
+    ///
+    /// \brief dynamics_t
+    ///
+    typedef std::vector<std::tuple<real_t, uint_t, real_t, bool>> dynamics_t;
 
     ///
     /// \brief FrozenLake
@@ -81,6 +93,13 @@ public:
     ///
     TimeStep step(action_t action, bool query_extra=false);
 
+    ///
+    /// \brief P
+    /// \param sidx
+    /// \param aidx
+    ///
+    dynamics_t p(uint_t sidx, uint_t aidx)const;
+
 private:
 
     ///
@@ -108,6 +127,8 @@ private:
     /// state of the world is
     ///
     TimeStep current_state_;
+
+
 };
 
 }

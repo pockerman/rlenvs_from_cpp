@@ -149,3 +149,29 @@ TEST(TestFrozenLake, Test_Step_With_Query)
         FAIL()<<"Error could not step in the environment";
     }
 }
+
+
+TEST(TestFrozenLake, Test_Get_Dynamics)
+{
+
+    try{
+
+        Py_Initialize();
+
+        auto gym_module = boost::python::import("gym");
+        auto gym_namespace = gym_module.attr("__dict__");
+
+        gymfcpp::FrozenLake env("v0", gym_namespace, false);
+        env.make();
+
+        auto dynamics = env.p(1, 3);
+
+        ASSERT_EQ(dynamics.size(), static_cast<uint_t>(3) );
+
+    }
+    catch(const boost::python::error_already_set&)
+    {
+        PyErr_Print();
+        FAIL()<<"Error could not step in the environment";
+    }
+}

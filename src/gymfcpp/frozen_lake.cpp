@@ -17,6 +17,7 @@ namespace gymfcpp{
 
 
 std::string FrozenLake::name = "FrozenLake";
+std::string FrozenLake::py_env_name = "frozen_env";
 
 
 FrozenLake::FrozenLake(std::string version, obj_t gym_namespace, bool do_create, bool is_slipery)
@@ -37,22 +38,19 @@ FrozenLake::FrozenLake(std::string version, obj_t gym_namespace, bool do_create,
 void
 FrozenLake::make(bool is_slipery){
 
-    //auto gym_module = boost::python::import("gym");
-    //auto gym_namespace = gym_module.attr("__dict__");
-
     str_t python_str = "import gym \n"
-                       "world = gym.make('FrozenLake-v0', is_slippery=True) \n"
-                       "world = world.unwrapped";
+                       "frozen_env = gym.make('FrozenLake-v0', is_slippery=True) \n"
+                       "frozen_env = frozen_env.unwrapped";
 
     if(!is_slipery){
         python_str = "import gym \n"
-                     "world = gym.make('FrozenLake-v0', is_slippery=False) \n"
-                     "world = world.unwrapped";
+                     "frozen_env = gym.make('FrozenLake-v0', is_slippery=False) \n"
+                     "frozen_env = frozen_env.unwrapped";
     }
 
     // create an environment
     auto ignored = boost::python::exec(python_str, gym_namespace_);
-    world_ = boost::python::extract<boost::python::api::object>(gym_namespace_["world"]);
+    world_ = boost::python::extract<boost::python::api::object>(gym_namespace_["frozen_env"]);
     is_created_ = true;
 }
 
@@ -89,7 +87,7 @@ FrozenLake::reset(){
 #endif
 
     // create an environment
-    boost::python::exec("observation = world.reset()", gym_namespace_);
+    boost::python::exec("observation = frozen_env.reset()", gym_namespace_);
 
     // the observation
     auto observation =  boost::python::extract<uint_t>(gym_namespace_["observation"]);
@@ -111,7 +109,7 @@ FrozenLake::step(action_t action, bool query_extra){
         return reset();
     }
 
-    std::string s = "result = world.step("+std::to_string(action)+")";
+    std::string s = "result = " + FrozenLake::py_env_name +".step("+std::to_string(action)+")";
     str_t exe_str = s.c_str();
 
     // create an environment
@@ -138,7 +136,38 @@ FrozenLake::step(action_t action, bool query_extra){
 
 }
 
+FrozenLake::dynamics_t
+FrozenLake::p(uint_t sidx, uint_t aidx)const{
 
+#ifdef GYMFCPP_DEBUG
+    assert(is_created_ && "Environment has not been created");
+#endif
+
+    std::string s = "dynamics = " + FrozenLake::py_env_name + ".P["+std::to_string(sidx)+"]";
+    s += "["+std::to_string(aidx)+"]";
+    str_t exe_str = s.c_str();
+
+    // get the dynamics
+    boost::python::exec(exe_str, gym_namespace_);
+    auto dynamics_list = boost::python::extract<boost::python::list>(gym_namespace_["dynamics"]);
+
+
+
+    dynamics_t dyn;
+    dyn.reserve(boost::python::len(dynamics_list));
+
+    for(uint_t i=0; i < boost::python::len(dynamics_list); ++i){
+        auto dynamics_tuple = boost::python::extract<boost::python::tuple>(dynamics_list()[i]);
+        auto prob = boost::python::extract<real_t>(dynamics_tuple()[0]);
+        auto next_state = boost::python::extract<uint_t>(dynamics_tuple()[1]);
+        auto reward = boost::python::extract<real_t>(dynamics_tuple()[2]);
+        auto done = boost::python::extract<bool>(dynamics_tuple()[3]);
+        dyn.push_back(std::make_tuple(prob(), next_state(), reward(), done()));
+    }
+
+
+    return dyn;
+}
 
 
 
