@@ -26,6 +26,11 @@ typedef double real_t;
 ///
 typedef std::size_t uint_t;
 
+///
+/// \brief invalid_uint
+///
+constexpr uint_t INVALID_UINT = static_cast<uint_t>(-1);
+
 }
 
 #endif // TYPES_H
