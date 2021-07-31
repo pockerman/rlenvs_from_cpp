@@ -24,6 +24,8 @@ SET(CMAKE_CXX_STANDARD 20)
 SET(CMAKE_CXX_STANDARD_REQUIRED True)
 SET(CMAKE_INSTALL_PREFIX /home/alex/qi3/py_from_cpp/install)
 SET(CMAKE_LINKER_FLAGS "-pthread")
+SET(ENABLE_TESTS_FLAG True)
+SET(ENABLE_EXAMPLES_FLAG True)
 
 
 # find Boost
@@ -62,18 +64,22 @@ INCLUDE_DIRECTORIES(src/)
 
 
 FILE(GLOB SRCS src/gymfcpp/*.cpp)
-
-#TARGET_SOURCES(gymfcpplib PUBLIC ${SRCS})
-
 ADD_LIBRARY(gymfcpplib SHARED ${SRCS})
-#ADD_SUBDIRECTORY(src/pfcpp)
 
 SET_TARGET_PROPERTIES(gymfcpplib PROPERTIES LINKER_LANGUAGE CXX)
 INSTALL(TARGETS gymfcpplib DESTINATION ${CMAKE_INSTALL_PREFIX})
 MESSAGE(STATUS "Installation destination at: ${CMAKE_INSTALL_PREFIX}")
 
-# Add the examples
-ADD_SUBDIRECTORY(examples)
+IF(ENABLE_EXAMPLES_FLAG)
+	# Add the examples
+	ADD_SUBDIRECTORY(examples)
+ELSE()
+	MESSAGE(WARNING "Examples have not been enabled")
+ENDIF()
 
-# Add the tests
-ADD_SUBDIRECTORY(tests)
+IF(ENABLE_TESTS_FLAG)
+	# Add the tests
+	ADD_SUBDIRECTORY(tests)
+ELSE()
+	MESSAGE(WARNING "Tests have not been enabled")
+ENDIF()
