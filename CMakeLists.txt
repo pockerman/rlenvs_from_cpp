@@ -22,9 +22,8 @@ SET(CMAKE_CXX_COMPILER /usr/bin/g++-10)
 SET(CMAKE_C_COMPILER /usr/bin/gcc-10)
 SET(CMAKE_CXX_STANDARD 20)
 SET(CMAKE_CXX_STANDARD_REQUIRED True)
-SET(CMAKE_INSTALL_PREFIX /home/alex/qi3/ce_rl/cubic_engine/rl/examples/example_6/gymfcpp/install)
+SET(CMAKE_INSTALL_PREFIX /home/alex/qi3/py_from_cpp/install)
 SET(CMAKE_LINKER_FLAGS "-pthread")
-<<<<<<< HEAD
 SET(ENABLE_TESTS_FLAG True)
 SET(ENABLE_EXAMPLES_FLAG True)
 
