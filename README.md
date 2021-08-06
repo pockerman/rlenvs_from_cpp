@@ -70,6 +70,7 @@ Step with prob=0.333333
 
 - ```FrozenLake```
 - ```Blackjack```
+- ```CliffWalking```
 
 ## Dependencies
 
