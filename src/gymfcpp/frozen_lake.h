@@ -128,7 +128,6 @@ private:
     ///
     TimeStep current_state_;
 
-
 };
 
 }
