@@ -29,7 +29,7 @@ SET(ENABLE_EXAMPLES_FLAG True)
 
 
 # find Boost
-FIND_PACKAGE(Boost 1.65.0 REQUIRED COMPONENTS python system)
+FIND_PACKAGE(Boost 1.65.0 REQUIRED COMPONENTS python system numpy)
 
 if(Boost_FOUND)
   if(Boost_LIBRARY_DIR)
