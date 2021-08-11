@@ -50,7 +50,7 @@ public:
     /// \brief FrozenLake
     /// \param version
     ///
-    FrozenLake(std::string version, obj_t gym_namespace, bool do_create=true, bool is_slipery=true);
+    FrozenLake(const std::string& version, obj_t gym_namespace, bool do_create=true, bool is_slipery=true);
 
     ///
     /// \brief make

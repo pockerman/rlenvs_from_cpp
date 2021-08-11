@@ -20,7 +20,7 @@ std::string FrozenLake::name = "FrozenLake";
 std::string FrozenLake::py_env_name = "frozen_env";
 
 
-FrozenLake::FrozenLake(std::string version, obj_t gym_namespace, bool do_create, bool is_slipery)
+FrozenLake::FrozenLake(const std::string& version, obj_t gym_namespace, bool do_create, bool is_slipery)
     :
       v_(version),
       is_created_(false),
