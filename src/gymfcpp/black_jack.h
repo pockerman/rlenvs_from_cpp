@@ -1,5 +1,5 @@
-#ifndef FROZEN_LAKE_H
-#define FROZEN_LAKE_H
+#ifndef BLACK_JACK_H
+#define BLACK_JACK_H
 
 #include "gymfcpp/gymfcpp_types.h"
 #include "gymfcpp/time_step.h"
@@ -12,24 +12,13 @@
 namespace gymfcpp {
 
 ///
-class TimeStep;
-
+/// \brief The BlackJack class. Wrapper to the Blackjack
+/// OpenAI-Gym environment.
 ///
-/// \brief The FrozenLake class
-///
-class FrozenLake: private boost::noncopyable
+class BlackJack: private boost::noncopyable
 {
+
 public:
-
-    ///
-    /// \brief state_t
-    ///
-    typedef uint_t state_t;
-
-    ///
-    /// \brief action_t
-    ///
-    typedef uint_t action_t;
 
     ///
     /// \brief name
@@ -42,32 +31,32 @@ public:
     static std::string py_env_name;
 
     ///
-    /// \brief dynamics_t
+    /// \brief action_t
     ///
-    typedef std::vector<std::tuple<real_t, uint_t, real_t, bool>> dynamics_t;
+    typedef uint_t action_t;
 
     ///
-    /// \brief FrozenLake
+    /// \brief BlackJack
     /// \param version
     ///
-    FrozenLake(const std::string& version, obj_t gym_namespace, bool do_create=true, bool is_slipery=true);
+    BlackJack(std::string version, obj_t gym_namespace, bool do_create=true, bool natural=false);
 
     ///
     /// \brief make
-    /// \param is_slipery
     ///
-    void make(bool is_slipery=true);
-
-    ///
-    /// \brief n_states
-    ///
-    uint_t n_states()const;
+    void make(bool natural=false);
 
     ///
     /// \brief n_actions
     /// \return
     ///
     uint_t n_actions()const;
+
+    ///
+    /// \brief observation_space
+    /// \return
+    ///
+    std::vector<uint_t> observation_space()const;
 
     ///
     /// \brief version
@@ -91,14 +80,7 @@ public:
     /// \param action
     /// \return
     ///
-    TimeStep step(action_t action, bool query_extra=false);
-
-    ///
-    /// \brief P
-    /// \param sidx
-    /// \param aidx
-    ///
-    dynamics_t p(uint_t sidx, uint_t aidx)const;
+    TimeStep step(action_t action);
 
 private:
 
@@ -128,8 +110,18 @@ private:
     ///
     TimeStep current_state_;
 
+    ///
+    /// \brief cache_n_actions_
+    ///
+    mutable uint_t cached_n_actions_;
+
+    ///
+    /// \brief cached_obs_space_
+    ///
+    mutable std::vector<uint_t> cached_obs_space_;
+
 };
 
 }
 
-#endif // FROZEN_LAKE_H
+#endif // BLACK_JACK_H

@@ -1,24 +1,20 @@
-#ifndef FROZEN_LAKE_H
-#define FROZEN_LAKE_H
+#ifndef CLIFF_WORLD_H
+#define CLIFF_WORLD_H
 
 #include "gymfcpp/gymfcpp_types.h"
 #include "gymfcpp/time_step.h"
-
-#include <boost/noncopyable.hpp>
 #include <string>
-#include <vector>
-#include <tuple>
+
 
 namespace gymfcpp {
 
-///
-class TimeStep;
 
 ///
-/// \brief The FrozenLake class
+/// \brief The CliffWorld class
 ///
-class FrozenLake: private boost::noncopyable
+class CliffWorld
 {
+
 public:
 
     ///
@@ -42,6 +38,21 @@ public:
     static std::string py_env_name;
 
     ///
+    /// \brief py_obs_name
+    ///
+    static std::string py_obs_name;
+
+    ///
+    /// \brief py_step_result_name
+    ///
+    static std::string py_step_result_name;
+
+    ///
+    /// \brief py_dynamics_name
+    ///
+    static std::string py_dynamics_name;
+
+    ///
     /// \brief dynamics_t
     ///
     typedef std::vector<std::tuple<real_t, uint_t, real_t, bool>> dynamics_t;
@@ -50,13 +61,12 @@ public:
     /// \brief FrozenLake
     /// \param version
     ///
-    FrozenLake(const std::string& version, obj_t gym_namespace, bool do_create=true, bool is_slipery=true);
+    CliffWorld(std::string version, obj_t gym_namespace, bool do_create=true);
 
     ///
     /// \brief make
-    /// \param is_slipery
     ///
-    void make(bool is_slipery=true);
+    void make();
 
     ///
     /// \brief n_states
@@ -128,8 +138,17 @@ private:
     ///
     TimeStep current_state_;
 
+    ///
+    /// \brief cache_n_actions_
+    ///
+    mutable uint_t cached_n_actions_;
+
+    ///
+    /// \brief cached_n_states_
+    ///
+    mutable uint_t cached_n_states_;
 };
 
 }
 
-#endif // FROZEN_LAKE_H
+#endif // CLIFF_WORLD_H

@@ -1,4 +1,6 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.6)
 
 ADD_SUBDIRECTORY(test_frozen_lake)
+ADD_SUBDIRECTORY(test_black_jack)
+ADD_SUBDIRECTORY(test_cliff_world)
 

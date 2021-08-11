@@ -1,5 +1,4 @@
 #include "gymfcpp/frozen_lake.h"
-#include "gymfcpp/time_step_type.h"
 #include "gymfcpp/config.h"
 
 #include <boost/python.hpp>
@@ -86,7 +85,7 @@ FrozenLake::reset(){
     assert(is_created_ && "Environment has not been created");
 #endif
 
-    // create an environment
+    // reset the python environment
     boost::python::exec("observation = frozen_env.reset()", gym_namespace_);
 
     // the observation

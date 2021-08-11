@@ -66,9 +66,11 @@ Step with prob=0.333333
 
 
 
-## Environment implemented
+## Environments implemented
 
 - ```FrozenLake```
+- ```Blackjack```
+- ```CliffWalking```
 
 ## Dependencies
 
@@ -82,5 +84,5 @@ Step with prob=0.333333
 ### ```pyconfig.h``` not found
 
 - Run: ```find /usr/include -name pyconfig.h```
-- Export: ```export CPLUS_INCLUDE_PATH="$CPLUS_INCLUDE_PATH:/path/to/pyconfig"```
+- Export: ```export CPLUS_INCLUDE_PATH``` for example ```export CPLUS_INCLUDE_PATH="$CPLUS_INCLUDE_PATH:/usr/include/python3.8/"```
 
