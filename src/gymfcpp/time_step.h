@@ -71,6 +71,12 @@ public:
     real_t reward()const{return reward_;}
 
     ///
+    /// \brief done
+    /// \return
+    ///
+    bool done()const{return type_ != TimeStepTp::LAST;}
+
+    ///
     ///
     ///
     template<typename T>
