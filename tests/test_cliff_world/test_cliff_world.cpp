@@ -178,3 +178,81 @@ TEST(TestCliffWorld, Test_Get_Dynamics)
         FAIL()<<"Error could not step in the environment";
     }
 }
+
+TEST(TestCliffWorld, Test_Not_Done)
+{
+
+    try{
+
+        Py_Initialize();
+        boost::python::numpy::initialize();
+        auto gym_module = boost::python::import("gym");
+        auto gym_namespace = gym_module.attr("__dict__");
+
+        gymfcpp::CliffWorld env("v0", gym_namespace, false);
+        env.make();
+        env.reset();
+
+        auto step_result = env.step(3);
+
+        ASSERT_FALSE(step_result.done());
+
+    }
+    catch(const boost::python::error_already_set&)
+    {
+        PyErr_Print();
+        FAIL()<<"Error could not step in the environment";
+    }
+}
+
+TEST(TestCliffWorld, Test_Done_1)
+{
+
+    try{
+
+        Py_Initialize();
+        boost::python::numpy::initialize();
+        auto gym_module = boost::python::import("gym");
+        auto gym_namespace = gym_module.attr("__dict__");
+
+        gymfcpp::CliffWorld env("v0", gym_namespace, false);
+        env.make();
+        env.reset();
+
+        auto step_result = env.step(1);
+
+        ASSERT_FALSE(step_result.done());
+
+    }
+    catch(const boost::python::error_already_set&)
+    {
+        PyErr_Print();
+        FAIL()<<"Error could not step in the environment";
+    }
+}
+
+TEST(TestCliffWorld, Test_Done_2)
+{
+
+    try{
+
+        Py_Initialize();
+        boost::python::numpy::initialize();
+        auto gym_module = boost::python::import("gym");
+        auto gym_namespace = gym_module.attr("__dict__");
+
+        gymfcpp::CliffWorld env("v0", gym_namespace, false);
+        env.make();
+        env.reset();
+
+        auto step_result = env.step(0);
+
+        ASSERT_FALSE(step_result.done());
+
+    }
+    catch(const boost::python::error_already_set&)
+    {
+        PyErr_Print();
+        FAIL()<<"Error could not step in the environment";
+    }
+}

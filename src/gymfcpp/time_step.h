@@ -74,7 +74,7 @@ public:
     /// \brief done
     /// \return
     ///
-    bool done()const{return type_ != TimeStepTp::LAST;}
+    bool done()const{return type_ == TimeStepTp::LAST;}
 
     ///
     ///
