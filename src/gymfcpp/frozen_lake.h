@@ -72,13 +72,13 @@ public:
     ///
     /// \brief version
     ///
-    std::string_view version()const{return v_;}
+    std::string_view version()const noexcept{return v_;}
 
     ///
     /// \brief is_created
     /// \return
     ///
-    bool is_created()const{return is_created_;}
+    bool is_created()const noexcept{return is_created_;}
 
     ///
     /// \brief reset
