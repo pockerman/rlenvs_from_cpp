@@ -1,0 +1,16 @@
+export CPLUS_INCLUDE_PATH="$CPLUS_INCLUDE_PATH:/usr/include/python3.8/"
+cd ./build/tests/
+
+echo "Running BlackJack tests"
+cd test_black_jack/ && ./test_black_jack
+cd ..
+echo "Running CartPole tests"
+cd test_cart_pole/ && ./test_cart_pole
+cd ..
+echo "Running CliffWorld tests"
+cd test_cliff_world/ && ./test_cliff_world
+cd ..
+echo "Running ForzenLake tests"
+cd test_frozen_lake/ && ./test_frozen_lake
+cd ..
+cd ..
