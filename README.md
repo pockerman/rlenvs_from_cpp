@@ -79,7 +79,7 @@ Step with prob=0.333333
 
 - A compiler that supports C++20 e.g. g++10
 - Boost.Python
-- OpenAI-Gym installed
+- OpenAI-Gym 
 - CMake
 - Gtest
 
