@@ -1,11 +1,13 @@
 # gym_from_cpp
 
-Some utilities based on <a href="https://www.boost.org/doc/libs/1_76_0/libs/python/doc/html/tutorial/index.html">Boost.Python</a> to execute 
-<a href="#">OpenAI-Gym</a> environments code from C++. Note that 
-this repository does not aim at execting general Python code from C++ drivers. Instead it focuses
-on simply facilitating interaction with  OpenAI-Gym. If you require something a lot more general, gave a look at <a href="https://github.com/pybind/pybind11">pybind11</a>.
+Some utilities based on <a href="https://www.boost.org/doc/libs/1_76_0/libs/python/doc/html/tutorial/index.html">Boost.Python</a> to use 
+<a href="#">OpenAI-Gym</a> environments from C++ drivers. This repository does not aim at executing general Python code from C++ drivers. Instead, it focuses
+on simply facilitating interaction with  OpenAI-Gym environments. If you require something a lot more general, have a look at <a href="https://github.com/pybind/pybind11">pybind11</a>.
+
 Thus, ```gym_from_cpp``` uses Boost.Python heavily under the hoods.  Moreover,
-it does not attempt to hide any of its functionality (see basic example below). The various wrappers of the environments exposed
+it does not attempt to hide any of the  functionality provided by  Boost.Python (see basic example below). 
+
+The various wrappers of the environments exposed
 should abide with <a href="https://github.com/deepmind/dm_env/blob/master/docs/index.md">dm_env</a> specification.
 
 
