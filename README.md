@@ -79,6 +79,18 @@ Step with prob=0.333333
 - Boost.Python
 - OpenAI-Gym installed
 - CMake
+- Gtest
+
+## Istallation
+
+The usual CMake based installation process is used. Namely
+
+```
+mkdir build && cd build && cmake ..
+make install
+```
+
+You can execute all the test by running the helper script ```execute_tests.sh```.
 
 ## Issues
 
