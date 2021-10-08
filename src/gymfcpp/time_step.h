@@ -8,16 +8,24 @@
 #include <any>
 #include <unordered_map>
 #include <stdexcept>
+#include <vector>
 #include <ostream>
 
 namespace gymfcpp {
 
+
 ///
 /// \brief The TimeStep class
 ///
-class TimeStep
+template<typename StateTp>
+class TimeSte
 {
 public:
+
+    ///
+    /// \brief state_ Type of the state
+    ///
+    typedef StateTp state_t;
 
     ///
     /// \brief TimeStep
@@ -27,12 +35,12 @@ public:
     ///
     ///
     ///
-    TimeStep(TimeStepTp type, real_t reward, uint_t obs);
+    TimeStep(TimeStepTp type, real_t reward, state_t obs);
 
     ///
     ///
     ///
-    TimeStep(TimeStepTp type, real_t reward, uint_t obs, std::unordered_map<std::string, std::any>&& extra);
+    TimeStep(TimeStepTp type, real_t reward, state_t obs, std::unordered_map<std::string, std::any>&& extra);
 
     ///
     /// \brief first
@@ -97,7 +105,7 @@ private:
     ///
     /// \brief obs_
     ///
-    uint_t obs_;
+    state_t obs_;
 
     ///
     /// \brief extra_
@@ -106,9 +114,37 @@ private:
 
 };
 
+template<typename StateTp>
+TimeStep<StateTp>::TimeStep()
+    :
+      type_(TimeStepTp::INVALID_TYPE),
+      reward_(0.0),
+      obs_(),
+      extra_()
+{}
+
+template<typename StateTp>
+TimeStep<StateTp>::TimeStep(TimeStepTp type, real_t reward, state_t obs)
+    :
+      type_(type),
+      reward_(reward),
+      obs_(obs),
+      extra_()
+{}
+
+template<typename StateTp>
+TimeStep<StateTp>::TimeStep(TimeStepTp type, real_t reward, state_t obs, std::unordered_map<std::string, std::any>&& extra)
+    :
+    type_(type),
+    reward_(reward),
+    obs_(obs),
+    extra_(extra)
+{}
+
+template<typename StateTp>
 template<typename T>
 const T&
-TimeStep::get_extra(std::string name)const{
+TimeStep<StateTp>::get_extra(std::string name)const{
 
     auto itr = extra_.find(name);
 
@@ -119,8 +155,10 @@ TimeStep::get_extra(std::string name)const{
     return std::any_cast<const T&>(itr->second);
 }
 
+
+template<typename StateTp>
 inline
-std::ostream& operator<<(std::ostream& out, const TimeStep& step){
+std::ostream& operator<<(std::ostream& out, const TimeStep<StateTp>& step){
 
     out<<"Step type.... "<<gymfcpp::to_string(step.type())<<std::endl;
     out<<"Reward..... .."<<step.reward()<<std::endl;

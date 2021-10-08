@@ -13,7 +13,7 @@
 namespace gymfcpp{
 
 /// Forward declaration
-class TimeStep;
+template<typename StateTp> class TimeStep;
 
 ///
 /// \brief The CartPole class Interface for CartPole environment
@@ -27,6 +27,11 @@ public:
     /// \brief action_t
     ///
     typedef uint_t action_t;
+
+    ///
+    /// \brief state_t
+    ///
+    typedef std::vector<real_t> state_t;
 
     ///
     /// \brief name
@@ -55,11 +60,6 @@ public:
     void make();
 
     ///
-    /// \brief n_states
-    ///
-    uint_t n_states()const;
-
-    ///
     /// \brief n_actions
     /// \return
     ///
@@ -80,12 +80,12 @@ public:
     /// \brief reset
     /// \return
     ///
-    TimeStep reset();
+    TimeStep<state_t> reset();
 
     ///
     /// \brief step
     ///
-    TimeStep step(action_t action, bool query_extra=false);
+    TimeStep<state_t> step(action_t action);
 
 private:
 

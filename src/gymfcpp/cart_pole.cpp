@@ -78,7 +78,7 @@ CartPole::reset(){
     boost::python::exec(cpp_str.c_str(), data_.gym_namespace);
 
     // the observation
-    auto observation =  boost::python::extract<uint_t>(data_.gym_namespace[CartPole::py_env_name]);
+    auto observation =  boost::python::extract<boost::python::list>(data_.gym_namespace[CartPole::py_env_name]);
 
     data_.current_state = TimeStep(TimeStepTp::FIRST, 0.0, observation);
     return data_.current_state;
@@ -87,7 +87,7 @@ CartPole::reset(){
 
 
 TimeStep
-CartPole::step(action_t action, bool query_extra){
+CartPole::step(action_t action){
 
 #ifdef GYMFCPP_DEBUG
     assert(data_.is_created && "Environment has not been created");
@@ -110,13 +110,6 @@ CartPole::step(action_t action, bool query_extra){
     auto done = boost::python::extract<bool>(result()[2]);
 
     std::unordered_map<std::string, std::any> extra;
-
-    if(query_extra){
-
-        auto prob_dict = boost::python::extract<boost::python::dict>(result()[3]);
-        auto prob = boost::python::extract<real_t>(prob_dict()["prob"]);
-        extra["prob"] = std::any(prob());
-    }
 
     data_.current_state = TimeStep(done() ? TimeStepTp::LAST : TimeStepTp::MID, reward(), observation(), std::move(extra));
     return data_.current_state;
