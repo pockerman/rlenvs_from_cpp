@@ -83,7 +83,7 @@ CliffWorld::n_actions()const{
     return cached_n_actions_;
 }
 
-TimeStep
+CliffWorld::time_step_t
 CliffWorld::reset(){
 
 #ifdef GYMFCPP_DEBUG
@@ -99,13 +99,13 @@ CliffWorld::reset(){
     // the observation
     auto observation =  boost::python::extract<uint_t>(gym_namespace_[CliffWorld::py_obs_name]);
 
-    current_state_ = TimeStep(TimeStepTp::FIRST, 0.0, observation);
+    current_state_ = time_step_t(TimeStepTp::FIRST, 0.0, observation);
     return current_state_;
 
 }
 
 
-TimeStep
+CliffWorld::time_step_t
 CliffWorld::step(action_t action, bool query_extra){
 
 #ifdef GYMFCPP_DEBUG
@@ -137,7 +137,7 @@ CliffWorld::step(action_t action, bool query_extra){
         extra["prob"] = std::any(prob());
     }
 
-    current_state_ = TimeStep(done() ? TimeStepTp::LAST : TimeStepTp::MID, reward(), observation(), std::move(extra));
+    current_state_ = time_step_t(done() ? TimeStepTp::LAST : TimeStepTp::MID, reward(), observation(), std::move(extra));
     return current_state_;
 
 }

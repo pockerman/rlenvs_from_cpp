@@ -12,9 +12,6 @@
 namespace gymfcpp {
 
 ///
-class TimeStep;
-
-///
 /// \brief The FrozenLake class
 ///
 class FrozenLake: private boost::noncopyable
@@ -30,6 +27,11 @@ public:
     /// \brief action_t
     ///
     typedef uint_t action_t;
+
+    ///
+    /// \brief time_step_t
+    ///
+    typedef TimeStep<state_t> time_step_t;
 
     ///
     /// \brief name
@@ -84,14 +86,14 @@ public:
     /// \brief reset
     /// \return
     ///
-    TimeStep reset();
+    time_step_t reset();
 
     ///
     /// \brief step
     /// \param action
     /// \return
     ///
-    TimeStep step(action_t action, bool query_extra=false);
+    time_step_t step(action_t action, bool query_extra=false);
 
     ///
     /// \brief P
@@ -126,7 +128,7 @@ private:
     /// \brief current_state_ Keep tract what the current
     /// state of the world is
     ///
-    TimeStep current_state_;
+    time_step_t current_state_;
 
 };
 

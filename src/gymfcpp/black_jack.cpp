@@ -95,7 +95,7 @@ BlackJack::observation_space()const{
 
 }
 
-TimeStep
+BlackJack::time_step_t
 BlackJack::reset(){
 
 #ifdef GYMFCPP_DEBUG
@@ -118,7 +118,7 @@ BlackJack::reset(){
 }
 
 
-TimeStep
+BlackJack::time_step_t
 BlackJack::step(action_t action){
 
 #ifdef GYMFCPP_DEBUG
@@ -156,7 +156,7 @@ BlackJack::step(action_t action){
     auto usable = boost::python::extract<bool>(observation()[2]);
     extra["usable_ace"] = std::any(usable());
 
-    current_state_ = TimeStep(done() ? TimeStepTp::LAST : TimeStepTp::MID, reward(), obs(), std::move(extra));
+    current_state_ = time_step_t(done() ? TimeStepTp::LAST : TimeStepTp::MID, reward(), obs(), std::move(extra));
     return current_state_;
 
 }

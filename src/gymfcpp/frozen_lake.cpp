@@ -78,7 +78,7 @@ FrozenLake::n_actions()const{
     return boost::python::extract<uint_t>(action_space().attr("__dict__")["n"]);
 }
 
-TimeStep
+FrozenLake::time_step_t
 FrozenLake::reset(){
 
 #ifdef GYMFCPP_DEBUG
@@ -91,13 +91,13 @@ FrozenLake::reset(){
     // the observation
     auto observation =  boost::python::extract<uint_t>(gym_namespace_["observation"]);
 
-    current_state_ = TimeStep(TimeStepTp::FIRST, 0.0, observation);
+    current_state_ = time_step_t(TimeStepTp::FIRST, 0.0, observation);
     return current_state_;
 
 }
 
 
-TimeStep
+FrozenLake::time_step_t
 FrozenLake::step(action_t action, bool query_extra){
 
 #ifdef GYMFCPP_DEBUG

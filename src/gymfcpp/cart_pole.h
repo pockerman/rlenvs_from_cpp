@@ -34,6 +34,11 @@ public:
     typedef std::vector<real_t> state_t;
 
     ///
+    /// \brief time_step_t
+    ///
+    typedef TimeStep<std::vector<real_t>> time_step_t;
+
+    ///
     /// \brief name
     ///
     static  std::string name;
@@ -47,6 +52,11 @@ public:
     /// \brief py_step_result_name
     ///
     static std::string py_step_result_name;
+
+    ///
+    /// \brief py_step_reset_result_name
+    ///
+    static std::string py_reset_result_name;
 
     ///
     /// \brief CartPole. Constructor
@@ -80,12 +90,12 @@ public:
     /// \brief reset
     /// \return
     ///
-    TimeStep<state_t> reset();
+    time_step_t reset();
 
     ///
     /// \brief step
     ///
-    TimeStep<state_t> step(action_t action);
+    time_step_t step(action_t action);
 
 private:
 
@@ -93,7 +103,7 @@ private:
     ///
     /// \brief data_
     ///
-    detail::data_wrapper data_;
+    detail::data_wrapper<time_step_t> data_;
 
     /// cached data
 

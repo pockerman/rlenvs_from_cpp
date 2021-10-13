@@ -12,6 +12,7 @@ namespace detail{
 /// \brief The data_wrapper struct. Helper struct to wrap common
 /// functionality for the implemented environment
 ///
+template<typename TimeStepType>
 struct data_wrapper
 {
 
@@ -39,7 +40,7 @@ struct data_wrapper
     /// \brief current_state_ Keep tract what the current
     /// state of the world is
     ///
-    TimeStep current_state;
+    TimeStepType current_state;
 
 };
 }

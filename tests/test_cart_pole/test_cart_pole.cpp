@@ -113,6 +113,7 @@ TEST(TestCartPole, Test_Step)
 
         gymfcpp::CartPole env("v0", gym_namespace, false);
         env.make();
+        env.reset();
 
         auto step_result = env.step(0);
         ASSERT_TRUE(step_result.mid());

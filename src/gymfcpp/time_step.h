@@ -18,7 +18,7 @@ namespace gymfcpp {
 /// \brief The TimeStep class
 ///
 template<typename StateTp>
-class TimeSte
+class TimeStep
 {
 public:
 
