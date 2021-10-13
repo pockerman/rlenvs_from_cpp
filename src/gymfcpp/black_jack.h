@@ -36,6 +36,16 @@ public:
     typedef uint_t action_t;
 
     ///
+    /// \brief state_t
+    ///
+    typedef uint_t state_t;
+
+    ///
+    /// \brief time_step_t
+    ///
+    typedef TimeStep<state_t> time_step_t;
+
+    ///
     /// \brief BlackJack
     /// \param version
     ///
@@ -73,14 +83,14 @@ public:
     /// \brief reset
     /// \return
     ///
-    TimeStep reset();
+    time_step_t reset();
 
     ///
     /// \brief step
     /// \param action
     /// \return
     ///
-    TimeStep step(action_t action);
+    time_step_t step(action_t action);
 
 private:
 
@@ -108,7 +118,7 @@ private:
     /// \brief current_state_ Keep tract what the current
     /// state of the world is
     ///
-    TimeStep current_state_;
+    time_step_t current_state_;
 
     ///
     /// \brief cache_n_actions_
