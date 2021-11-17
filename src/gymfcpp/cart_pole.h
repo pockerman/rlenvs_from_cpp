@@ -6,6 +6,7 @@
 
 
 #include <boost/noncopyable.hpp>
+
 #include <string>
 #include <vector>
 #include <array>
@@ -37,7 +38,7 @@ public:
     ///
     /// \brief time_step_t
     ///
-    typedef TimeStep<std::vector<real_t>> time_step_t;
+    typedef TimeStep<state_t> time_step_t;
 
     ///
     /// \brief name
@@ -106,7 +107,7 @@ public:
     ///
     /// \brief the screen
     ///
-    Screen get_screen();
+    Screen get_screen()const;
 
     ///
     /// \brief render
@@ -135,6 +136,13 @@ class CartPole::Screen
 {
 public:
 
+    typedef std::vector<std::vector<std::vector<real_t>>> screen_vector_t;
+
+    ///
+    ///
+    ///
+    Screen()=default;
+
     ///
     /// \brief Screen
     ///
@@ -149,14 +157,44 @@ public:
     /// \brief
     ///
     const std::vector<std::vector<std::vector<real_t>>>& get_as_vector()const;
+    
+    ///
+    ///
+    ///
+    bool is_valid()const noexcept{return is_valid_screen_;}
+    
+    ///
+    ///
+    ///
+    void invalidate() noexcept;
 
 private:
 
     obj_t screen_;
     std::array<uint_t, 3> shape_;
+    bool is_valid_screen_{false};
     mutable std::vector<std::vector<std::vector<real_t>>> screen_vec_;
 
 };
+
+inline
+bool operator==(const CartPole::Screen& screen1, const CartPole::Screen& screen2){
+	auto shape_1 = screen1.shape();
+	auto shape_2 = screen2.shape();
+	return (shape_1[0] == shape_2[0]) &&  (shape_1[1] == shape_2[1]) &&  (shape_1[2] == shape_2[2]);
+}
+
+inline
+bool operator!=(const CartPole::Screen& screen1, const CartPole::Screen& screen2){
+	return !(screen1 == screen2); 
+}
+
+
+inline
+CartPole::Screen operator-(const CartPole::Screen& screen1, const CartPole::Screen& screen2){
+}
+
+
 }
 
 #endif // CART_POLE_H
