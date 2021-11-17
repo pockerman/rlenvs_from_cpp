@@ -3,6 +3,8 @@
 #include "gymfcpp/time_step.h"
 #include "gymfcpp/config.h"
 
+#include <iostream>
+
 namespace gymfcpp{
 
 // static data
@@ -27,6 +29,52 @@ std::vector<real_t> extract_obs(const ObsTp& observation){
 
 }
 }
+
+
+CartPole::Screen::Screen(obj_t screen, std::array<uint_t, 3>&& shp)
+    :
+      screen_(screen),
+      shape_(shp)
+{}
+
+
+const std::vector<std::vector<std::vector<real_t>>>&
+CartPole::Screen::get_as_vector()const{
+
+    if(!screen_vec_.empty()){
+        return screen_vec_;
+    }
+
+    screen_vec_.resize(shape()[0]);
+
+    for(uint_t i=0; i<shape()[0]; ++i){
+        screen_vec_[i].resize(shape()[1]);
+
+        for(uint_t j=0; j<shape()[1]; ++j){
+            screen_vec_[i][j].reserve(shape()[2]);
+        }
+    }
+
+    for(uint_t i=0; i<shape()[0]; ++i){
+        for(uint_t j=0; j<shape()[1]; ++j){
+
+            auto screen_data = boost::python::extract<boost::python::list>(screen_[i][j]);
+            screen_vec_[i][j] = extract_obs(screen_data);
+        }
+    }
+
+    return screen_vec_;
+
+
+}
+
+/*std::array<uint_t, 3>
+CartPole::Screen::shape()const{
+
+    auto result = boost::python::extract<boost::python::tuple>(screen_["__dict__"])
+    std::array<uint_t, 3>
+
+}*/
 
 
 
@@ -54,8 +102,9 @@ CartPole::make(){
     }
 
     std::string cpp_str = "import gym \n";
+    cpp_str += "import numpy as np \n";
+    cpp_str += "import torch \n";
     cpp_str += CartPole::py_env_name + " = gym.make('" + CartPole::name +"-" + data_.v + "').unwrapped\n";
-    //cpp_str += CartPole::py_env_name + " = " + CartPole::py_env_name + ".unwrapped";
 
     // create an environment
     auto ignored = boost::python::exec(cpp_str.c_str(), data_.gym_namespace);
@@ -137,6 +186,64 @@ CartPole::step(action_t action){
 
     data_.current_state = time_step_t(done() ? TimeStepTp::LAST : TimeStepTp::MID, reward(), obs, std::move(extra));
     return data_.current_state;
+
+}
+
+void
+CartPole::render(){
+#ifdef GYMFCPP_DEBUG
+    assert(data_.is_created && "Environment has not been created");
+#endif
+
+    auto str = "screen = " + CartPole::py_env_name + ".render(mode='rgb_array')\n";
+    boost::python::exec(str.c_str(), data_.gym_namespace);
+}
+
+CartPole::Screen
+CartPole::get_screen(){
+
+#ifdef GYMFCPP_DEBUG
+    assert(data_.is_created && "Environment has not been created");
+#endif
+
+    auto str = "screen = " + CartPole::py_env_name + ".render(mode='rgb_array').transpose((2, 0, 1))\n";
+    str += "_, screen_height, screen_width = screen.shape\n";
+    str += "screen_height_scale_1 = int(screen_height * 0.4)\n";
+    str += "screen_height_scale_2 = int(screen_height * 0.8)\n";
+    str += "screen = screen[:, screen_height_scale_1 : screen_height_scale_2]\n";
+
+    str += "view_width = int(screen_width * 0.6)\n";
+
+    // calculate the cart location
+    str += "world_width = " + CartPole::py_env_name + ".x_threshold * 2\n";
+    str += "scale = screen_width / world_width \n";
+    str += "cart_location = int(" + CartPole::py_env_name + ".state[0] * scale + screen_width / 2.0)\n";
+
+    str += "if cart_location < view_width // 2:\n";
+    str += "\tslice_range = slice(view_width)\n";
+    str += "elif cart_location > (screen_width - view_width // 2):\n";
+    str += "\tslice_range = slice(-view_width, None)\n";
+    str += "else:\n";
+    str += "\tslice_range = slice(cart_location - view_width // 2, cart_location + view_width // 2)\n";
+
+    // # Strip off the edges, so that we have a square image centered on a cart
+    str += "screen = screen[:, :, slice_range]\n";
+
+    // Convert to float, rescale, convert to torch tensor
+    // (this doesn't require a copy)
+    str += "cart_pole_screen = np.ascontiguousarray(screen, dtype=np.float32) / 255\n";
+    str += "cart_pole_screen_shape = cart_pole_screen.shape\n";
+    str += "cart_pole_screen_list = cart_pole_screen.tolist()\n";
+    //str += "cart_pole_screen = torch.from_numpy(screen)\n";
+
+    //std::cout<<str<<std::endl;
+
+    // execute the script
+    boost::python::exec(str.c_str(), data_.gym_namespace);
+
+    auto shape = boost::python::extract<boost::python::tuple>(data_.gym_namespace["cart_pole_screen_shape"]);
+    return Screen(data_.gym_namespace["cart_pole_screen_list"],
+    {boost::python::extract<uint_t>(shape()[0]), boost::python::extract<uint_t>(shape()[1]), boost::python::extract<uint_t>(shape()[2])});
 
 }
 

@@ -8,6 +8,7 @@
 #include <boost/noncopyable.hpp>
 #include <string>
 #include <vector>
+#include <array>
 #include <tuple>
 
 namespace gymfcpp{
@@ -59,6 +60,11 @@ public:
     static std::string py_reset_result_name;
 
     ///
+    /// \brief The class Screen
+    ///
+    class Screen;
+
+    ///
     /// \brief CartPole. Constructor
     ///
     CartPole(const std::string& version, obj_t gym_namespace, bool do_create=true);
@@ -97,6 +103,16 @@ public:
     ///
     time_step_t step(action_t action);
 
+    ///
+    /// \brief the screen
+    ///
+    Screen get_screen();
+
+    ///
+    /// \brief render
+    ///
+    void render();
+
 private:
 
 
@@ -111,6 +127,34 @@ private:
     /// \brief number of actions
     ///
     mutable uint_t n_actions_;
+
+};
+
+
+class CartPole::Screen
+{
+public:
+
+    ///
+    /// \brief Screen
+    ///
+    Screen(obj_t screen, std::array<uint_t, 3>&& shp);
+
+    ///
+    /// \breif shape
+    ///
+    std::array<uint_t, 3> shape()const noexcept{return shape_;};
+
+    ///
+    /// \brief
+    ///
+    const std::vector<std::vector<std::vector<real_t>>>& get_as_vector()const;
+
+private:
+
+    obj_t screen_;
+    std::array<uint_t, 3> shape_;
+    mutable std::vector<std::vector<std::vector<real_t>>> screen_vec_;
 
 };
 }

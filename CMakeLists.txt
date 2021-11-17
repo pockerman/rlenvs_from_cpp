@@ -1,7 +1,7 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.6)
 MESSAGE(STATUS "Using CMake ${CMAKE_VERSION}")
 
-PROJECT(Gym_FromCpp VERSION 0.0.1 LANGUAGES CXX)
+PROJECT(Gym_FromCpp VERSION 0.0.3 LANGUAGES CXX)
 
 # -----------------------------------------------------------------------------
 # Prevent in-source builds.
