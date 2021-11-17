@@ -125,3 +125,56 @@ TEST(TestCartPole, Test_Step)
         FAIL()<<"Error could not step in the environment";
     }
 }
+
+TEST(TestCartPole, Test_Get_Screen)
+{
+    try{
+        Py_Initialize();
+
+        auto gym_module = boost::python::import("gym");
+        auto gym_namespace = gym_module.attr("__dict__");
+
+        gymfcpp::CartPole env("v0", gym_namespace, false);
+        env.make();
+        env.reset();
+
+        // access the screen
+        env.get_screen();
+    }
+    catch(const boost::python::error_already_set&)
+    {
+        PyErr_Print();
+        FAIL()<<"Error could not get screen\n";
+    }
+}
+
+TEST(TestCartPole, Test_Get_Screen_as_vector)
+{
+    try{
+        Py_Initialize();
+
+        auto gym_module = boost::python::import("gym");
+        auto gym_namespace = gym_module.attr("__dict__");
+
+        gymfcpp::CartPole env("v0", gym_namespace, false);
+        env.make();
+        env.reset();
+
+        // access the screen
+        auto screen = env.get_screen();
+
+        const auto& data = screen.get_as_vector();
+        const auto shape = screen.shape();
+
+        ASSERT_EQ(data.size(), static_cast<uint_t>(shape[0]));
+        ASSERT_EQ(data[0].size(), static_cast<uint_t>(shape[1]));
+        ASSERT_EQ(data[0][1].size(), static_cast<uint_t>(shape[2]));
+    }
+    catch(const boost::python::error_already_set&)
+    {
+        PyErr_Print();
+        FAIL()<<"Error could not get screen\n";
+    }
+
+
+}
