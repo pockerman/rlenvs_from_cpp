@@ -26,6 +26,9 @@ SET(CMAKE_INSTALL_PREFIX /home/alex/qi3/py_from_cpp/install)
 SET(CMAKE_LINKER_FLAGS "-pthread")
 SET(ENABLE_TESTS_FLAG True)
 SET(ENABLE_EXAMPLES_FLAG True)
+SET(ENABLE_DOC_FLAG True)
+
+LIST(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 
 
 # find Boost
@@ -82,4 +85,12 @@ IF(ENABLE_TESTS_FLAG)
 	ADD_SUBDIRECTORY(tests)
 ELSE()
 	MESSAGE(WARNING "Tests have not been enabled")
+ENDIF()
+
+
+IF(ENABLE_DOC_FLAG)
+	# Add the tests
+	ADD_SUBDIRECTORY(doc)
+ELSE()
+	MESSAGE(WARNING "Documentation will not be generated")
 ENDIF()
