@@ -66,8 +66,6 @@ Step with prob=0.333333
 
 ```
 
-
-
 ## Environments implemented
 
 - ```FrozenLake```
@@ -92,7 +90,19 @@ mkdir build && cd build && cmake ..
 make install
 ```
 
-You can execute all the test by running the helper script ```execute_tests.sh```.
+## Generate documentation
+
+There are extra dependencies if you want to generate the documentation. Namely,
+
+- Doxygen
+- Sphinx
+- sphinx_rtd_theme
+- breathe
+- m2r2
+
+## Run the tests
+
+You can execute all the tests by running the helper script ```execute_tests.sh```.
 
 ## Issues
 
