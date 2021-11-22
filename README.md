@@ -81,7 +81,7 @@ Step with prob=0.333333
 - CMake
 - Gtest
 
-## Istallation
+## Installation
 
 The usual CMake based installation process is used. Namely
 

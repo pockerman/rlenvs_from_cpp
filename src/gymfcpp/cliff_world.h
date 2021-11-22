@@ -115,6 +115,11 @@ public:
     ///
     dynamics_t p(uint_t sidx, uint_t aidx)const;
 
+    ///
+    /// \brief render. Render the environment
+    ///
+    void render();
+
 private:
 
     ///

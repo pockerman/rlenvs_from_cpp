@@ -68,16 +68,6 @@ CartPole::Screen::get_as_vector()const{
 
 }
 
-/*std::array<uint_t, 3>
-CartPole::Screen::shape()const{
-
-    auto result = boost::python::extract<boost::python::tuple>(screen_["__dict__"])
-    std::array<uint_t, 3>
-
-}*/
-
-
-
 CartPole::CartPole(const std::string& version, obj_t gym_namespace, bool do_create)
     :
       data_(),
@@ -191,6 +181,7 @@ CartPole::step(action_t action){
 
 void
 CartPole::render(){
+
 #ifdef GYMFCPP_DEBUG
     assert(data_.is_created && "Environment has not been created");
 #endif
