@@ -92,6 +92,11 @@ public:
     ///
     time_step_t step(action_t action);
 
+    ///
+    /// \brief render. Render the environment
+    ///
+    void render();
+
 private:
 
     ///

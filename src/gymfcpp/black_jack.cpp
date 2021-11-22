@@ -161,7 +161,16 @@ BlackJack::step(action_t action){
 
 }
 
+void
+BlackJack::render(){
 
+#ifdef GYMFCPP_DEBUG
+    assert(is_created_ && "Environment has not been created");
+#endif
+
+    auto str = "screen = " + BlackJack::py_env_name + ".render(mode='rgb_array')\n";
+    boost::python::exec(str.c_str(), gym_namespace_);
+}
 
 
 }

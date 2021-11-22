@@ -49,36 +49,33 @@ public:
     typedef std::vector<std::tuple<real_t, uint_t, real_t, bool>> dynamics_t;
 
     ///
-    /// \brief FrozenLake
-    /// \param version
+    /// \brief FrozenLake. Constructor
     ///
     FrozenLake(const std::string& version, obj_t gym_namespace, bool do_create=true, bool is_slipery=true);
 
     ///
-    /// \brief make
-    /// \param is_slipery
+    /// \brief make. Builds the environment. Optionally we can choose if the
+    /// environment will be slippery
     ///
     void make(bool is_slipery=true);
 
     ///
-    /// \brief n_states
+    /// \brief n_states. Returns the number of states
     ///
     uint_t n_states()const;
 
     ///
-    /// \brief n_actions
-    /// \return
+    /// \brief n_actions. Returns the number of actions
     ///
     uint_t n_actions()const;
 
     ///
-    /// \brief version
+    /// \brief version. The version of the environment
     ///
     std::string_view version()const noexcept{return v_;}
 
     ///
     /// \brief is_created
-    /// \return
     ///
     bool is_created()const noexcept{return is_created_;}
 
@@ -101,6 +98,11 @@ public:
     /// \param aidx
     ///
     dynamics_t p(uint_t sidx, uint_t aidx)const;
+
+    ///
+    /// \brief render. Render the environment
+    ///
+    void render();
 
 private:
 

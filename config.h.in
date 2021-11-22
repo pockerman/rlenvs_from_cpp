@@ -1,0 +1,8 @@
+#ifndef GYMFCPP_CONFIG_H
+#define GYMFCPP_CONFIG_H
+
+/*DEBUG*/
+#cmakedefine GYMFCPP_DEBUG
+
+#endif
+
