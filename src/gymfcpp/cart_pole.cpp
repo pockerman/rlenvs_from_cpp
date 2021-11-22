@@ -34,8 +34,24 @@ std::vector<real_t> extract_obs(const ObsTp& observation){
 CartPole::Screen::Screen(obj_t screen, std::array<uint_t, 3>&& shp)
     :
       screen_(screen),
-      shape_(shp)
+      shape_(shp),
+      is_valid_screen_(true),
+      screen_vec_()
 {}
+
+void 
+CartPole::Screen::invalidate() noexcept{
+
+	screen_ = obj_t();
+	
+	std::array<uint_t, 3> empty;
+	std::swap(shape_, empty);
+	
+	screen_vector_t empty_vec;
+	std::swap(screen_vec_, empty_vec);
+	is_valid_screen_ = false;
+
+}
 
 
 const std::vector<std::vector<std::vector<real_t>>>&
@@ -191,7 +207,7 @@ CartPole::render(){
 }
 
 CartPole::Screen
-CartPole::get_screen(){
+CartPole::get_screen()const{
 
 #ifdef GYMFCPP_DEBUG
     assert(data_.is_created && "Environment has not been created");
