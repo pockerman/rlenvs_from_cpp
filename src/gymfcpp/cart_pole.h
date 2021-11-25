@@ -26,17 +26,17 @@ class CartPole: private boost::noncopyable
 public:
 
     ///
-    /// \brief action_t
+    /// \brief action_t. The type of the action
     ///
     typedef uint_t action_t;
 
     ///
-    /// \brief state_t
+    /// \brief state_t. The type of the state
     ///
     typedef std::vector<real_t> state_t;
 
     ///
-    /// \brief time_step_t
+    /// \brief time_step_t. The type of the time step
     ///
     typedef TimeStep<state_t> time_step_t;
 
@@ -46,12 +46,12 @@ public:
     static  std::string name;
 
     ///
-    /// \brief py_env_name
+    /// \brief py_env_name. The name of the environment in Python REPL
     ///
     static std::string py_env_name;
 
     ///
-    /// \brief py_step_result_name
+    /// \brief py_step_result_name. The name of the result when stepping in the Python REPL
     ///
     static std::string py_step_result_name;
 
@@ -61,7 +61,7 @@ public:
     static std::string py_reset_result_name;
 
     ///
-    /// \brief The class Screen
+    /// \brief The class Screen. Wrapper to the screen captured when calling render
     ///
     class Screen;
 
@@ -71,14 +71,12 @@ public:
     CartPole(const std::string& version, obj_t gym_namespace, bool do_create=true);
 
     ///
-    /// \brief make
-    /// \param is_slipery
+    /// \brief make. Build the environment
     ///
     void make();
 
     ///
-    /// \brief n_actions
-    /// \return
+    /// \brief n_actions. Returns the number of actions
     ///
     uint_t n_actions()const;
 
@@ -149,22 +147,22 @@ public:
     Screen(obj_t screen, std::array<uint_t, 3>&& shp);
 
     ///
-    /// \breif shape
+    /// \brief shape. The shape of screen.
     ///
     std::array<uint_t, 3> shape()const noexcept{return shape_;};
 
     ///
-    /// \brief
+    /// \brief get_as_vector. Returns the screen as floats
     ///
     const std::vector<std::vector<std::vector<real_t>>>& get_as_vector()const;
     
     ///
-    ///
+    /// \brief is_valid. Returns true if the computed screen is valid
     ///
     bool is_valid()const noexcept{return is_valid_screen_;}
     
     ///
-    ///
+    /// \brief invalidate. Invalidate the screen.
     ///
     void invalidate() noexcept;
 
