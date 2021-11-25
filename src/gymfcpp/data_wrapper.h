@@ -27,7 +27,7 @@ struct data_wrapper
     bool is_created;
 
     ///
-    /// \brief gym_namespace_
+    /// \brief gym_namespace
     ///
     obj_t gym_namespace;
 

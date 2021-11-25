@@ -185,6 +185,18 @@ CliffWorld::p(uint_t sidx, uint_t aidx)const{
     return dyn;
 }
 
+void
+CliffWorld::render(){
+
+#ifdef GYMFCPP_DEBUG
+    assert(is_created_ && "Environment has not been created");
+#endif
+
+    auto str = CliffWorld::py_env_name + ".render(mode='rgb_array')\n";
+    boost::python::exec(str.c_str(), gym_namespace_);
+
+}
+
 
 
 }

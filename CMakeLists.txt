@@ -1,7 +1,7 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.6)
 MESSAGE(STATUS "Using CMake ${CMAKE_VERSION}")
 
-PROJECT(Gym_FromCpp VERSION 0.0.3 LANGUAGES CXX)
+PROJECT(Gym_FromCpp VERSION 0.0.4 LANGUAGES CXX)
 
 # -----------------------------------------------------------------------------
 # Prevent in-source builds.
@@ -17,6 +17,12 @@ IF(COMMAND cmake_policy)
 	CMAKE_POLICY(SET CMP0048 NEW)
 ENDIF(COMMAND cmake_policy)
 
+SET(GYMFCPP_VERSION_MAJOR 0)
+SET(GYMFCPP_VERSION_MINOR 0)
+SET(GYMFCPP_VERSION_PATCH 4)
+SET(GYMFCPP_VERSION "${GYMFCPP_VERSION_MAJOR}.${GYMFCPP_VERSION_MINOR}.${GYMFCPP_VERSION_PATCH}")
+MESSAGE(STATUS "GymFromCpp Version ${GYMFCPP_VERSION}")
+
 SET(CMAKE_BUILD_TYPE "Debug")
 SET(CMAKE_CXX_COMPILER /usr/bin/g++-10)
 SET(CMAKE_C_COMPILER /usr/bin/gcc-10)
@@ -29,6 +35,9 @@ SET(ENABLE_EXAMPLES_FLAG True)
 SET(ENABLE_DOC_FLAG True)
 
 LIST(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
+
+configure_file(config.h.in ${PROJECT_SOURCE_DIR}/src/gymfcpp/gymfcpp_config.h @ONLY)
+configure_file(version.h.in ${PROJECT_SOURCE_DIR}/src/gymfcpp/gymfcpp_version.h @ONLY)
 
 
 # find Boost

@@ -197,6 +197,7 @@ CartPole::step(action_t action){
 
 void
 CartPole::render(){
+
 #ifdef GYMFCPP_DEBUG
     assert(data_.is_created && "Environment has not been created");
 #endif

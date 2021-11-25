@@ -37,18 +37,20 @@ FrozenLake::FrozenLake(const std::string& version, obj_t gym_namespace, bool do_
 void
 FrozenLake::make(bool is_slipery){
 
-    str_t python_str = "import gym \n"
-                       "frozen_env = gym.make('FrozenLake-v0', is_slippery=True) \n"
-                       "frozen_env = frozen_env.unwrapped";
+    std::string  python_str = "import gym \n";
+    python_str +=  FrozenLake::py_env_name + " = gym.make('FrozenLake-v0', is_slippery=True).unwrapped \n";
+          //             "frozen_env = frozen_env.unwrapped";
 
     if(!is_slipery){
-        python_str = "import gym \n"
-                     "frozen_env = gym.make('FrozenLake-v0', is_slippery=False) \n"
-                     "frozen_env = frozen_env.unwrapped";
+        python_str = "import gym \n";
+        python_str +=  FrozenLake::py_env_name + " = gym.make('FrozenLake-v0', is_slippery=False).unwrapped \n";
+
+        //"frozen_env = gym.make('FrozenLake-v0', is_slippery=False) \n"
+        //"frozen_env = frozen_env.unwrapped";
     }
 
     // create an environment
-    auto ignored = boost::python::exec(python_str, gym_namespace_);
+    auto ignored = boost::python::exec(python_str.c_str(), gym_namespace_);
     world_ = boost::python::extract<boost::python::api::object>(gym_namespace_["frozen_env"]);
     is_created_ = true;
 }
@@ -109,10 +111,10 @@ FrozenLake::step(action_t action, bool query_extra){
     }
 
     std::string s = "result = " + FrozenLake::py_env_name +".step("+std::to_string(action)+")";
-    str_t exe_str = s.c_str();
+    //str_t exe_str = s.c_str();
 
     // create an environment
-    boost::python::exec(exe_str, gym_namespace_);
+    boost::python::exec(s.c_str(), gym_namespace_);
 
     // the observation
     auto result =  boost::python::extract<boost::python::tuple>(gym_namespace_["result"]);
@@ -166,6 +168,19 @@ FrozenLake::p(uint_t sidx, uint_t aidx)const{
 
 
     return dyn;
+}
+
+
+void
+FrozenLake::render(){
+
+#ifdef GYMFCPP_DEBUG
+    assert(is_created_ && "Environment has not been created");
+#endif
+
+    auto str = FrozenLake::py_env_name + ".render(mode='rgb_array')\n";
+    boost::python::exec(str.c_str(), gym_namespace_);
+
 }
 
 
