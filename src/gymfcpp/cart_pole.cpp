@@ -109,7 +109,6 @@ CartPole::make(){
 
     std::string cpp_str = "import gym \n";
     cpp_str += "import numpy as np \n";
-    cpp_str += "import torch \n";
     cpp_str += CartPole::py_env_name + " = gym.make('" + CartPole::name +"-" + data_.v + "').unwrapped\n";
 
     // create an environment

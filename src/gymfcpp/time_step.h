@@ -33,15 +33,15 @@ public:
     TimeStep();
 
     ///
-    ///
+    /// \brief TimeStep. Constructor
     ///
     TimeStep(TimeStepTp type, real_t reward, state_t obs);
 
     ///
-    ///
+    /// \brief TimeStep. Constructor
     ///
     TimeStep(TimeStepTp type, real_t reward, state_t obs, std::unordered_map<std::string, std::any>&& extra);
-
+    
     ///
     /// \brief first
     /// \return
@@ -70,7 +70,7 @@ public:
     /// \brief observation
     /// \return
     ///
-    uint_t observation()const{return obs_;}
+    state_t observation()const{return obs_;}
 
     ///
     /// \brief reward
