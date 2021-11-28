@@ -71,6 +71,11 @@ public:
     CartPole(const std::string& version, obj_t gym_namespace, bool do_create=true);
 
     ///
+    /// \brief ~CartPole. Destructor
+    ///
+    ~CartPole();
+
+    ///
     /// \brief make. Build the environment
     ///
     void make();
@@ -110,8 +115,12 @@ public:
     ///
     /// \brief render
     ///
-    void render();
+    void render(std::string mode="human");
 
+    ///
+    /// \brief close. Close down the python environment
+    ///
+    void close();
 private:
 
 

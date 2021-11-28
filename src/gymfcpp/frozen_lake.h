@@ -12,7 +12,8 @@
 namespace gymfcpp {
 
 ///
-/// \brief The FrozenLake class
+/// \brief The FrozenLake class. Wrapper to OpenAI-Gym FrozenLake
+/// environment
 ///
 class FrozenLake: private boost::noncopyable
 {
@@ -52,6 +53,11 @@ public:
     /// \brief FrozenLake. Constructor
     ///
     FrozenLake(const std::string& version, obj_t gym_namespace, bool do_create=true, bool is_slipery=true);
+
+    ///
+    /// \brief ~FrozenLake. Destructor.
+    ///
+    ~FrozenLake();
 
     ///
     /// \brief make. Builds the environment. Optionally we can choose if the
@@ -102,7 +108,12 @@ public:
     ///
     /// \brief render. Render the environment
     ///
-    void render();
+    void render(std::string mode="human");
+
+    ///
+    /// \brief close. Close down the python environment
+    ///
+    void close();
 
 private:
 
