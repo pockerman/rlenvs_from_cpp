@@ -5,6 +5,7 @@
 #include "gymfcpp/time_step.h"
 
 #include <boost/noncopyable.hpp>
+
 #include <string>
 #include <vector>
 #include <tuple>
@@ -46,10 +47,17 @@ public:
     typedef TimeStep<state_t> time_step_t;
 
     ///
-    /// \brief BlackJack
-    /// \param version
+    /// \brief BlackJack. Constructor. Construct an environment
+    /// \param version: The version of the environemnt
+    /// \param do_create: If set to true make() is called
+    /// \param natural:
     ///
     BlackJack(std::string version, obj_t gym_namespace, bool do_create=true, bool natural=false);
+
+    ///
+    /// \brief ~BlackJack. Destructor
+    ///
+    ~BlackJack();
 
     ///
     /// \brief make
@@ -95,7 +103,12 @@ public:
     ///
     /// \brief render. Render the environment
     ///
-    void render();
+    void render(std::string mode);
+
+    ///
+    /// \brief close
+    ///
+    void close();
 
 private:
 

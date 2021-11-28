@@ -26,6 +26,10 @@ CliffWorld::CliffWorld(std::string version, obj_t gym_namespace, bool do_create)
       cached_n_states_(INVALID_UINT)
 {}
 
+CliffWorld::~CliffWorld(){
+    close();
+}
+
 void
 CliffWorld::make(){
 
@@ -178,7 +182,6 @@ CliffWorld::p(uint_t sidx, uint_t aidx)const{
 
         dyn.push_back(std::make_tuple(prob(), next_state(), reward(), done()));
 
-
     }
 
 
@@ -186,13 +189,25 @@ CliffWorld::p(uint_t sidx, uint_t aidx)const{
 }
 
 void
-CliffWorld::render(){
+CliffWorld::render(std::string mode){
 
 #ifdef GYMFCPP_DEBUG
     assert(is_created_ && "Environment has not been created");
 #endif
 
-    auto str = CliffWorld::py_env_name + ".render(mode='rgb_array')\n";
+    auto str = CliffWorld::py_env_name + ".render(mode=" + mode + ")\n";
+    boost::python::exec(str.c_str(), gym_namespace_);
+
+}
+
+void
+CliffWorld::close(){
+
+    if(!is_created_){
+        return;
+    }
+
+    auto str = CliffWorld::py_env_name + ".close()\n";
     boost::python::exec(str.c_str(), gym_namespace_);
 
 }

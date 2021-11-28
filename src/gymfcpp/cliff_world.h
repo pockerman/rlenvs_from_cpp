@@ -3,6 +3,8 @@
 
 #include "gymfcpp/gymfcpp_types.h"
 #include "gymfcpp/time_step.h"
+
+#include "boost/noncopyable.hpp"
 #include <string>
 
 
@@ -12,38 +14,40 @@ namespace gymfcpp {
 ///
 /// \brief The CliffWorld class
 ///
-class CliffWorld
+class CliffWorld: private boost::noncopyable
 {
 
 public:
 
     ///
-    /// \brief state_t
+    /// \brief state_t. The type of the state
     ///
     typedef uint_t state_t;
 
     ///
-    /// \brief action_t
+    /// \brief action_t. The type of the action
     ///
     typedef uint_t action_t;
 
     ///
-    /// \brief time_step_t
+    /// \brief time_step_t. The type of the time step
     ///
     typedef TimeStep<state_t> time_step_t;
 
     ///
-    /// \brief name
+    /// \brief name. The name of the environment
     ///
     static  std::string name;
 
     ///
-    /// \brief py_env_name
+    /// \brief py_env_name. The name of the environment created in
+    /// the Python interpreter
     ///
     static std::string py_env_name;
 
     ///
-    /// \brief py_obs_name
+    /// \brief py_obs_name. The name of the observation in the
+    /// Python interpreter
     ///
     static std::string py_obs_name;
 
@@ -67,6 +71,11 @@ public:
     /// \param version
     ///
     CliffWorld(std::string version, obj_t gym_namespace, bool do_create=true);
+
+    ///
+    /// \brief ~CliffWorld. Destructor
+    ///
+    ~CliffWorld();
 
     ///
     /// \brief make
@@ -118,7 +127,12 @@ public:
     ///
     /// \brief render. Render the environment
     ///
-    void render();
+    void render(std::string mode="human");
+
+    ///
+    /// \brief close. Close down the python environment
+    ///
+    void close();
 
 private:
 

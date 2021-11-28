@@ -26,6 +26,9 @@ BlackJack::BlackJack(std::string version, obj_t gym_namespace, bool do_create, b
     }
 }
 
+BlackJack::~BlackJack(){
+    close();
+}
 
 void
 BlackJack::make(bool natural){
@@ -162,15 +165,27 @@ BlackJack::step(action_t action){
 }
 
 void
-BlackJack::render(){
+BlackJack::render(std::string mode){
 
 #ifdef GYMFCPP_DEBUG
     assert(is_created_ && "Environment has not been created");
 #endif
 
-    auto str = "screen = " + BlackJack::py_env_name + ".render(mode='rgb_array')\n";
+    auto str = "screen = " + BlackJack::py_env_name + ".render(mode=" + mode + ")\n";
     boost::python::exec(str.c_str(), gym_namespace_);
 }
 
+void
+BlackJack::close(){
+
+    if(!is_created_){
+        return;
+    }
+
+    auto str = BlackJack::py_env_name + ".close()\n";
+    boost::python::exec(str.c_str(), gym_namespace_);
+
+
+}
 
 }

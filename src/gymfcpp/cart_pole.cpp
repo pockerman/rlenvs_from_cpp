@@ -39,6 +39,10 @@ CartPole::Screen::Screen(obj_t screen, std::array<uint_t, 3>&& shp)
       screen_vec_()
 {}
 
+CartPole::~CartPole(){
+    close();
+}
+
 void 
 CartPole::Screen::invalidate() noexcept{
 
@@ -195,13 +199,13 @@ CartPole::step(action_t action){
 }
 
 void
-CartPole::render(){
+CartPole::render(std::string mode){
 
 #ifdef GYMFCPP_DEBUG
     assert(data_.is_created && "Environment has not been created");
 #endif
 
-    auto str = "screen = " + CartPole::py_env_name + ".render(mode='rgb_array')\n";
+    auto str = "screen = " + CartPole::py_env_name + ".render(mode=" + mode + ")\n";
     boost::python::exec(str.c_str(), data_.gym_namespace);
 }
 
@@ -242,7 +246,6 @@ CartPole::get_screen()const{
     str += "cart_pole_screen_list = cart_pole_screen.tolist()\n";
     //str += "cart_pole_screen = torch.from_numpy(screen)\n";
 
-    //std::cout<<str<<std::endl;
 
     // execute the script
     boost::python::exec(str.c_str(), data_.gym_namespace);
@@ -252,5 +255,20 @@ CartPole::get_screen()const{
     {boost::python::extract<uint_t>(shape()[0]), boost::python::extract<uint_t>(shape()[1]), boost::python::extract<uint_t>(shape()[2])});
 
 }
+
+void
+CartPole::close(){
+
+    if(!data_.is_created){
+        return;
+    }
+
+    auto str = CartPole::py_env_name + ".close()\n";
+    boost::python::exec(str.c_str(), data_.gym_namespace);
+
+
+}
+
+
 
 }
