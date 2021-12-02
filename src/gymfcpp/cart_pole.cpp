@@ -105,7 +105,7 @@ CartPole::Screen::get_as_torch_tensor()const{
     		tensor.slice(0, i, i+1).slice(0, j, j+1) = torch::from_blob(screen_vec_[i][j].data(), {screen_vec_[i][j].size()}, options);
     	}
   	
-	return tensor
+	return tensor;
 
 }
 #endif
