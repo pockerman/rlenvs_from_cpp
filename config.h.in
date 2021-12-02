@@ -4,5 +4,8 @@
 /*DEBUG*/
 #cmakedefine GYMFCPP_DEBUG
 
+/*Use PyTorch */
+#cmakedefine USE_PYTORCH
+
 #endif
 

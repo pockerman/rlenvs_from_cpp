@@ -1,7 +1,11 @@
 #include "gymfcpp/cart_pole.h"
 #include "gymfcpp/gymfcpp_types.h"
 #include "gymfcpp/time_step.h"
-#include "gymfcpp/config.h"
+#include "gymfcpp/gymfcpp_config.h"
+
+#ifdef USE_PYTOCH
+#include <torch/torch.h>
+#endif
 
 #include <iostream>
 
@@ -87,6 +91,24 @@ CartPole::Screen::get_as_vector()const{
 
 
 }
+
+#ifdef USE_PYTORCH
+torch_tensor_t 
+CartPole::Screen::get_as_torch_tensor()const{
+
+
+	auto options = torch::TensorOptions().dtype(at::kDouble);
+  	auto tensor = torch::zeros({screen_vec_.size(), screen_vec_[0].size(), screen_vec_[0][0].size()}, options);
+  	
+  	for (uint_t i = 0; i < screen_vec_.size(); ++i){
+  	 for(uint_t j=0; j<screen_vec_[0].size(); ++j)
+    		tensor.slice(0, i, i+1).slice(0, j, j+1) = torch::from_blob(screen_vec_[i][j].data(), {screen_vec_[i][j].size()}, options);
+    	}
+  	
+	return tensor
+
+}
+#endif
 
 CartPole::CartPole(const std::string& version, obj_t gym_namespace, bool do_create)
     :
@@ -265,7 +287,6 @@ CartPole::close(){
 
     auto str = CartPole::py_env_name + ".close()\n";
     boost::python::exec(str.c_str(), data_.gym_namespace);
-
 
 }
 
