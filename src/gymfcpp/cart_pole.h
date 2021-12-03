@@ -1,9 +1,9 @@
 #ifndef CART_POLE_H
 #define CART_POLE_H
 
+#include "gymfcpp/gymfcpp_config.h"
 #include "gymfcpp/gymfcpp_types.h"
 #include "gymfcpp/data_wrapper.h"
-
 
 #include <boost/noncopyable.hpp>
 
@@ -164,6 +164,10 @@ public:
     /// \brief get_as_vector. Returns the screen as floats
     ///
     const std::vector<std::vector<std::vector<real_t>>>& get_as_vector()const;
+    
+#ifdef USE_PYTORCH
+    torch_tensor_t get_as_torch_tensor()const;
+#endif
     
     ///
     /// \brief is_valid. Returns true if the computed screen is valid
