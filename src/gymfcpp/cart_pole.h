@@ -32,6 +32,7 @@ public:
 
     ///
     /// \brief state_t. The type of the state
+    /// cart position, cart velocity, pole angle, and pole velocity.
     ///
     typedef std::vector<real_t> state_t;
 
