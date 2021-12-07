@@ -1,6 +1,9 @@
 export CPLUS_INCLUDE_PATH="$CPLUS_INCLUDE_PATH:/usr/include/python3.8/"
 cd ./build/tests/
 
+echo "Running EnvBase tests"
+cd test_env_base/ && ./test_env_base
+cd ..
 echo "Running BlackJack tests"
 cd test_black_jack/ && ./test_black_jack
 cd ..
@@ -13,4 +16,6 @@ cd ..
 echo "Running ForzenLake tests"
 cd test_frozen_lake/ && ./test_frozen_lake
 cd ..
+echo "Running MountainCar tests"
+cd test_mountain_car/ && ./test_mountain_car
 cd ..
