@@ -71,6 +71,17 @@ protected:
     ///
     void make_created()noexcept{is_created_ = true;}
 
+    ///
+    /// \brief gym_namespace
+    /// \return
+    ///
+    obj_t& gym_namespace()noexcept{return gym_namespace_;}
+
+    ///
+    /// \brief gym_namespace
+    /// \return
+    ///
+    obj_t& env()noexcept{return env_;}
 
 private:
 
@@ -93,6 +104,11 @@ private:
     /// \brief gym_namespace_
     ///
     obj_t gym_namespace_;
+
+    ///
+    /// \brief env_
+    ///
+    obj_t env_;
 
     ///
     /// \brief is_created_

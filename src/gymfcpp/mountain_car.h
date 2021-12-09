@@ -85,7 +85,7 @@ public:
     ///
     /// \brief n_actions. Returns the number of actions
     ///
-    uint_t n_actions()const{return action_space_t::size;}
+    uint_t n_actions()const noexcept{return action_space_t::size;}
 
     ///
     /// \brief reset

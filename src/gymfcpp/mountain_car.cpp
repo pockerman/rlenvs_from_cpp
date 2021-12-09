@@ -26,9 +26,9 @@ MountainCar::make(){
     cpp_str += MountainCar::py_env_name + " = gym.make('" + MountainCar::name + "-" + std::string(this->version()) + "').unwrapped\n";
 
     // create an environment
-    //auto ignored = boost::python::exec(cpp_str.c_str(), data_.gym_namespace);
-    //data_.world = boost::python::extract<boost::python::api::object>(data_.gym_namespace[this->py_env_name()]);
-    //data_.is_created = true;
+    auto ignored = boost::python::exec(cpp_str.c_str(), this->gym_namespace());
+    this->env() = boost::python::extract<boost::python::api::object>(this->gym_namespace()[MountainCar::py_env_name]);
+    this->make_created();
 
 }
 
