@@ -3,9 +3,10 @@
 
 #include "gymfcpp/gymfcpp_config.h"
 #include "gymfcpp/gymfcpp_types.h"
-#include "gymfcpp/env_base.h"
+#include "gymfcpp/env_mixin.h"
 #include "gymfcpp/discrete_space.h"
 #include "gymfcpp/continuous_space.h"
+#include "gymfcpp/time_step.h"
 
 #include <boost/noncopyable.hpp>
 #include <string>
@@ -14,16 +15,11 @@ namespace gymfcpp
 {
 
 /// Forward declarations
-template<typename StateTp> class TimeStep;
+//template<typename StateTp> class TimeStep;
 
-///
-/// \brief The MountainCar class
-///
-class MountainCar: public EnvBase
+
+struct MountainCarData
 {
-
-public:
-
     ///
     /// \brief action_space_t. The type of the action space
     ///
@@ -43,6 +39,11 @@ public:
     /// \brief state_t
     ///
     typedef state_space_t::item_t state_t;
+
+    ///
+    /// \brief state_boost_python_t
+    ///
+    typedef boost::python::list state_boost_python_t;
 
     ///
     /// \brief name
@@ -70,6 +71,66 @@ public:
     typedef TimeStep<state_t> time_step_t;
 
     ///
+    /// \brief state_transform_from_boost
+    /// \param boost_type
+    /// \return
+    ///
+    static state_t state_transform_from_boost(state_boost_python_t boost_type);
+
+    ///
+    /// \brief extract_state
+    /// \param gym_namespace
+    /// \return
+    ///
+    static state_t extract_state(obj_t gym_namespace, std::string result_name);
+
+};
+
+///
+/// \brief The MountainCar class
+///
+class MountainCar: protected EnvMixin<MountainCarData>
+{
+
+public:
+
+    ///
+    /// \brief action_space_t. The type of the action space
+    ///
+    typedef MountainCarData::action_space_t action_space_t;
+
+    ///
+    /// \brief action_t
+    ///
+    typedef action_space_t::item_t action_t;
+
+    ///
+    /// \brief state_space_t
+    ///
+    typedef MountainCarData::state_space_t state_space_t;
+
+    ///
+    /// \brief state_t
+    ///
+    typedef state_space_t::item_t state_t;
+
+    ///
+    /// \brief time_step_t. The type of the time step
+    ///
+    typedef TimeStep<state_t> time_step_t;
+
+    ///
+    /// \brief Expose the functionality this class is using
+    /// from the Mixin
+    ///
+    using EnvMixin<MountainCarData>::close;
+    using EnvMixin<MountainCarData>::full_name;
+    using EnvMixin<MountainCarData>::reset;
+    using EnvMixin<MountainCarData>::is_created;
+    using EnvMixin<MountainCarData>::version;
+    using EnvMixin<MountainCarData>::gym_namespace;
+
+    ///
     /// \brief MountainCar. Constructor. Creates an environment.
     /// \param version The version of the environment
     /// \param gym_namespace The boost::python open-ai gym namespace
@@ -88,15 +149,13 @@ public:
     uint_t n_actions()const noexcept{return action_space_t::size;}
 
     ///
-    /// \brief reset
-    /// \return
-    ///
-    time_step_t reset();
-
-    ///
     /// \brief step
     ///
     time_step_t step(action_t action);
+
+private:
+
+    using EnvMixin<MountainCarData>::env;
 
 
 

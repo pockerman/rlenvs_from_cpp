@@ -1,6 +1,7 @@
 #ifndef TIME_STEP_TYPE_H
 #define TIME_STEP_TYPE_H
 
+#include "gymfcpp/extern/enum.h"
 #include <string>
 
 namespace gymfcpp
@@ -9,14 +10,16 @@ namespace gymfcpp
 ///
 /// \brief The TimeStepTp enum
 ///
-enum class TimeStepTp{FIRST, MID, LAST, INVALID_TYPE};
+
+BETTER_ENUM(TimeStepTp, char, FIRST=0, MID, LAST, INVALID_TYPE);
 
 ///
 /// \brief to_string
 /// \param type
 /// \return
 ///
-std::string to_string(TimeStepTp type);
+inline
+std::string to_string(TimeStepTp type){return type._to_string();}
 
 }
 
