@@ -9,6 +9,7 @@
 #include <boost/noncopyable.hpp>
 #include <string>
 #include <type_traits>
+#include <iostream>
 
 namespace gymfcpp
 {
@@ -66,6 +67,11 @@ struct EnvMixin: private boost::noncopyable
     bool is_created;
 
     ///
+    /// \brief idx
+    ///
+    uint_t idx;
+
+    ///
     /// \brief gym_namespace_
     ///
     obj_t gym_namespace;
@@ -87,6 +93,7 @@ EnvMixin<EnvImpl>::EnvMixin(std::string version_, obj_t gym_namespace_)
     :
      version(version_),
      is_created(false),
+     idx(0),
      gym_namespace(gym_namespace_),
      env(),
      current_state()
@@ -119,10 +126,6 @@ EnvMixin<EnvImpl>::reset(){
     // reset the python environment
     boost::python::exec(cpp_str.c_str(), gym_namespace);
 
-    // the observation
-    /*auto obs =  boost::python::extract<boost::python::list>(gym_namespace[EnvImpl::py_reset_result_name]);
-
-    auto obs =  boost::python::extract<typename EnvImpl::state_boost_python_t>(gym_namespace[EnvImpl::py_reset_result_name]);*/
     auto obs = EnvImpl::extract_state(gym_namespace, EnvImpl::py_reset_result_name);
     current_state = time_step_t(TimeStepTp::FIRST, 0.0, obs);
     return current_state;
@@ -135,7 +138,7 @@ void render(const Env& env, RenderModeType render_mode){
     assert(env.is_created && "Environment has not been created");
 #endif
 
-    auto str = "screen = " + Env::py_env_name + ".render(mode=" + gymfcpp::to_string(render_mode) + ")\n";
+    auto str = "screen = " + Env::env_data_t::py_env_name + ".render(mode='" + gymfcpp::to_string(render_mode) + "')\n";
     boost::python::exec(str.c_str(), env.gym_namespace);
 
 }
