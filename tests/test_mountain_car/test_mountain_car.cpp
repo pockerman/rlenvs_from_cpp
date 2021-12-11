@@ -2,6 +2,7 @@
 #include "gymfcpp/time_step.h"
 #include "gymfcpp/time_step_type.h"
 #include "gymfcpp/gymfcpp_types.h"
+#include "gymfcpp/render_mode_enum.h"
 
 #include <gtest/gtest.h>
 #include <boost/python.hpp>
@@ -74,6 +75,9 @@ TEST(TestMountainCar, Test_Reset)
         auto state = env.reset();
         ASSERT_TRUE(state.first());
 
+        auto obs = state.observation();
+        ASSERT_EQ(obs.size(), static_cast<uint_t>(2));
+
     }
     catch(const boost::python::error_already_set&)
     {
@@ -94,10 +98,14 @@ TEST(TestMountainCar, Test_Step)
 
         gymfcpp::MountainCar env("v0", gym_namespace, false);
         env.make();
+        env.reset();
 
         auto step_result = env.step(0);
         ASSERT_TRUE(step_result.mid());
 
+        auto obs = step_result.observation();
+        ASSERT_EQ(obs.size(), static_cast<uint_t>(2));
+
     }
     catch(const boost::python::error_already_set&)
     {
@@ -107,7 +115,7 @@ TEST(TestMountainCar, Test_Step)
 }
 
 
-TEST(TestCliffWorld, Test_Not_Done)
+TEST(TestMountainCar, Test_Render)
 {
 
     try{
@@ -121,9 +129,7 @@ TEST(TestCliffWorld, Test_Not_Done)
         env.make();
         env.reset();
 
-        auto step_result = env.step(3);
-
-        ASSERT_FALSE(step_result.done());
+        gymfcpp::render(env, gymfcpp::RenderModeType::human);
 
     }
     catch(const boost::python::error_already_set&)
@@ -133,54 +139,5 @@ TEST(TestCliffWorld, Test_Not_Done)
     }
 }
 
-TEST(TestCliffWorld, Test_Done_1)
-{
 
-    try{
 
-        Py_Initialize();
-        boost::python::numpy::initialize();
-        auto gym_module = boost::python::import("gym");
-        auto gym_namespace = gym_module.attr("__dict__");
-
-        gymfcpp::MountainCar env("v0", gym_namespace, false);
-        env.make();
-        env.reset();
-
-        auto step_result = env.step(1);
-
-        ASSERT_FALSE(step_result.done());
-
-    }
-    catch(const boost::python::error_already_set&)
-    {
-        PyErr_Print();
-        FAIL()<<"Error could not step in the environment";
-    }
-}
-
-TEST(TestCliffWorld, Test_Done_2)
-{
-
-    try{
-
-        Py_Initialize();
-        boost::python::numpy::initialize();
-        auto gym_module = boost::python::import("gym");
-        auto gym_namespace = gym_module.attr("__dict__");
-
-        gymfcpp::MountainCar env("v0", gym_namespace, false);
-        env.make();
-        env.reset();
-
-        auto step_result = env.step(0);
-
-        ASSERT_FALSE(step_result.done());
-
-    }
-    catch(const boost::python::error_already_set&)
-    {
-        PyErr_Print();
-        FAIL()<<"Error could not step in the environment";
-    }
-}

@@ -66,6 +66,11 @@ struct MountainCarData
     static std::string py_reset_result_name;
 
     ///
+    /// \brief py_step_reset_result_name
+    ///
+    static std::string py_state_name;
+
+    ///
     /// \brief time_step_t. The type of the time step
     ///
     typedef TimeStep<state_t> time_step_t;
@@ -93,6 +98,11 @@ class MountainCar: protected EnvMixin<MountainCarData>
 {
 
 public:
+
+    ///
+    /// \brief env_data_t
+    ///
+    typedef MountainCarData  env_data_t;
 
     ///
     /// \brief action_space_t. The type of the action space
@@ -139,6 +149,11 @@ public:
     MountainCar(std::string version, obj_t gym_namespace, bool do_create=true);
 
     ///
+    /// \brief ~MountainCar. Destructor.
+    ///
+    ~MountainCar();
+
+    ///
     /// \brief make. Build the environment
     ///
     void make();
@@ -155,9 +170,10 @@ public:
 
 private:
 
+    ///
+    /// \brief  The boost::python object environment
+    ///
     using EnvMixin<MountainCarData>::env;
-
-
 
 };
 }
