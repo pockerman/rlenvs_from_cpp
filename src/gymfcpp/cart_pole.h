@@ -32,6 +32,7 @@ public:
 
     ///
     /// \brief state_t. The type of the state
+    /// cart position, cart velocity, pole angle, and pole velocity.
     ///
     typedef std::vector<real_t> state_t;
 
@@ -188,7 +189,7 @@ private:
 
 };
 
-inline
+/*inline
 bool operator==(const CartPole::Screen& screen1, const CartPole::Screen& screen2){
 	auto shape_1 = screen1.shape();
 	auto shape_2 = screen2.shape();
@@ -203,7 +204,7 @@ bool operator!=(const CartPole::Screen& screen1, const CartPole::Screen& screen2
 
 inline
 CartPole::Screen operator-(const CartPole::Screen& screen1, const CartPole::Screen& screen2){
-}
+}*/
 
 
 }

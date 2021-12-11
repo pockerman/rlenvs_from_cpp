@@ -46,19 +46,19 @@ public:
     /// \brief first
     /// \return
     ///
-    bool first()const{return type_ == TimeStepTp::FIRST;}
+    bool first()const{return type_._to_index() == TimeStepTp::FIRST;}
 
     ///
     /// \brief mid
     /// \return
     ///
-    bool mid()const{return type_ == TimeStepTp::MID;}
+    bool mid()const{return type_._to_index() == TimeStepTp::MID;}
 
     ///
     /// \brief last
     /// \return
     ///
-    bool last()const{return type_ == TimeStepTp::LAST;}
+    bool last()const{return type_._to_index() == TimeStepTp::LAST;}
 
     ///
     /// \brief type
@@ -82,10 +82,10 @@ public:
     /// \brief done
     /// \return
     ///
-    bool done()const{return type_ == TimeStepTp::LAST;}
+    bool done()const{return type_._to_index() == TimeStepTp::LAST;}
 
     ///
-    ///
+    /// \brief get_extra
     ///
     template<typename T>
     const T& get_extra(std::string name)const;

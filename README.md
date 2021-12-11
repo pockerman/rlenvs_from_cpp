@@ -72,6 +72,7 @@ Step with prob=0.333333
 - ```Blackjack```
 - ```CliffWalking```
 - ```CartPole```
+- ```MountainCar```
 
 ## Dependencies
 
@@ -80,6 +81,7 @@ Step with prob=0.333333
 - OpenAI-Gym 
 - CMake
 - Gtest
+- <a href="https://github.com/aantron/better-enums">better-enums</a>
 
 ## Installation
 

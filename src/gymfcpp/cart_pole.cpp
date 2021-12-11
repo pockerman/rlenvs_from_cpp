@@ -98,11 +98,14 @@ CartPole::Screen::get_as_torch_tensor()const{
 
 
 	auto options = torch::TensorOptions().dtype(at::kDouble);
-  	auto tensor = torch::zeros({screen_vec_.size(), screen_vec_[0].size(), screen_vec_[0][0].size()}, options);
+    auto tensor = torch::zeros({static_cast<long int>(screen_vec_.size()),
+                                static_cast<long int>(screen_vec_[0].size()),
+                                static_cast<long int>(screen_vec_[0][0].size())}, options);
   	
   	for (uint_t i = 0; i < screen_vec_.size(); ++i){
   	 for(uint_t j=0; j<screen_vec_[0].size(); ++j)
-    		tensor.slice(0, i, i+1).slice(0, j, j+1) = torch::from_blob(screen_vec_[i][j].data(), {screen_vec_[i][j].size()}, options);
+            tensor.slice(0, i, i+1).slice(0, j, j+1) = torch::from_blob(screen_vec_[i][j].data(),
+                                                                        {static_cast<long int>(screen_vec_[i][j].size())}, options);
     	}
   	
 	return tensor;

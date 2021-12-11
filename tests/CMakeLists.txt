@@ -4,4 +4,6 @@ ADD_SUBDIRECTORY(test_frozen_lake)
 ADD_SUBDIRECTORY(test_black_jack)
 ADD_SUBDIRECTORY(test_cliff_world)
 ADD_SUBDIRECTORY(test_cart_pole)
+ADD_SUBDIRECTORY(test_env_base)
+ADD_SUBDIRECTORY(test_mountain_car)
 
