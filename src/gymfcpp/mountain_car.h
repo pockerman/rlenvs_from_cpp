@@ -139,6 +139,7 @@ public:
     using EnvMixin<MountainCarData>::is_created;
     using EnvMixin<MountainCarData>::version;
     using EnvMixin<MountainCarData>::gym_namespace;
+    using EnvMixin<MountainCarData>::render;
 
     ///
     /// \brief MountainCar. Constructor. Creates an environment.
@@ -167,6 +168,18 @@ public:
     /// \brief step
     ///
     time_step_t step(action_t action);
+
+    ///
+    /// \brief render
+    /// \param render_mode
+    ///
+    //void render(RenderModeType render_mode);
+
+    ///
+    /// \brief sample
+    /// \return
+    ///
+    action_t sample()const noexcept{return MountainCarData::action_space_t::sample();}
 
 private:
 
