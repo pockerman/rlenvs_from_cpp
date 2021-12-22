@@ -33,7 +33,7 @@ template<uint_t SpaceSize>
 typename DiscreteSpace<SpaceSize>::item_t
 DiscreteSpace<SpaceSize>::sample(){
 
-    std::uniform_int_distribution<> dist(0, SpaceSize);
+    std::uniform_int_distribution<> dist(0, SpaceSize - 1);
 
     std::random_device rd;
     std::mt19937 gen(rd());
