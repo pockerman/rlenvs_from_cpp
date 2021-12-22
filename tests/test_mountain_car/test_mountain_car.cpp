@@ -129,7 +129,7 @@ TEST(TestMountainCar, Test_Render)
         env.make();
         env.reset();
 
-        gymfcpp::render(env, gymfcpp::RenderModeType::human);
+        env.render(gymfcpp::RenderModeType::human);
 
     }
     catch(const boost::python::error_already_set&)

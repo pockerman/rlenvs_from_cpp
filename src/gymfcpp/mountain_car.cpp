@@ -119,4 +119,9 @@ MountainCar::step(action_t action){
 
 }
 
+/*void
+MountainCar::render(RenderModeType render_mode){
+    render(*this, render_mode);
+}*/
+
 }

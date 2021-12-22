@@ -56,6 +56,12 @@ struct EnvMixin: private boost::noncopyable
     std::string full_name()const noexcept{return EnvImpl::name + "-" + version;}
 
     ///
+    /// \brief render
+    /// \param render_mode
+    ///
+    void render(RenderModeType render_mode);
+
+    ///
     /// \brief version
     /// \return
     ///
@@ -131,15 +137,16 @@ EnvMixin<EnvImpl>::reset(){
     return current_state;
 }
 
-template<typename Env>
-void render(const Env& env, RenderModeType render_mode){
+template<typename EnvImpl>
+void
+EnvMixin<EnvImpl>::render(RenderModeType render_mode){
 
 #ifdef GYMFCPP_DEBUG
-    assert(env.is_created && "Environment has not been created");
+    assert(is_created && "Environment has not been created");
 #endif
 
-    auto str = "screen = " + Env::env_data_t::py_env_name + ".render(mode='" + gymfcpp::to_string(render_mode) + "')\n";
-    boost::python::exec(str.c_str(), env.gym_namespace);
+    auto str = "screen = " + EnvImpl::py_env_name + ".render(mode='" + gymfcpp::to_string(render_mode) + "')\n";
+    boost::python::exec(str.c_str(), gym_namespace);
 
 }
 
