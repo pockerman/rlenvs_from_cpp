@@ -5,10 +5,10 @@ namespace gymfcpp
 {
 
 std::string TaxiData::name = "Taxi";
-std::string TaxiData::py_env_name = get_py_env_name(TaxiData::name); //"py_mountain_car";
-std::string TaxiData::py_step_result_name = get_py_step_rslt_name(TaxiData::name); //"py_mountain_car_step_rslt";
-std::string TaxiData::py_reset_result_name = get_py_reset_rslt_name(TaxiData::name); //"py_mountain_car_reset_rslt";
-std::string TaxiData::py_state_name = get_py_state_name(TaxiData::name); //"py_mountain_car_state";
+std::string TaxiData::py_env_name = get_py_env_name(TaxiData::name);
+std::string TaxiData::py_step_result_name = get_py_step_rslt_name(TaxiData::name);
+std::string TaxiData::py_reset_result_name = get_py_reset_rslt_name(TaxiData::name);
+std::string TaxiData::py_state_name = get_py_state_name(TaxiData::name);
 
 
 TaxiData::state_t
@@ -74,16 +74,12 @@ Taxi::step(action_t action){
     }
 
     std::string s = TaxiData::py_step_result_name + " = " + TaxiData::py_env_name +".step("+std::to_string(action)+")\n";
-    //s += TaxiData::py_step_result_name + " = (" + TaxiData::py_step_result_name + "[0].tolist(),";
-    //s += "float(" + TaxiData::py_step_result_name + "[1]),";
-    //s += TaxiData::py_step_result_name + "[2])\n";
 
     boost::python::exec(s.c_str(), gym_namespace);
 
     auto obs = TaxiData::extract_state(gym_namespace, TaxiData::py_step_result_name);
 
     auto result =  boost::python::extract<boost::python::tuple>(gym_namespace[TaxiData::py_step_result_name]);
-
     auto reward = boost::python::extract<real_t>(result()[1]);
     auto done = boost::python::extract<bool>(result()[2]);
 
