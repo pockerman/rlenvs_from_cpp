@@ -14,10 +14,11 @@
 namespace gymfcpp
 {
 
-/// Forward declarations
-//template<typename StateTp> class TimeStep;
 
 
+///
+/// \brief The MountainCarData struct. Wrapper for the environment data
+///
 struct MountainCarData
 {
     ///
@@ -168,12 +169,6 @@ public:
     /// \brief step
     ///
     time_step_t step(action_t action);
-
-    ///
-    /// \brief render
-    /// \param render_mode
-    ///
-    //void render(RenderModeType render_mode);
 
     ///
     /// \brief sample

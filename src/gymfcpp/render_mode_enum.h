@@ -10,7 +10,7 @@ namespace gymfcpp {
 ///
 /// \brief The RenderModeType enum
 ///
-BETTER_ENUM(RenderModeType, char, human=0, rgb_array, INVALID_TYPE);
+BETTER_ENUM(RenderModeType, char, human=0, rgb_array, ansi, INVALID_TYPE);
 
 
 ///
