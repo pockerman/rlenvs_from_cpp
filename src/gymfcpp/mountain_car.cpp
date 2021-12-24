@@ -92,6 +92,7 @@ MountainCar::step(action_t action){
 
 #ifdef GYMFCPP_DEBUG
     assert(is_created && "Environment has not been created");
+    assert(action < n_actions() && "Invalid action index");
 #endif
 
     if(current_state.last()){

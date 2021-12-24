@@ -73,6 +73,7 @@ Step with prob=0.333333
 - ```CliffWalking```
 - ```CartPole```
 - ```MountainCar```
+- ```Taxi```
 
 ## Dependencies
 

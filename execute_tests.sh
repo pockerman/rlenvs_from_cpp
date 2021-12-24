@@ -19,3 +19,6 @@ cd ..
 echo "Running MountainCar tests"
 cd test_mountain_car/ && ./test_mountain_car
 cd ..
+echo "Running Taxi tests"
+cd test_taxi/ && ./test_taxi
+cd ..

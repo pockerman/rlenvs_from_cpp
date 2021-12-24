@@ -1,5 +1,5 @@
-#ifndef MOUNTAIN_CAR_H
-#define MOUNTAIN_CAR_H
+#ifndef TAXI_H
+#define TAXI_H
 
 #include "gymfcpp/gymfcpp_config.h"
 #include "gymfcpp/gymfcpp_types.h"
@@ -8,23 +8,18 @@
 #include "gymfcpp/continuous_space.h"
 #include "gymfcpp/time_step.h"
 
-#include <boost/noncopyable.hpp>
-#include <string>
-
 namespace gymfcpp
 {
 
-
-
 ///
-/// \brief The MountainCarData struct. Wrapper for the environment data
+/// \brief The TaxiData struct. Wrapper for the environment data
 ///
-struct MountainCarData
+struct TaxiData
 {
     ///
     /// \brief action_space_t. The type of the action space
     ///
-    typedef DiscreteSpace<3> action_space_t;
+    typedef DiscreteSpace<6> action_space_t;
 
     ///
     /// \brief action_t
@@ -34,12 +29,12 @@ struct MountainCarData
     ///
     /// \brief state_space_t
     ///
-    typedef ContinuousSpace<3> state_space_t;
+    typedef ContinuousSpace<4> state_space_t;
 
     ///
     /// \brief state_t
     ///
-    typedef state_space_t::item_t state_t;
+    typedef uint_t state_t;
 
     ///
     /// \brief state_boost_python_t
@@ -77,13 +72,6 @@ struct MountainCarData
     typedef TimeStep<state_t> time_step_t;
 
     ///
-    /// \brief state_transform_from_boost
-    /// \param boost_type
-    /// \return
-    ///
-    static state_t state_transform_from_boost(state_boost_python_t boost_type);
-
-    ///
     /// \brief extract_state
     /// \param gym_namespace
     /// \return
@@ -92,68 +80,63 @@ struct MountainCarData
 
 };
 
-///
-/// \brief The MountainCar class
-///
-class MountainCar: protected EnvMixin<MountainCarData>
-{
 
+///
+/// \brief The Taxi class
+///
+class Taxi: protected EnvMixin<TaxiData>
+{
 public:
 
     ///
     /// \brief env_data_t
     ///
-    typedef MountainCarData  env_data_t;
+    typedef TaxiData  env_data_t;
 
     ///
     /// \brief action_space_t. The type of the action space
     ///
-    typedef MountainCarData::action_space_t action_space_t;
+    typedef TaxiData::action_space_t action_space_t;
 
     ///
     /// \brief action_t
     ///
-    typedef action_space_t::item_t action_t;
+    typedef TaxiData::action_t action_t;
 
     ///
     /// \brief state_space_t
     ///
-    typedef MountainCarData::state_space_t state_space_t;
+    typedef TaxiData::state_space_t state_space_t;
 
     ///
     /// \brief state_t
     ///
-    typedef state_space_t::item_t state_t;
+    typedef TaxiData::state_t state_t;
 
     ///
     /// \brief time_step_t. The type of the time step
     ///
-    typedef TimeStep<state_t> time_step_t;
+    typedef TaxiData::time_step_t time_step_t;
+
+    ///
+    /// \brief Taxi
+    /// \param version
+    /// \param main_namespace
+    /// \param do_create
+    ///
+    Taxi(std::string version, obj_t main_namespace, bool do_create=true);
 
     ///
     /// \brief Expose the functionality this class is using
     /// from the Mixin
     ///
-    using EnvMixin<MountainCarData>::close;
-    using EnvMixin<MountainCarData>::full_name;
-    using EnvMixin<MountainCarData>::reset;
-    using EnvMixin<MountainCarData>::is_created;
-    using EnvMixin<MountainCarData>::version;
-    using EnvMixin<MountainCarData>::gym_namespace;
-    using EnvMixin<MountainCarData>::render;
-
-    ///
-    /// \brief MountainCar. Constructor. Creates an environment.
-    /// \param version The version of the environment
-    /// \param gym_namespace The boost::python open-ai gym namespace
-    /// \param do_create If true it calls make
-    ///
-    MountainCar(std::string version, obj_t gym_namespace, bool do_create=true);
-
-    ///
-    /// \brief ~MountainCar. Destructor.
-    ///
-    ~MountainCar();
+    using EnvMixin<TaxiData>::close;
+    using EnvMixin<TaxiData>::full_name;
+    using EnvMixin<TaxiData>::reset;
+    using EnvMixin<TaxiData>::is_created;
+    using EnvMixin<TaxiData>::version;
+    using EnvMixin<TaxiData>::gym_namespace;
+    using EnvMixin<TaxiData>::render;
 
     ///
     /// \brief make. Build the environment
@@ -174,15 +157,10 @@ public:
     /// \brief sample
     /// \return
     ///
-    action_t sample()const noexcept{return MountainCarData::action_space_t::sample();}
-
-private:
-
-    ///
-    /// \brief  The boost::python object environment
-    ///
-    using EnvMixin<MountainCarData>::env;
+    action_t sample()const noexcept{return action_space_t::sample();}
 
 };
+
+
 }
-#endif // MOUNTAIN_CAR_H
+#endif // TAXI_H
