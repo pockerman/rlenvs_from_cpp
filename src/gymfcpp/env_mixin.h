@@ -21,15 +21,15 @@ template<typename EnvImpl>
 struct EnvMixin: private boost::noncopyable
 {
 
-    typedef EnvImpl env_impl_data_t;
+    typedef EnvImpl env_impl_data_type;
 
     ///
     /// \brief time_step_t
     ///
-    typedef typename env_impl_data_t::time_step_t time_step_t;
+    typedef typename env_impl_data_type::time_step_type time_step_type;
 
 
-    static_assert(std::is_default_constructible<time_step_t>::value, "Time step type is not default constructible");
+    static_assert(std::is_default_constructible<time_step_type>::value, "Time step type is not default constructible");
 
     ///
     /// \brief EnvMixin
@@ -42,7 +42,7 @@ struct EnvMixin: private boost::noncopyable
     /// \brief reset
     /// \return
     ///
-    time_step_t reset();
+    time_step_type reset();
 
     ///
     /// \brief close. Close down the python environment
@@ -90,7 +90,7 @@ struct EnvMixin: private boost::noncopyable
     ///
     /// \brief current_state
     ///
-    time_step_t current_state;
+    time_step_type current_state;
 
 };
 
@@ -119,7 +119,7 @@ EnvMixin<EnvImpl>::close(){
 }
 
 template<typename EnvImpl>
-typename EnvMixin<EnvImpl>::time_step_t
+typename EnvMixin<EnvImpl>::time_step_type
 EnvMixin<EnvImpl>::reset(){
 
 #ifdef GYMFCPP_DEBUG
@@ -133,7 +133,7 @@ EnvMixin<EnvImpl>::reset(){
     boost::python::exec(cpp_str.c_str(), gym_namespace);
 
     auto obs = EnvImpl::extract_state(gym_namespace, EnvImpl::py_reset_result_name);
-    current_state = time_step_t(TimeStepTp::FIRST, 0.0, obs);
+    current_state = time_step_type(TimeStepTp::FIRST, 0.0, obs);
     return current_state;
 }
 

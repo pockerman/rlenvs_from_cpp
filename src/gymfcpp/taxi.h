@@ -76,7 +76,7 @@ struct TaxiData
     /// \param gym_namespace
     /// \return
     ///
-    static state_t extract_state(obj_t gym_namespace, std::string result_name);
+    static state_type extract_state(obj_t gym_namespace, std::string result_name);
 
 };
 
@@ -96,7 +96,7 @@ public:
     ///
     /// \brief action_space_t. The type of the action space
     ///
-    typedef TaxiData::action_space_t action_space_type;
+    typedef TaxiData::action_space_type action_space_type;
 
     ///
     /// \brief action_t

@@ -17,10 +17,10 @@ std::string MountainCarData::py_step_result_name = "py_mountain_car_step_rslt";
 std::string MountainCarData::py_reset_result_name = "py_mountain_car_reset_rslt";
 std::string MountainCarData::py_state_name = "py_mountain_car_state";
 
-MountainCarData::state_t
-MountainCarData::state_transform_from_boost(state_boost_python_t boost_type){
+MountainCarData::state_type
+MountainCarData::state_transform_from_boost(state_boost_python_type boost_type){
 
-    MountainCarData::state_t obs;
+    MountainCarData::state_type obs;
     obs.reserve(boost::python::len(boost_type));
 
     for(auto i=0; i<boost::python::len(boost_type); ++i){
@@ -31,7 +31,7 @@ MountainCarData::state_transform_from_boost(state_boost_python_t boost_type){
 
 }
 
-MountainCarData::state_t
+MountainCarData::state_type
 MountainCarData::extract_state(obj_t gym_namespace, std::string result_name){
 
     std::string s;
@@ -50,7 +50,7 @@ MountainCarData::extract_state(obj_t gym_namespace, std::string result_name){
 
     boost::python::exec(s.c_str(), gym_namespace);
 
-    auto obs =  boost::python::extract<MountainCarData::state_boost_python_t>(gym_namespace[MountainCarData::py_state_name]);
+    auto obs =  boost::python::extract<MountainCarData::state_boost_python_type>(gym_namespace[MountainCarData::py_state_name]);
     return MountainCarData::state_transform_from_boost(obs);
 
 }
@@ -87,8 +87,8 @@ MountainCar::make(){
 
 }
 
-MountainCar::time_step_t
-MountainCar::step(action_t action){
+MountainCar::time_step_type
+MountainCar::step(action_type action){
 
 #ifdef GYMFCPP_DEBUG
     assert(is_created && "Environment has not been created");
@@ -115,14 +115,9 @@ MountainCar::step(action_t action){
 
     std::unordered_map<std::string, std::any> extra;
 
-    current_state = time_step_t(done() ? TimeStepTp::LAST : TimeStepTp::MID, reward(), obs, std::move(extra));
+    current_state = time_step_type(done() ? TimeStepTp::LAST : TimeStepTp::MID, reward(), obs, std::move(extra));
     return current_state;
 
 }
-
-/*void
-MountainCar::render(RenderModeType render_mode){
-    render(*this, render_mode);
-}*/
 
 }

@@ -24,27 +24,27 @@ struct MountainCarData
     ///
     /// \brief action_space_t. The type of the action space
     ///
-    typedef DiscreteSpace<3> action_space_t;
+    typedef DiscreteSpace<3> action_space_type;
 
     ///
     /// \brief action_t
     ///
-    typedef action_space_t::item_t action_t;
+    typedef action_space_type::item_t action_type;
 
     ///
     /// \brief state_space_t
     ///
-    typedef ContinuousSpace<3> state_space_t;
+    typedef ContinuousSpace<3> state_space_type;
 
     ///
     /// \brief state_t
     ///
-    typedef state_space_t::item_t state_t;
+    typedef state_space_type::item_t state_type;
 
     ///
     /// \brief state_boost_python_t
     ///
-    typedef boost::python::list state_boost_python_t;
+    typedef boost::python::list state_boost_python_type;
 
     ///
     /// \brief name
@@ -74,21 +74,21 @@ struct MountainCarData
     ///
     /// \brief time_step_t. The type of the time step
     ///
-    typedef TimeStep<state_t> time_step_t;
+    typedef TimeStep<state_type> time_step_type;
 
     ///
     /// \brief state_transform_from_boost
     /// \param boost_type
     /// \return
     ///
-    static state_t state_transform_from_boost(state_boost_python_t boost_type);
+    static state_type state_transform_from_boost(state_boost_python_type boost_type);
 
     ///
     /// \brief extract_state
     /// \param gym_namespace
     /// \return
     ///
-    static state_t extract_state(obj_t gym_namespace, std::string result_name);
+    static state_type extract_state(obj_t gym_namespace, std::string result_name);
 
 };
 
@@ -103,32 +103,32 @@ public:
     ///
     /// \brief env_data_t
     ///
-    typedef MountainCarData  env_data_t;
+    typedef MountainCarData  env_data_type;
 
     ///
     /// \brief action_space_t. The type of the action space
     ///
-    typedef MountainCarData::action_space_t action_space_t;
+    typedef MountainCarData::action_space_type action_space_type;
 
     ///
     /// \brief action_t
     ///
-    typedef action_space_t::item_t action_t;
+    typedef action_space_type::item_t action_type;
 
     ///
     /// \brief state_space_t
     ///
-    typedef MountainCarData::state_space_t state_space_t;
+    typedef MountainCarData::state_space_type state_space_type;
 
     ///
     /// \brief state_t
     ///
-    typedef state_space_t::item_t state_t;
+    typedef state_space_type::item_t state_type;
 
     ///
     /// \brief time_step_t. The type of the time step
     ///
-    typedef TimeStep<state_t> time_step_t;
+    typedef TimeStep<state_type> time_step_type;
 
     ///
     /// \brief Expose the functionality this class is using
@@ -163,18 +163,18 @@ public:
     ///
     /// \brief n_actions. Returns the number of actions
     ///
-    uint_t n_actions()const noexcept{return action_space_t::size;}
+    uint_t n_actions()const noexcept{return action_space_type::size;}
 
     ///
     /// \brief step
     ///
-    time_step_t step(action_t action);
+    time_step_type step(action_type action);
 
     ///
     /// \brief sample
     /// \return
     ///
-    action_t sample()const noexcept{return MountainCarData::action_space_t::sample();}
+    action_type sample()const noexcept{return MountainCarData::action_space_type::sample();}
 
 private:
 
