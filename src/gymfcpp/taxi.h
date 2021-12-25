@@ -19,27 +19,27 @@ struct TaxiData
     ///
     /// \brief action_space_t. The type of the action space
     ///
-    typedef DiscreteSpace<6> action_space_t;
+    typedef DiscreteSpace<6> action_space_type;
 
     ///
     /// \brief action_t
     ///
-    typedef action_space_t::item_t action_t;
+    typedef action_space_type::item_t action_type;
 
     ///
     /// \brief state_space_t
     ///
-    typedef ContinuousSpace<4> state_space_t;
+    typedef ContinuousSpace<4> state_space_type;
 
     ///
     /// \brief state_t
     ///
-    typedef uint_t state_t;
+    typedef uint_t state_type;
 
     ///
     /// \brief state_boost_python_t
     ///
-    typedef boost::python::list state_boost_python_t;
+    typedef boost::python::list state_boost_python_type;
 
     ///
     /// \brief name
@@ -69,7 +69,7 @@ struct TaxiData
     ///
     /// \brief time_step_t. The type of the time step
     ///
-    typedef TimeStep<state_t> time_step_t;
+    typedef TimeStep<state_type> time_step_type;
 
     ///
     /// \brief extract_state
@@ -91,32 +91,32 @@ public:
     ///
     /// \brief env_data_t
     ///
-    typedef TaxiData  env_data_t;
+    typedef TaxiData  env_data_type;
 
     ///
     /// \brief action_space_t. The type of the action space
     ///
-    typedef TaxiData::action_space_t action_space_t;
+    typedef TaxiData::action_space_t action_space_type;
 
     ///
     /// \brief action_t
     ///
-    typedef TaxiData::action_t action_t;
+    typedef TaxiData::action_type action_type;
 
     ///
     /// \brief state_space_t
     ///
-    typedef TaxiData::state_space_t state_space_t;
+    typedef TaxiData::state_space_type state_space_type;
 
     ///
     /// \brief state_t
     ///
-    typedef TaxiData::state_t state_t;
+    typedef TaxiData::state_type state_type;
 
     ///
     /// \brief time_step_t. The type of the time step
     ///
-    typedef TaxiData::time_step_t time_step_t;
+    typedef TaxiData::time_step_type time_step_type;
 
     ///
     /// \brief Taxi
@@ -146,18 +146,18 @@ public:
     ///
     /// \brief n_actions. Returns the number of actions
     ///
-    uint_t n_actions()const noexcept{return action_space_t::size;}
+    uint_t n_actions()const noexcept{return action_space_type::size;}
 
     ///
     /// \brief step
     ///
-    time_step_t step(action_t action);
+    time_step_type step(action_type action);
 
     ///
     /// \brief sample
     /// \return
     ///
-    action_t sample()const noexcept{return action_space_t::sample();}
+    action_type sample()const noexcept{return action_space_type::sample();}
 
 };
 

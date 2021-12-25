@@ -11,7 +11,7 @@ std::string TaxiData::py_reset_result_name = get_py_reset_rslt_name(TaxiData::na
 std::string TaxiData::py_state_name = get_py_state_name(TaxiData::name);
 
 
-TaxiData::state_t
+TaxiData::state_type
 TaxiData::extract_state(obj_t gym_namespace, std::string result_name){
 
     std::string s;
@@ -61,8 +61,8 @@ Taxi::make(){
 }
 
 
-Taxi::time_step_t
-Taxi::step(action_t action){
+Taxi::time_step_type
+Taxi::step(action_type action){
 
 #ifdef GYMFCPP_DEBUG
     assert(is_created && "Environment has not been created");
@@ -85,7 +85,7 @@ Taxi::step(action_t action){
 
     std::unordered_map<std::string, std::any> extra;
 
-    current_state = time_step_t(done() ? TimeStepTp::LAST : TimeStepTp::MID, reward(), obs, std::move(extra));
+    current_state = time_step_type(done() ? TimeStepTp::LAST : TimeStepTp::MID, reward(), obs, std::move(extra));
     return current_state;
 }
 
