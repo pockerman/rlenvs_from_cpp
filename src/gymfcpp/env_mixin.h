@@ -18,7 +18,7 @@ namespace gymfcpp
 /// \brief The EnvMixin class
 ///
 template<typename EnvImpl>
-struct EnvMixin: private boost::noncopyable
+struct EnvMixin //: private boost::noncopyable
 {
 
     typedef EnvImpl env_impl_data_type;
@@ -62,6 +62,26 @@ struct EnvMixin: private boost::noncopyable
     void render(RenderModeType render_mode);
 
     ///
+    /// \brief py_env_name
+    ///
+    std::string py_env_name;
+
+    ///
+    /// \brief py_reset_result_name
+    ///
+    std::string py_reset_result_name;
+
+    ///
+    /// \brief py_step_result_name
+    ///
+    std::string py_step_result_name;
+
+    ///
+    /// \brief py_state_name
+    ///
+    std::string py_state_name;
+
+    ///
     /// \brief version
     /// \return
     ///
@@ -97,6 +117,10 @@ struct EnvMixin: private boost::noncopyable
 template<typename EnvImpl>
 EnvMixin<EnvImpl>::EnvMixin(std::string version_, obj_t gym_namespace_)
     :
+     py_env_name(),
+     py_reset_result_name(),
+     py_step_result_name(),
+     py_state_name(),
      version(version_),
      is_created(false),
      idx(0),
@@ -113,7 +137,7 @@ EnvMixin<EnvImpl>::close(){
         return;
     }
 
-    auto str = EnvImpl::py_env_name + ".close()\n";
+    auto str = py_env_name + ".close()\n";
     boost::python::exec(str.c_str(), gym_namespace);
     is_created = false;
 }
@@ -126,13 +150,13 @@ EnvMixin<EnvImpl>::reset(){
     assert(is_created && "Environment has not been created");
 #endif
 
-    auto cpp_str = std::string(EnvImpl::py_reset_result_name + " = ");
-    cpp_str += EnvImpl::py_env_name + ".reset()";
+    auto cpp_str = py_reset_result_name + " = ";
+    cpp_str += py_env_name + ".reset()";
 
     // reset the python environment
     boost::python::exec(cpp_str.c_str(), gym_namespace);
 
-    auto obs = EnvImpl::extract_state(gym_namespace, EnvImpl::py_reset_result_name);
+    auto obs = EnvImpl::extract_state(gym_namespace, py_reset_result_name);
     current_state = time_step_type(TimeStepTp::FIRST, 0.0, obs);
     return current_state;
 }
@@ -145,7 +169,7 @@ EnvMixin<EnvImpl>::render(RenderModeType render_mode){
     assert(is_created && "Environment has not been created");
 #endif
 
-    auto str = "screen = " + EnvImpl::py_env_name + ".render(mode='" + gymfcpp::to_string(render_mode) + "')\n";
+    auto str = "screen = " + py_env_name + ".render(mode='" + gymfcpp::to_string(render_mode) + "')\n";
     boost::python::exec(str.c_str(), gym_namespace);
 
 }

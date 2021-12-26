@@ -1,20 +1,17 @@
 #include "gymfcpp/taxi.h"
 #include "gymfcpp/names_generator.h"
+#include "gymfcpp/gymfcpp_consts.h"
 
 namespace gymfcpp
 {
 
 std::string TaxiData::name = "Taxi";
-std::string TaxiData::py_env_name = get_py_env_name(TaxiData::name);
-std::string TaxiData::py_step_result_name = get_py_step_rslt_name(TaxiData::name);
-std::string TaxiData::py_reset_result_name = get_py_reset_rslt_name(TaxiData::name);
-std::string TaxiData::py_state_name = get_py_state_name(TaxiData::name);
 
 
 TaxiData::state_type
 TaxiData::extract_state(obj_t gym_namespace, std::string result_name){
 
-    std::string s;
+    /*std::string s;
     if(result_name == TaxiData::py_reset_result_name){
         s = TaxiData::py_state_name +   " = " +  result_name + "\n";
     }
@@ -29,7 +26,8 @@ TaxiData::extract_state(obj_t gym_namespace, std::string result_name){
 #endif
 
     boost::python::exec(s.c_str(), gym_namespace);
-    auto obs =  boost::python::extract<uint_t>(gym_namespace[TaxiData::py_state_name]);
+    auto obs =  boost::python::extract<uint_t>(gym_namespace[TaxiData::py_state_name]);*/
+    auto obs = 1;
     return obs;
 
 }
@@ -38,10 +36,37 @@ Taxi::Taxi(std::string version, obj_t main_namespace, bool do_create)
     :
       EnvMixin<TaxiData>(version, main_namespace)
 {
+    this->EnvMixin<TaxiData>::py_env_name = get_py_env_name(TaxiData::name);
+    this->EnvMixin<TaxiData>::py_reset_result_name = get_py_reset_rslt_name(TaxiData::name);
+    this->EnvMixin<TaxiData>::py_step_result_name = get_py_step_rslt_name(TaxiData::name);
+    this->EnvMixin<TaxiData>::py_state_name = get_py_state_name(TaxiData::name);
+
     if(do_create){
         make();
     }
 }
+
+Taxi::Taxi(std::string version, obj_t main_namespace, std::map<std::string, std::string>&& names)
+    :
+    EnvMixin<TaxiData>(version, main_namespace)
+{
+    this->EnvMixin<TaxiData>::py_env_name = names[PY_ENV_NAME];
+    this->EnvMixin<TaxiData>::py_reset_result_name = names[PY_RESET_ENV_RESULT_NAME];
+    this->EnvMixin<TaxiData>::py_step_result_name = names[PY_STEP_ENV_RESULT_NAME];
+    this->EnvMixin<TaxiData>::py_state_name = names[PY_STATE_NAME];
+}
+
+Taxi::Taxi(const Taxi& other)
+    :
+       EnvMixin<TaxiData>(other.version, other.gym_namespace)
+{
+
+    this->py_env_name = other.py_env_name;
+    this->py_reset_result_name = other.py_reset_result_name;
+    this->py_step_result_name = other.py_step_result_name;
+    this->py_state_name = other.py_state_name;
+}
+
 
 void
 Taxi::make(){
@@ -51,12 +76,11 @@ Taxi::make(){
     }
 
     std::string cpp_str = "import gym \n";
-    //cpp_str += "import numpy as np \n";
-    cpp_str += TaxiData::py_env_name + " = gym.make('" + TaxiData::name + "-" + version + "').unwrapped\n";
+    cpp_str += this->EnvMixin<TaxiData>::py_env_name + " = gym.make('" + TaxiData::name + "-" + version + "').unwrapped\n";
 
     // create an environment
     auto ignored = boost::python::exec(cpp_str.c_str(), gym_namespace);
-    env = boost::python::extract<boost::python::api::object>(gym_namespace[TaxiData::py_env_name]);
+    env = boost::python::extract<boost::python::api::object>(gym_namespace[this->EnvMixin<TaxiData>::py_env_name]);
     is_created = true;
 }
 
@@ -73,13 +97,14 @@ Taxi::step(action_type action){
         return reset();
     }
 
-    std::string s = TaxiData::py_step_result_name + " = " + TaxiData::py_env_name +".step("+std::to_string(action)+")\n";
+    std::string s = this->EnvMixin<TaxiData>::py_step_result_name  + " = "
+            + this->EnvMixin<TaxiData>::py_env_name +".step("+std::to_string(action)+")\n";
 
     boost::python::exec(s.c_str(), gym_namespace);
 
-    auto obs = TaxiData::extract_state(gym_namespace, TaxiData::py_step_result_name);
+    auto obs = TaxiData::extract_state(gym_namespace, this->EnvMixin<TaxiData>::py_step_result_name);
 
-    auto result =  boost::python::extract<boost::python::tuple>(gym_namespace[TaxiData::py_step_result_name]);
+    auto result =  boost::python::extract<boost::python::tuple>(gym_namespace[this->EnvMixin<TaxiData>::py_step_result_name]);
     auto reward = boost::python::extract<real_t>(result()[1]);
     auto done = boost::python::extract<bool>(result()[2]);
 
@@ -87,6 +112,12 @@ Taxi::step(action_type action){
 
     current_state = time_step_type(done() ? TimeStepTp::LAST : TimeStepTp::MID, reward(), obs, std::move(extra));
     return current_state;
+}
+
+Taxi
+Taxi::copy(std::map<std::string, std::string>&& names)const{
+
+    return Taxi(this->version, this->gym_namespace, std::move(names));
 }
 
 

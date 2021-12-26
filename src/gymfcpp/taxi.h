@@ -8,6 +8,9 @@
 #include "gymfcpp/continuous_space.h"
 #include "gymfcpp/time_step.h"
 
+#include <map>
+#include <string>
+
 namespace gymfcpp
 {
 
@@ -49,22 +52,22 @@ struct TaxiData
     ///
     /// \brief py_env_name. The name of the environment in Python REPL
     ///
-    static std::string py_env_name;
+    //static std::string py_env_name;
 
     ///
     /// \brief py_step_result_name. The name of the result when stepping in the Python REPL
     ///
-    static std::string py_step_result_name;
+    //static std::string py_step_result_name;
 
     ///
     /// \brief py_step_reset_result_name
     ///
-    static std::string py_reset_result_name;
+    //static std::string py_reset_result_name;
 
     ///
     /// \brief py_step_reset_result_name
     ///
-    static std::string py_state_name;
+    //static std::string py_state_name;
 
     ///
     /// \brief time_step_t. The type of the time step
@@ -127,6 +130,25 @@ public:
     Taxi(std::string version, obj_t main_namespace, bool do_create=true);
 
     ///
+    /// \brief Taxi Constructor
+    /// \param main_namespace
+    /// \param names
+    ///
+    Taxi(std::string version, obj_t main_namespace, std::map<std::string, std::string>&& names);
+
+    ///
+    /// \brief Taxi
+    /// \param other
+    ///
+    Taxi(const Taxi& other);
+
+    ///
+    /// \brief Taxi
+    /// \param other
+    ///
+    Taxi(Taxi&& other);
+
+    ///
     /// \brief Expose the functionality this class is using
     /// from the Mixin
     ///
@@ -137,6 +159,10 @@ public:
     using EnvMixin<TaxiData>::version;
     using EnvMixin<TaxiData>::gym_namespace;
     using EnvMixin<TaxiData>::render;
+    using EnvMixin<TaxiData>::py_env_name;
+    using EnvMixin<TaxiData>::py_reset_result_name;
+    using EnvMixin<TaxiData>::py_step_result_name;
+    using EnvMixin<TaxiData>::py_state_name;
 
     ///
     /// \brief make. Build the environment
@@ -157,7 +183,18 @@ public:
     /// \brief sample
     /// \return
     ///
-    action_type sample()const noexcept{return action_space_type::sample();}
+    action_type sample_action()const noexcept{return action_space_type::sample();}
+
+    ///
+    /// \brief copy. Deep copy of the environment
+    /// \return
+    ///
+    Taxi copy(std::map<std::string, std::string>&& names)const;
+
+private:
+
+
+    using EnvMixin<TaxiData>::current_state;
 
 };
 
