@@ -55,6 +55,30 @@ MountainCarData::extract_state(obj_t gym_namespace, std::string result_name){
 
 }
 
+
+
+MountainCarData::state_type
+MountainCarData::extract_state_from_reset(obj_t gym_namespace, std::string py_state_name, std::string result_name){
+
+    std::string s = py_state_name +   " = " +  result_name + ".tolist()\n";
+    boost::python::exec(s.c_str(), gym_namespace);
+
+    auto obs =  boost::python::extract<MountainCarData::state_boost_python_type>(gym_namespace[py_state_name]);
+    return MountainCarData::state_transform_from_boost(obs);
+
+}
+
+
+MountainCarData::state_type
+MountainCarData::extract_state_from_step(obj_t gym_namespace, std::string py_state_name, std::string result_name){
+
+    std::string s = py_state_name + " = " + result_name + "[0]\n";
+    boost::python::exec(s.c_str(), gym_namespace);
+
+    auto obs =  boost::python::extract<MountainCarData::state_boost_python_type>(gym_namespace[py_state_name]);
+    return MountainCarData::state_transform_from_boost(obs);
+}
+
 MountainCar::MountainCar(std::string version, obj_t gym_namespace, bool do_create)
     :
       EnvMixin<MountainCarData>(version, gym_namespace)

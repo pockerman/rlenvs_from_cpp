@@ -79,7 +79,24 @@ struct TaxiData
     /// \param gym_namespace
     /// \return
     ///
-    static state_type extract_state(obj_t gym_namespace, std::string result_name);
+    //static state_type extract_state(obj_t gym_namespace, std::string result_name);
+
+    ///
+    /// \brief extract_state_from_reset
+    /// \param gym_namespace
+    /// \param py_env_n
+    /// \return
+    ///
+    static state_type extract_state_from_reset(obj_t gym_namespace, std::string py_state_name, std::string result_name);
+
+    ///
+    /// \brief extract_state_from_step
+    /// \param gym_namespace
+    /// \param py_state_name
+    /// \param result_name
+    /// \return
+    ///
+    static state_type extract_state_from_step(obj_t gym_namespace, std::string py_state_name, std::string result_name);
 
 };
 

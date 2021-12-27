@@ -156,7 +156,7 @@ EnvMixin<EnvImpl>::reset(){
     // reset the python environment
     boost::python::exec(cpp_str.c_str(), gym_namespace);
 
-    auto obs = EnvImpl::extract_state(gym_namespace, py_reset_result_name);
+    auto obs = EnvImpl::extract_state_from_reset(gym_namespace, py_state_name, py_reset_result_name);
     current_state = time_step_type(TimeStepTp::FIRST, 0.0, obs);
     return current_state;
 }

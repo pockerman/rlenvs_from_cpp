@@ -9,9 +9,29 @@ std::string TaxiData::name = "Taxi";
 
 
 TaxiData::state_type
+TaxiData::extract_state_from_reset(obj_t gym_namespace, std::string py_state_name, std::string result_name){
+
+     std:: string s = py_state_name +   " = " +  result_name + "\n";
+
+     boost::python::exec(s.c_str(), gym_namespace);
+     auto obs =  boost::python::extract<uint_t>(gym_namespace[py_state_name]);
+     return obs;
+}
+
+TaxiData::state_type
+TaxiData::extract_state_from_step(obj_t gym_namespace, std::string py_state_name, std::string result_name){
+
+     std:: string s = py_state_name +   " = " +  result_name + "[0]\n";
+
+     boost::python::exec(s.c_str(), gym_namespace);
+     auto obs =  boost::python::extract<uint_t>(gym_namespace[py_state_name]);
+     return obs;
+}
+
+/*TaxiData::state_type
 TaxiData::extract_state(obj_t gym_namespace, std::string result_name){
 
-    /*std::string s;
+    std::string s;
     if(result_name == TaxiData::py_reset_result_name){
         s = TaxiData::py_state_name +   " = " +  result_name + "\n";
     }
@@ -26,11 +46,11 @@ TaxiData::extract_state(obj_t gym_namespace, std::string result_name){
 #endif
 
     boost::python::exec(s.c_str(), gym_namespace);
-    auto obs =  boost::python::extract<uint_t>(gym_namespace[TaxiData::py_state_name]);*/
+    auto obs =  boost::python::extract<uint_t>(gym_namespace[TaxiData::py_state_name]);
     auto obs = 1;
     return obs;
 
-}
+}*/
 
 Taxi::Taxi(std::string version, obj_t main_namespace, bool do_create)
     :
@@ -102,9 +122,9 @@ Taxi::step(action_type action){
 
     boost::python::exec(s.c_str(), gym_namespace);
 
-    auto obs = TaxiData::extract_state(gym_namespace, this->EnvMixin<TaxiData>::py_step_result_name);
+    auto obs = TaxiData::extract_state_from_step(gym_namespace, this->py_state_name, this->py_step_result_name);
 
-    auto result =  boost::python::extract<boost::python::tuple>(gym_namespace[this->EnvMixin<TaxiData>::py_step_result_name]);
+    auto result =  boost::python::extract<boost::python::tuple>(gym_namespace[this->py_step_result_name]);
     auto reward = boost::python::extract<real_t>(result()[1]);
     auto done = boost::python::extract<bool>(result()[2]);
 
@@ -117,6 +137,12 @@ Taxi::step(action_type action){
 Taxi
 Taxi::copy(std::map<std::string, std::string>&& names)const{
 
+    // before copying we need to copy in the Python
+    // interpreter
+    std::string str = "import copy \n";
+    str += names[PY_ENV_NAME] + " = copy.copy(" + this->py_env_name + ")\n";
+
+    boost::python::exec(str.c_str(), this->gym_namespace);
     return Taxi(this->version, this->gym_namespace, std::move(names));
 }
 
