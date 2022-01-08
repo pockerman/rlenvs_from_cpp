@@ -1,4 +1,4 @@
-#include "gymfcpp/taxi.h"
+#include "gymfcpp/taxi_env.h"
 #include "gymfcpp/names_generator.h"
 #include "gymfcpp/gymfcpp_consts.h"
 
@@ -27,30 +27,6 @@ TaxiData::extract_state_from_step(obj_t gym_namespace, std::string py_state_name
      auto obs =  boost::python::extract<uint_t>(gym_namespace[py_state_name]);
      return obs;
 }
-
-/*TaxiData::state_type
-TaxiData::extract_state(obj_t gym_namespace, std::string result_name){
-
-    std::string s;
-    if(result_name == TaxiData::py_reset_result_name){
-        s = TaxiData::py_state_name +   " = " +  result_name + "\n";
-    }
-    else if(result_name == TaxiData::py_step_result_name){
-
-        s = TaxiData::py_state_name + " = " + result_name + "[0]\n";
-    }
-#ifdef GYMFCPP_DEBUG
-    else{
-        assert(false && result_name + "not " + TaxiData::py_reset_result_name + " or " + TaxiData::py_step_result_name);
-    }
-#endif
-
-    boost::python::exec(s.c_str(), gym_namespace);
-    auto obs =  boost::python::extract<uint_t>(gym_namespace[TaxiData::py_state_name]);
-    auto obs = 1;
-    return obs;
-
-}*/
 
 Taxi::Taxi(std::string version, obj_t main_namespace, bool do_create)
     :

@@ -3,8 +3,10 @@
 
 #include "gymfcpp/gymfcpp_config.h"
 #include "gymfcpp/gymfcpp_types.h"
-#include "gymfcpp/data_wrapper.h"
 #include "gymfcpp/env_mixin.h"
+#include "gymfcpp/discrete_space.h"
+#include "gymfcpp/continuous_space.h"
+#include "gymfcpp/time_step.h"
 
 #include <boost/noncopyable.hpp>
 
@@ -19,28 +21,35 @@ namespace gymfcpp{
 template<typename StateTp> class TimeStep;
 
 ///
-/// \brief The CartPole class Interface for CartPole environment
+/// \brief The CartPoleData struct
 ///
-class CartPole: private boost::noncopyable
+struct CartPoleData
 {
 
-public:
+    ///
+    /// \brief action_space_t. The type of the action space
+    ///
+    typedef DiscreteSpace<2> action_space_type;
 
     ///
-    /// \brief action_t. The type of the action
+    /// \brief action_t
     ///
-    typedef uint_t action_t;
+    typedef action_space_type::item_t action_type;
 
     ///
-    /// \brief state_t. The type of the state
-    /// cart position, cart velocity, pole angle, and pole velocity.
+    /// \brief state_space_type (cart_position, cart_velocity, pole angle, pole angular velocity)
     ///
-    typedef std::vector<real_t> state_t;
+    typedef ContinuousSpace<4> state_space_type;
 
     ///
-    /// \brief time_step_t. The type of the time step
+    /// \brief state_type
     ///
-    typedef TimeStep<state_t> time_step_t;
+    typedef state_space_type::item_t state_type;
+
+    ///
+    /// \brief state_boost_python_t
+    ///
+    typedef boost::python::list state_boost_python_type;
 
     ///
     /// \brief name
@@ -48,19 +57,81 @@ public:
     static  std::string name;
 
     ///
-    /// \brief py_env_name. The name of the environment in Python REPL
+    /// \brief time_step_t. The type of the time step
     ///
-    static std::string py_env_name;
+    typedef TimeStep<state_type> time_step_type;
 
     ///
-    /// \brief py_step_result_name. The name of the result when stepping in the Python REPL
+    /// \brief state_transform_from_boost
+    /// \param boost_type
+    /// \return
     ///
-    static std::string py_step_result_name;
+    static state_type state_transform_from_boost(state_boost_python_type boost_type);
 
     ///
-    /// \brief py_step_reset_result_name
+    /// \brief extract_state
+    /// \param gym_namespace
+    /// \return
     ///
-    static std::string py_reset_result_name;
+    static state_type extract_state(obj_t gym_namespace, std::string result_name);
+
+    ///
+    /// \brief extract_state_from_reset
+    /// \param gym_namespace
+    /// \param py_env_n
+    /// \return
+    ///
+    static state_type extract_state_from_reset(obj_t gym_namespace, std::string py_state_name, std::string result_name);
+
+    ///
+    /// \brief extract_state_from_step
+    /// \param gym_namespace
+    /// \param py_state_name
+    /// \param result_name
+    /// \return
+    ///
+    static state_type extract_state_from_step(obj_t gym_namespace, std::string py_state_name, std::string result_name);
+
+
+};
+
+///
+/// \brief The CartPole class Interface for CartPole environment
+///
+class CartPole: protected EnvMixin<CartPoleData>
+{
+
+public:
+
+    ///
+    /// \brief env_data_t
+    ///
+    typedef CartPoleData  env_data_type;
+
+    ///
+    /// \brief action_space_t. The type of the action space
+    ///
+    typedef CartPoleData::action_space_type action_space_type;
+
+    ///
+    /// \brief action_t
+    ///
+    typedef CartPoleData::action_type action_type;
+
+    ///
+    /// \brief state_space_t
+    ///
+    typedef CartPoleData::state_space_type state_space_type;
+
+    ///
+    /// \brief state_t
+    ///
+    typedef CartPoleData::state_type state_type;
+
+    ///
+    /// \brief time_step_t. The type of the time step
+    ///
+    typedef CartPoleData::time_step_type time_step_type;
 
     ///
     /// \brief The class Screen. Wrapper to the screen captured when calling render
@@ -78,6 +149,23 @@ public:
     ~CartPole();
 
     ///
+    /// \brief Expose the functionality this class is using
+    /// from the Mixin
+    ///
+    using EnvMixin<CartPoleData>::close;
+    using EnvMixin<CartPoleData>::full_name;
+    using EnvMixin<CartPoleData>::reset;
+    using EnvMixin<CartPoleData>::is_created;
+    using EnvMixin<CartPoleData>::version;
+    using EnvMixin<CartPoleData>::gym_namespace;
+    using EnvMixin<CartPoleData>::render;
+    using EnvMixin<CartPoleData>::idx;
+    using EnvMixin<CartPoleData>::py_env_name;
+    using EnvMixin<CartPoleData>::py_reset_result_name;
+    using EnvMixin<CartPoleData>::py_step_result_name;
+    using EnvMixin<CartPoleData>::py_state_name;
+
+    ///
     /// \brief make. Build the environment
     ///
     void make();
@@ -85,58 +173,25 @@ public:
     ///
     /// \brief n_actions. Returns the number of actions
     ///
-    uint_t n_actions()const;
-
-    ///
-    /// \brief version
-    ///
-    std::string_view version()const noexcept{return data_.v;}
-
-    ///
-    /// \brief is_created
-    /// \return
-    ///
-    bool is_created()const noexcept{return data_.is_created;}
-
-    ///
-    /// \brief reset
-    /// \return
-    ///
-    time_step_t reset();
+    uint_t n_actions()const noexcept{return action_space_type::size;}
 
     ///
     /// \brief step
     ///
-    time_step_t step(action_t action);
+    time_step_type step(const action_type action);
 
     ///
     /// \brief the screen
     ///
     Screen get_screen()const;
 
-    ///
-    /// \brief render
-    ///
-    void render(std::string mode="human");
 
-    ///
-    /// \brief close. Close down the python environment
-    ///
-    void close();
 private:
 
+    using EnvMixin<CartPoleData>::current_state;
+    using EnvMixin<CartPoleData>::env;
 
-    ///
-    /// \brief data_
-    ///
-    detail::data_wrapper<time_step_t> data_;
 
-    /// cached data
-
-    ///
-    /// \brief number of actions
-    ///
-    mutable uint_t n_actions_;
 
 };
 
