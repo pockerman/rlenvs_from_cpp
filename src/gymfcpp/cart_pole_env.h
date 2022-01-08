@@ -1,9 +1,10 @@
-#ifndef CART_POLE_H
-#define CART_POLE_H
+#ifndef CART_POLE_ENV_H
+#define CART_POLE_ENV_H
 
 #include "gymfcpp/gymfcpp_config.h"
 #include "gymfcpp/gymfcpp_types.h"
 #include "gymfcpp/data_wrapper.h"
+#include "gymfcpp/env_mixin.h"
 
 #include <boost/noncopyable.hpp>
 
