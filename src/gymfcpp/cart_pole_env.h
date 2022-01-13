@@ -185,7 +185,6 @@ public:
     ///
     Screen get_screen()const;
 
-
 private:
 
     using EnvMixin<CartPoleData>::current_state;
