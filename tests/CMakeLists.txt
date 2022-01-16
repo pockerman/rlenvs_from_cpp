@@ -31,4 +31,5 @@ ADD_SUBDIRECTORY(test_cart_pole)
 ADD_SUBDIRECTORY(test_env_base)
 ADD_SUBDIRECTORY(test_mountain_car)
 ADD_SUBDIRECTORY(test_taxi)
+ADD_SUBDIRECTORY(test_tiled_cart_pole)
 
