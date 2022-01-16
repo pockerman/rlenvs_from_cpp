@@ -190,8 +190,6 @@ private:
     using EnvMixin<CartPoleData>::current_state;
     using EnvMixin<CartPoleData>::env;
 
-
-
 };
 
 
@@ -243,24 +241,6 @@ private:
     mutable std::vector<std::vector<std::vector<real_t>>> screen_vec_;
 
 };
-
-/*inline
-bool operator==(const CartPole::Screen& screen1, const CartPole::Screen& screen2){
-	auto shape_1 = screen1.shape();
-	auto shape_2 = screen2.shape();
-	return (shape_1[0] == shape_2[0]) &&  (shape_1[1] == shape_2[1]) &&  (shape_1[2] == shape_2[2]);
-}
-
-inline
-bool operator!=(const CartPole::Screen& screen1, const CartPole::Screen& screen2){
-	return !(screen1 == screen2); 
-}
-
-
-inline
-CartPole::Screen operator-(const CartPole::Screen& screen1, const CartPole::Screen& screen2){
-}*/
-
 
 }
 

@@ -47,6 +47,11 @@ std::vector<real_t> linspace(T start_in, T end_in, uint_t num_in)
   return linspaced;
 }
 
+template<typename T, typename SerialContainer>
+uint_t digitize(const T x, const SerialContainer& container){
+    return 0;
+}
+
 }
 
 #endif // NUMPY_CPP_UTILS_H
