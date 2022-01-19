@@ -19,7 +19,7 @@ std::string CartPoleData::name = "CartPole";
 
 namespace  {
 
-template<typename ObsTp>
+/*template<typename ObsTp>
 std::vector<real_t> extract_obs(const ObsTp& observation){
 
     std::vector<real_t> obs;
@@ -31,7 +31,7 @@ std::vector<real_t> extract_obs(const ObsTp& observation){
 
     return obs;
 
-}
+}*/
 }
 
 
@@ -64,7 +64,6 @@ CartPoleData::extract_state_from_step(obj_t gym_namespace, std::string py_state_
      return obs;*/
 }
 
-
 CartPole::Screen::Screen(obj_t screen, std::array<uint_t, 3>&& shp)
     :
       screen_(screen),
@@ -72,8 +71,6 @@ CartPole::Screen::Screen(obj_t screen, std::array<uint_t, 3>&& shp)
       is_valid_screen_(true),
       screen_vec_()
 {}
-
-
 
 void 
 CartPole::Screen::invalidate() noexcept{
@@ -88,7 +85,6 @@ CartPole::Screen::invalidate() noexcept{
 	is_valid_screen_ = false;
 
 }
-
 
 const std::vector<std::vector<std::vector<real_t>>>&
 CartPole::Screen::get_as_vector()const{
@@ -116,8 +112,6 @@ CartPole::Screen::get_as_vector()const{
     }
 
     return screen_vec_;
-
-
 }
 
 #ifdef USE_PYTORCH
@@ -158,7 +152,6 @@ CartPole::CartPole(const std::string& version, obj_t main_namespace, bool do_cre
 CartPole::~CartPole(){
     close();
 }
-
 
 void
 CartPole::make(){
@@ -227,11 +220,9 @@ CartPole::step(const action_type action){
     auto done = boost::python::extract<bool>(result()[2]);
     std::unordered_map<std::string, std::any> extra;
 
-    current_state = time_step_type(done() ? TimeStepTp::LAST : TimeStepTp::MID, reward(), obs, std::move(extra));
+    current_state = time_step_type(done ? TimeStepTp::LAST : TimeStepTp::MID, reward(), obs, std::move(extra));
     return current_state;
-
 }
-
 
 CartPole::Screen
 CartPole::get_screen()const{
