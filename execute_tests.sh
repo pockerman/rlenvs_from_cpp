@@ -22,3 +22,6 @@ cd ..
 echo "Running Taxi tests"
 cd test_taxi/ && ./test_taxi
 cd ..
+echo "Running TiledCartPole environment tests"
+cd test_tiled_cart_pole/ && ./test_tiled_cart_pole
+cd ..

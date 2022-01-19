@@ -1,6 +1,8 @@
-#include "gymfcpp/cart_pole.h"
+#include "gymfcpp/cart_pole_env.h"
 #include "gymfcpp/gymfcpp_types.h"
 #include "gymfcpp/time_step.h"
+#include "gymfcpp/names_generator.h"
+
 #include "gymfcpp/gymfcpp_config.h"
 
 #ifdef USE_PYTOCH
@@ -12,14 +14,12 @@
 namespace gymfcpp{
 
 // static data
-std::string CartPole::name = "CartPole";
-std::string CartPole::py_env_name = "py_cart_pole";
-std::string CartPole::py_step_result_name = "py_cart_pole_step_rslt";
-std::string CartPole::py_reset_result_name = "py_cart_pole_reset_rslt";
+std::string CartPoleData::name = "CartPole";
+
 
 namespace  {
 
-template<typename ObsTp>
+/*template<typename ObsTp>
 std::vector<real_t> extract_obs(const ObsTp& observation){
 
     std::vector<real_t> obs;
@@ -31,9 +31,38 @@ std::vector<real_t> extract_obs(const ObsTp& observation){
 
     return obs;
 
-}
+}*/
 }
 
+
+CartPoleData::state_type
+CartPoleData::extract_state_from_reset(obj_t gym_namespace, std::string py_state_name, std::string result_name){
+
+     std:: string s = py_state_name +   " = " +  result_name + ".tolist()\n";
+
+     boost::python::exec(s.c_str(), gym_namespace);
+     auto obs =  boost::python::extract<boost::python::list>(gym_namespace[py_state_name]);
+
+     CartPoleData::state_type state;
+
+     state.reserve(boost::python::len(obs));
+
+     for(auto i=0; i<boost::python::len(obs); ++i){
+         state.push_back(boost::python::extract<real_t>(obs()[i]));
+     }
+
+     return state;
+}
+
+CartPoleData::state_type
+CartPoleData::extract_state_from_step(obj_t gym_namespace, std::string py_state_name, std::string result_name){
+
+     /*std:: string s = py_state_name +   " = " +  result_name + "[0]\n";
+
+     boost::python::exec(s.c_str(), gym_namespace);
+     auto obs =  boost::python::extract<uint_t>(gym_namespace[py_state_name]);
+     return obs;*/
+}
 
 CartPole::Screen::Screen(obj_t screen, std::array<uint_t, 3>&& shp)
     :
@@ -42,10 +71,6 @@ CartPole::Screen::Screen(obj_t screen, std::array<uint_t, 3>&& shp)
       is_valid_screen_(true),
       screen_vec_()
 {}
-
-CartPole::~CartPole(){
-    close();
-}
 
 void 
 CartPole::Screen::invalidate() noexcept{
@@ -60,7 +85,6 @@ CartPole::Screen::invalidate() noexcept{
 	is_valid_screen_ = false;
 
 }
-
 
 const std::vector<std::vector<std::vector<real_t>>>&
 CartPole::Screen::get_as_vector()const{
@@ -88,8 +112,6 @@ CartPole::Screen::get_as_vector()const{
     }
 
     return screen_vec_;
-
-
 }
 
 #ifdef USE_PYTORCH
@@ -113,104 +135,84 @@ CartPole::Screen::get_as_torch_tensor()const{
 }
 #endif
 
-CartPole::CartPole(const std::string& version, obj_t gym_namespace, bool do_create)
+CartPole::CartPole(const std::string& version, obj_t main_namespace, bool do_create)
     :
-      data_(),
-      n_actions_(INVALID_UINT)
+     EnvMixin<CartPoleData>(version, main_namespace)
 {
-    data_.v = version;
-    data_.gym_namespace = gym_namespace;
-    data_.is_created = false;
+    this->py_env_name = get_py_env_name(CartPoleData::name);
+    this->py_reset_result_name = get_py_reset_rslt_name(CartPoleData::name);
+    this->py_step_result_name = get_py_step_rslt_name(CartPoleData::name);
+    this->py_state_name = get_py_state_name(CartPoleData::name);
 
     if(do_create){
         make();
     }
-
 }
 
+CartPole::~CartPole(){
+    close();
+}
 
 void
 CartPole::make(){
 
-    if(data_.is_created){
+    if(is_created){
         return;
     }
 
     std::string cpp_str = "import gym \n";
     cpp_str += "import numpy as np \n";
-    cpp_str += CartPole::py_env_name + " = gym.make('" + CartPole::name +"-" + data_.v + "').unwrapped\n";
+    cpp_str += py_env_name + " = gym.make('" + CartPoleData::name +"-" + version + "').unwrapped\n";
 
     // create an environment
-    auto ignored = boost::python::exec(cpp_str.c_str(), data_.gym_namespace);
-    data_.world = boost::python::extract<boost::python::api::object>(data_.gym_namespace[CartPole::py_env_name]);
-    data_.is_created = true;
-
+    auto ignored = boost::python::exec(cpp_str.c_str(), gym_namespace);
+    env = boost::python::extract<boost::python::api::object>(gym_namespace[CartPole::py_env_name]);
+    is_created = true;
 }
 
-
-uint_t
-CartPole::n_actions()const{
-
-#ifdef GYMFCPP_DEBUG
-    assert(data_.is_created && "Environment has not been created");
-#endif
-
-    if(n_actions_ == INVALID_UINT){
-
-        auto world_dict = boost::python::extract<boost::python::dict>(data_.world.attr("__dict__"));
-        auto action_space = boost::python::extract<boost::python::api::object>(world_dict()["action_space"]);
-        n_actions_ = boost::python::extract<uint64_t>(action_space().attr("__dict__")["n"]);
-
-    }
-
-    return n_actions_;
-}
-
-CartPole::time_step_t
+/*CartPole::time_step_type
 CartPole::reset(){
 
 #ifdef GYMFCPP_DEBUG
-    assert(data_.is_created && "Environment has not been created");
+    assert(is_created && "Environment has not been created");
 #endif
 
     auto cpp_str = std::string(CartPole::py_reset_result_name + " = ");
     cpp_str += CartPole::py_env_name + ".reset().tolist()";
 
     // reset the python environment
-    boost::python::exec(cpp_str.c_str(), data_.gym_namespace);
+    boost::python::exec(cpp_str.c_str(), gym_namespace);
 
     // the observation
-    auto observation =  boost::python::extract<boost::python::list>(data_.gym_namespace[CartPole::py_reset_result_name]);
+    auto observation =  boost::python::extract<boost::python::list>(gym_namespace[CartPole::py_reset_result_name]);
     auto obs = extract_obs(observation);
 
-    data_.current_state = time_step_t(TimeStepTp::FIRST, 0.0, obs);
-    return data_.current_state;
+    current_state = time_step_type(TimeStepTp::FIRST, 0.0, obs);
+    return current_state;
 
-}
+}*/
 
 
-CartPole::time_step_t
-CartPole::step(action_t action){
+CartPole::time_step_type
+CartPole::step(const action_type action){
 
 #ifdef GYMFCPP_DEBUG
     assert(data_.is_created && "Environment has not been created");
 #endif
 
-    if(data_.current_state.last()){
+    if(current_state.last()){
         return reset();
     }
 
-    std::string s = CartPole::py_step_result_name + " = " + CartPole::py_env_name +".step("+std::to_string(action)+")\n";
-    s += CartPole::py_step_result_name + " = (" + CartPole::py_step_result_name + "[0].tolist(),";
-    s += "float(" + CartPole::py_step_result_name + "[1]),";
-    s += CartPole::py_step_result_name + "[2])\n";
+    std::string s = py_step_result_name + " = " + py_env_name +".step("+std::to_string(action)+")\n";
+    s += CartPole::py_step_result_name + " = (" + py_step_result_name + "[0].tolist(),";
+    s += "float(" + py_step_result_name + "[1]),";
+    s += py_step_result_name + "[2])\n";
 
-
-    // create an environment
-    boost::python::exec(s.c_str(), data_.gym_namespace);
+    boost::python::exec(s.c_str(), gym_namespace);
 
     // the observation
-    auto result =  boost::python::extract<boost::python::tuple>(data_.gym_namespace[CartPole::py_step_result_name]);
+    auto result =  boost::python::extract<boost::python::tuple>(gym_namespace[py_step_result_name]);
 
     auto observation = boost::python::extract<boost::python::list>(result()[0]);
     auto obs = extract_obs(observation);
@@ -218,20 +220,8 @@ CartPole::step(action_t action){
     auto done = boost::python::extract<bool>(result()[2]);
     std::unordered_map<std::string, std::any> extra;
 
-    data_.current_state = time_step_t(done() ? TimeStepTp::LAST : TimeStepTp::MID, reward(), obs, std::move(extra));
-    return data_.current_state;
-
-}
-
-void
-CartPole::render(std::string mode){
-
-#ifdef GYMFCPP_DEBUG
-    assert(data_.is_created && "Environment has not been created");
-#endif
-
-    auto str = "screen = " + CartPole::py_env_name + ".render(mode=" + mode + ")\n";
-    boost::python::exec(str.c_str(), data_.gym_namespace);
+    current_state = time_step_type(done ? TimeStepTp::LAST : TimeStepTp::MID, reward(), obs, std::move(extra));
+    return current_state;
 }
 
 CartPole::Screen
@@ -241,7 +231,7 @@ CartPole::get_screen()const{
     assert(data_.is_created && "Environment has not been created");
 #endif
 
-    auto str = "screen = " + CartPole::py_env_name + ".render(mode='rgb_array').transpose((2, 0, 1))\n";
+    auto str = "screen = " + py_env_name + ".render(mode='rgb_array').transpose((2, 0, 1))\n";
     str += "_, screen_height, screen_width = screen.shape\n";
     str += "screen_height_scale_1 = int(screen_height * 0.4)\n";
     str += "screen_height_scale_2 = int(screen_height * 0.8)\n";
@@ -250,9 +240,9 @@ CartPole::get_screen()const{
     str += "view_width = int(screen_width * 0.6)\n";
 
     // calculate the cart location
-    str += "world_width = " + CartPole::py_env_name + ".x_threshold * 2\n";
+    str += "world_width = " + py_env_name + ".x_threshold * 2\n";
     str += "scale = screen_width / world_width \n";
-    str += "cart_location = int(" + CartPole::py_env_name + ".state[0] * scale + screen_width / 2.0)\n";
+    str += "cart_location = int(" + py_env_name + ".state[0] * scale + screen_width / 2.0)\n";
 
     str += "if cart_location < view_width // 2:\n";
     str += "\tslice_range = slice(view_width)\n";
@@ -273,26 +263,13 @@ CartPole::get_screen()const{
 
 
     // execute the script
-    boost::python::exec(str.c_str(), data_.gym_namespace);
+    boost::python::exec(str.c_str(), gym_namespace);
 
-    auto shape = boost::python::extract<boost::python::tuple>(data_.gym_namespace["cart_pole_screen_shape"]);
-    return Screen(data_.gym_namespace["cart_pole_screen_list"],
+    auto shape = boost::python::extract<boost::python::tuple>(gym_namespace["cart_pole_screen_shape"]);
+    return Screen(gym_namespace["cart_pole_screen_list"],
     {boost::python::extract<uint_t>(shape()[0]), boost::python::extract<uint_t>(shape()[1]), boost::python::extract<uint_t>(shape()[2])});
 
 }
-
-void
-CartPole::close(){
-
-    if(!data_.is_created){
-        return;
-    }
-
-    auto str = CartPole::py_env_name + ".close()\n";
-    boost::python::exec(str.c_str(), data_.gym_namespace);
-
-}
-
 
 
 }

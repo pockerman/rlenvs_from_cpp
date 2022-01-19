@@ -18,7 +18,7 @@ namespace gymfcpp
 /// \brief The EnvMixin class
 ///
 template<typename EnvImpl>
-struct EnvMixin //: private boost::noncopyable
+struct EnvMixin
 {
 
     typedef EnvImpl env_impl_data_type;

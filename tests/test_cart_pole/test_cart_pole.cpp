@@ -1,4 +1,4 @@
-#include "gymfcpp/cart_pole.h"
+#include "gymfcpp/cart_pole_env.h"
 #include "gymfcpp/time_step.h"
 #include "gymfcpp/time_step_type.h"
 #include "gymfcpp/gymfcpp_types.h"
@@ -42,7 +42,7 @@ TEST(TestCartPole, Test_Not_Created)
         auto gym_namespace = gym_module.attr("__dict__");
         gymfcpp::CartPole env("v0", gym_namespace, false);
 
-        ASSERT_FALSE(env.is_created());
+        ASSERT_FALSE(env.is_created);
 
     }
     catch(const boost::python::error_already_set&)
@@ -65,7 +65,7 @@ TEST(TestCartPole, Test_Make)
         gymfcpp::CartPole env("v0", gym_namespace, false);
         env.make();
 
-        ASSERT_TRUE(env.is_created());
+        ASSERT_TRUE(env.is_created);
         ASSERT_EQ(env.n_actions(), static_cast<uint_t>(2));
 
     }

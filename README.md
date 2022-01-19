@@ -74,15 +74,17 @@ Step with prob=0.333333
 - ```CartPole```
 - ```MountainCar```
 - ```Taxi```
+- ```TiledCartPole``` (implements state aggregation for ```CartPole```)
 
 ## Dependencies
 
-- A compiler that supports C++20 e.g. g++10
-- Boost.Python
+- A compiler that supports C++20 e.g. g++-11
+- Boost C++ and in particlar Boost.Python
 - OpenAI-Gym 
-- CMake
-- Gtest
+- CMake >= 3.6
+- Gtest (if configured with tests)
 - <a href="https://github.com/aantron/better-enums">better-enums</a>
+- PyTorch (C++ bindings)
 
 ## Installation
 

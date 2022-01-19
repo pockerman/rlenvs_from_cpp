@@ -15,7 +15,12 @@ SET(CMAKE_C_COMPILER /usr/bin/gcc-11)
 SET(CMAKE_CXX_STANDARD 20)
 SET(CMAKE_CXX_STANDARD_REQUIRED True) 
 
+IF(CMAKE_BUILD_TYPE STREQUAL "Debug")
 SET(CMAKE_CXX_FLAGS "-g -Wall -Wextra")
+ELSEIF(CMAKE_BUILD_TYPE STREQUAL "Release")
+SET(CMAKE_CXX_FLAGS "-O2")
+ENDIF()
+
 SET(CMAKE_LINKER_FLAGS "-pthread")
 
 # use the Boost link directories
@@ -31,4 +36,5 @@ ADD_SUBDIRECTORY(test_cart_pole)
 ADD_SUBDIRECTORY(test_env_base)
 ADD_SUBDIRECTORY(test_mountain_car)
 ADD_SUBDIRECTORY(test_taxi)
+ADD_SUBDIRECTORY(test_tiled_cart_pole)
 

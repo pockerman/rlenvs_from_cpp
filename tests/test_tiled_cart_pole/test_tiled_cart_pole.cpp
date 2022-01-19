@@ -1,4 +1,4 @@
-#include "gymfcpp/taxi_env.h"
+#include "gymfcpp/tiled_cart_pole_env.h"
 #include "gymfcpp/time_step.h"
 #include "gymfcpp/time_step_type.h"
 #include "gymfcpp/gymfcpp_types.h"
@@ -16,27 +16,26 @@ using gymfcpp::real_t;
 }
 
 
-TEST(TestTaxi, TestConstructor) {
+TEST(TestTiledCartPoleEnv, TestConstructor) {
 
     try{
 
         Py_Initialize();
-
+        boost::python::numpy::initialize();
         auto main_module = boost::python::import("__main__");
         auto main_namespace = main_module.attr("__dict__");
-
-        gymfcpp::Taxi env("v3", main_namespace);
+        gymfcpp::TiledCartPole env("v0", main_namespace, 10);
     }
     catch(const boost::python::error_already_set&)
     {
         PyErr_Print();
-        FAIL()<<"Failed to create environment instance...";
+        FAIL();
     }
 
 }
 
 
-TEST(TestTaxi, Test_Make)
+TEST(TestTiledCartPoleEnv, TestMake)
 {
 
     try{
@@ -46,11 +45,10 @@ TEST(TestTaxi, Test_Make)
         auto main_module = boost::python::import("__main__");
         auto main_namespace = main_module.attr("__dict__");
 
-        gymfcpp::Taxi env("v3", main_namespace, false);
+        gymfcpp::TiledCartPole env("v0", main_namespace, 10);
         env.make();
 
-
-        ASSERT_TRUE(env.is_created);
+        ASSERT_EQ(env.n_actions(), static_cast<uint_t>(2));
 
     }
     catch(const boost::python::error_already_set&)
@@ -61,7 +59,7 @@ TEST(TestTaxi, Test_Make)
 }
 
 
-TEST(TestTaxi, Test_Reset)
+TEST(TestTiledCartPoleEnv, TestReset)
 {
 
     try{
@@ -71,14 +69,11 @@ TEST(TestTaxi, Test_Reset)
         auto main_module = boost::python::import("__main__");
         auto main_namespace = main_module.attr("__dict__");
 
-        gymfcpp::Taxi env("v3", main_namespace, false);
+        gymfcpp::TiledCartPole env("v0", main_namespace, 10);
         env.make();
 
         auto state = env.reset();
         ASSERT_TRUE(state.first());
-
-        //auto obs = state.observation();
-        //ASSERT_EQ(obs.size(), static_cast<uint_t>(2));
 
     }
     catch(const boost::python::error_already_set&)
@@ -88,7 +83,7 @@ TEST(TestTaxi, Test_Reset)
     }
 }
 
-TEST(TestMountainCar, Test_Step)
+TEST(TestMountainCar, TestStep)
 {
 
     try{
@@ -98,16 +93,12 @@ TEST(TestMountainCar, Test_Step)
         auto main_module = boost::python::import("__main__");
         auto main_namespace = main_module.attr("__dict__");
 
-        gymfcpp::Taxi env("v3", main_namespace, false);
+        gymfcpp::TiledCartPole env("v0", main_namespace, 10);
         env.make();
         env.reset();
 
         auto step_result = env.step(0);
         ASSERT_TRUE(step_result.mid());
-
-        //auto obs = step_result.observation();
-        //ASSERT_EQ(obs, static_cast<uint_t>(327));
-
     }
     catch(const boost::python::error_already_set&)
     {
@@ -117,7 +108,7 @@ TEST(TestMountainCar, Test_Step)
 }
 
 
-TEST(TestMountainCar, Test_Render)
+TEST(TestMountainCar, TestRender)
 {
 
     try{
@@ -127,7 +118,7 @@ TEST(TestMountainCar, Test_Render)
         auto main_module = boost::python::import("__main__");
         auto main_namespace = main_module.attr("__dict__");
 
-        gymfcpp::Taxi env("v3", main_namespace, false);
+        gymfcpp::TiledCartPole env("v0", main_namespace, 10);
         env.make();
         env.reset();
 
@@ -137,7 +128,7 @@ TEST(TestMountainCar, Test_Render)
     catch(const boost::python::error_already_set&)
     {
         PyErr_Print();
-        FAIL()<<"Error could not render the environment";
+        FAIL()<<"Error could not step in the environment";
     }
 }
 

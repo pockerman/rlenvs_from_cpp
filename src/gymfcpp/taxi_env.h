@@ -50,36 +50,9 @@ struct TaxiData
     static  std::string name;
 
     ///
-    /// \brief py_env_name. The name of the environment in Python REPL
-    ///
-    //static std::string py_env_name;
-
-    ///
-    /// \brief py_step_result_name. The name of the result when stepping in the Python REPL
-    ///
-    //static std::string py_step_result_name;
-
-    ///
-    /// \brief py_step_reset_result_name
-    ///
-    //static std::string py_reset_result_name;
-
-    ///
-    /// \brief py_step_reset_result_name
-    ///
-    //static std::string py_state_name;
-
-    ///
     /// \brief time_step_t. The type of the time step
     ///
     typedef TimeStep<state_type> time_step_type;
-
-    ///
-    /// \brief extract_state
-    /// \param gym_namespace
-    /// \return
-    ///
-    //static state_type extract_state(obj_t gym_namespace, std::string result_name);
 
     ///
     /// \brief extract_state_from_reset
