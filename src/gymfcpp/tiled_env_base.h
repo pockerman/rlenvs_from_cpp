@@ -44,9 +44,14 @@ public:
     using EnvMixin<typename EnvType::env_data_type>::close;
 
     ///
-    ///
+    /// \brief Destructor
     ///
     virtual ~TiledEnviromentBase()=default;
+
+    ///
+    /// \brief make
+    ///
+    virtual void make();
 
     ///
     /// \brief reset
@@ -73,13 +78,11 @@ public:
     ///
     virtual state_type get_state(const typename env_type::state_type& obs)const=0;
 
-
     ///
     /// \brief n_states
     /// \return
     ///
     uint_t n_states()const noexcept{return n_states_;}
-
 
 protected:
 
@@ -110,6 +113,18 @@ TiledEnviromentBase<EnvType>::TiledEnviromentBase(const std::string version, obj
 #ifdef GYMFCPP_DEBUG
  assert(n_states_ != 0 && "Number of states cannot be zero");
 #endif
+}
+
+template<typename EnvType>
+void
+TiledEnviromentBase<EnvType>::make(){
+
+    // create the bins
+    create_bins();
+
+    // make the environment
+    env_.make();
+
 }
 
 

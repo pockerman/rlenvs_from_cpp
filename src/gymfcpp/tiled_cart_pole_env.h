@@ -29,7 +29,7 @@ struct TiledCartPoleBoundaries
 ///
 /// \brief The TiledCartPole class
 ///
-class TiledCartPole: public TiledEnviromentBase<CartPole>
+class TiledCartPole final: public TiledEnviromentBase<CartPole>
 {
 public:
 
@@ -38,7 +38,7 @@ public:
     typedef TiledEnviromentBase<CartPole>::action_type action_type;
 
     ///
-    ///
+    /// \brief Constructor
     ///
     TiledCartPole(const std::string version, obj_t main_namespace, uint_t n_states,
                   uint_t state_idx=4, const TiledCartPoleBoundaries& boundaries=TiledCartPoleBoundaries());
@@ -67,6 +67,12 @@ public:
     /// \return
     ///
     virtual state_type get_state(const CartPole::state_type& obs)const override final;
+
+    ///
+    /// \brief n_actions
+    /// \return
+    ///
+    uint_t n_actions()const noexcept{return this->env_.n_actions();}
 
 private:
 

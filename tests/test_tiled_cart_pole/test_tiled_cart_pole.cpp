@@ -16,7 +16,7 @@ using gymfcpp::real_t;
 }
 
 
-TEST(TestMountainCar, TestConstructor) {
+TEST(TestTiledCartPoleEnv, TestConstructor) {
 
     try{
 
@@ -35,97 +35,90 @@ TEST(TestMountainCar, TestConstructor) {
 }
 
 
-TEST(TestMountainCar, Test_Make)
+TEST(TestTiledCartPoleEnv, TestMake)
 {
 
-    /*try{
+    try{
 
         Py_Initialize();
         boost::python::numpy::initialize();
-        auto gym_module = boost::python::import("gym");
-        auto gym_namespace = gym_module.attr("__dict__");
+        auto main_module = boost::python::import("__main__");
+        auto main_namespace = main_module.attr("__dict__");
 
-        gymfcpp::MountainCar env("v0", gym_namespace, false);
+        gymfcpp::TiledCartPole env("v0", main_namespace, 10);
         env.make();
 
-        ASSERT_EQ(env.n_actions(), static_cast<uint_t>(3));
+        ASSERT_EQ(env.n_actions(), static_cast<uint_t>(2));
 
     }
     catch(const boost::python::error_already_set&)
     {
         PyErr_Print();
         FAIL()<<"Error could not make the environment";
-    }*/
+    }
 }
 
 
-TEST(TestMountainCar, Test_Reset)
+TEST(TestTiledCartPoleEnv, TestReset)
 {
 
-    /*try{
+    try{
 
         Py_Initialize();
         boost::python::numpy::initialize();
-        auto gym_module = boost::python::import("gym");
-        auto gym_namespace = gym_module.attr("__dict__");
+        auto main_module = boost::python::import("__main__");
+        auto main_namespace = main_module.attr("__dict__");
 
-        gymfcpp::MountainCar env("v0", gym_namespace, false);
+        gymfcpp::TiledCartPole env("v0", main_namespace, 10);
         env.make();
 
         auto state = env.reset();
         ASSERT_TRUE(state.first());
-
-        auto obs = state.observation();
-        ASSERT_EQ(obs.size(), static_cast<uint_t>(2));
 
     }
     catch(const boost::python::error_already_set&)
     {
         PyErr_Print();
         FAIL()<<"Error could not reset the environment";
-    }*/
+    }
 }
 
-TEST(TestMountainCar, Test_Step)
+TEST(TestMountainCar, TestStep)
 {
 
-    /*try{
+    try{
 
         Py_Initialize();
         boost::python::numpy::initialize();
-        auto gym_module = boost::python::import("gym");
-        auto gym_namespace = gym_module.attr("__dict__");
+        auto main_module = boost::python::import("__main__");
+        auto main_namespace = main_module.attr("__dict__");
 
-        gymfcpp::MountainCar env("v0", gym_namespace, false);
+        gymfcpp::TiledCartPole env("v0", main_namespace, 10);
         env.make();
         env.reset();
 
         auto step_result = env.step(0);
         ASSERT_TRUE(step_result.mid());
-
-        auto obs = step_result.observation();
-        ASSERT_EQ(obs.size(), static_cast<uint_t>(2));
-
     }
     catch(const boost::python::error_already_set&)
     {
         PyErr_Print();
         FAIL()<<"Error could not step in the environment";
-    }*/
+    }
 }
 
 
-TEST(TestMountainCar, Test_Render)
+TEST(TestMountainCar, TestRender)
 {
 
-    /*try{
+    try{
 
         Py_Initialize();
         boost::python::numpy::initialize();
-        auto gym_module = boost::python::import("gym");
-        auto gym_namespace = gym_module.attr("__dict__");
+        auto main_module = boost::python::import("__main__");
+        auto main_namespace = main_module.attr("__dict__");
 
-        gymfcpp::MountainCar env("v0", gym_namespace, false);
+        gymfcpp::TiledCartPole env("v0", main_namespace, 10);
         env.make();
         env.reset();
 
@@ -136,7 +129,7 @@ TEST(TestMountainCar, Test_Render)
     {
         PyErr_Print();
         FAIL()<<"Error could not step in the environment";
-    }*/
+    }
 }
 
 

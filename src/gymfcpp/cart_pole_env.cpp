@@ -38,11 +38,20 @@ std::vector<real_t> extract_obs(const ObsTp& observation){
 CartPoleData::state_type
 CartPoleData::extract_state_from_reset(obj_t gym_namespace, std::string py_state_name, std::string result_name){
 
-     /*std:: string s = py_state_name +   " = " +  result_name + "\n";
+     std:: string s = py_state_name +   " = " +  result_name + ".tolist()\n";
 
      boost::python::exec(s.c_str(), gym_namespace);
-     auto obs =  boost::python::extract<uint_t>(gym_namespace[py_state_name]);
-     return obs;*/
+     auto obs =  boost::python::extract<boost::python::list>(gym_namespace[py_state_name]);
+
+     CartPoleData::state_type state;
+
+     state.reserve(boost::python::len(obs));
+
+     for(auto i=0; i<boost::python::len(obs); ++i){
+         state.push_back(boost::python::extract<real_t>(obs()[i]));
+     }
+
+     return state;
 }
 
 CartPoleData::state_type
