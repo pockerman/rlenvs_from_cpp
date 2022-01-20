@@ -31,7 +31,7 @@ SET(CMAKE_CXX_STANDARD_REQUIRED True)
 
 IF(CMAKE_BUILD_TYPE STREQUAL "Debug")
 SET(CMAKE_INSTALL_PREFIX /home/alex/qi3/cubeAI/gymcpp/install/dbg)
-SET(CMAKE_CXX_FLAGS "-g -Wall -Wextra")
+SET(CMAKE_CXX_FLAGS "-g ") # -Wall -Wextra")
 ELSEIF(CMAKE_BUILD_TYPE STREQUAL "Release")
 SET(CMAKE_INSTALL_PREFIX /home/alex/qi3/cubeAI/gymcpp/install/opt)
 SET(CMAKE_CXX_FLAGS "-O2")

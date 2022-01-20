@@ -19,7 +19,7 @@ std::string CartPoleData::name = "CartPole";
 
 namespace  {
 
-/*template<typename ObsTp>
+template<typename ObsTp>
 std::vector<real_t> extract_obs(const ObsTp& observation){
 
     std::vector<real_t> obs;
@@ -30,8 +30,8 @@ std::vector<real_t> extract_obs(const ObsTp& observation){
     }
 
     return obs;
+}
 
-}*/
 }
 
 
@@ -57,11 +57,21 @@ CartPoleData::extract_state_from_reset(obj_t gym_namespace, std::string py_state
 CartPoleData::state_type
 CartPoleData::extract_state_from_step(obj_t gym_namespace, std::string py_state_name, std::string result_name){
 
-     /*std:: string s = py_state_name +   " = " +  result_name + "[0]\n";
+     std:: string s = py_state_name +   " = " +  result_name + "[0].tolist()\n";
 
      boost::python::exec(s.c_str(), gym_namespace);
-     auto obs =  boost::python::extract<uint_t>(gym_namespace[py_state_name]);
-     return obs;*/
+     auto obs_python =  boost::python::extract<boost::python::list>(gym_namespace[py_state_name]);
+
+     /*std::vector<real_t> obs;
+     obs.reserve(boost::python::len(obs_python));
+
+     for(auto i=0; i<boost::python::len(obs_python); ++i){
+         obs.push_back(boost::python::extract<real_t>(obs_python()[i]));
+     }*/
+
+     //return obs;
+
+     return extract_obs(obs_python);
 }
 
 CartPole::Screen::Screen(obj_t screen, std::array<uint_t, 3>&& shp)
