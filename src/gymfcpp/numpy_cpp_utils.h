@@ -2,6 +2,12 @@
 #define NUMPY_CPP_UTILS_H
 
 #include "gymfcpp/gymfcpp_types.h"
+#include "gymfcpp/gymfcpp_config.h"
+
+#ifdef GYMFCPP_DEBUG
+#include <cassert>
+#endif
+
 #include <vector>
 
 namespace gymfcpp{
@@ -47,9 +53,39 @@ std::vector<real_t> linspace(T start_in, T end_in, uint_t num_in)
   return linspaced;
 }
 
+///
+/// \brief digitize. Simplified numpy.digitize. Numpy documentation
+/// can be found here: https://numpy.org/doc/stable/reference/generated/numpy.digitize.html
+/// The SerialContainer is expected to be sorted in ascending order.
+///
 template<typename T, typename SerialContainer>
 uint_t digitize(const T x, const SerialContainer& container){
-    return 0;
+
+#ifdef GYMFCPP_DEBUG
+    assert(container.empty() == false && "The given container is empty");
+#endif
+
+    // out of min boundary
+    if(x < container[0]){
+        return 0;
+    }
+
+    if( x > container.back()){
+        return container.size();
+    }
+
+    auto bin = 1;
+    for(uint_t i=1; i<container.size(); ++i){
+
+        // we found the bin index
+        if((container[i - 1] <= x) && ( x < container[i]) ){
+            break;
+        }
+
+        bin += 1;
+    }
+
+    return bin;
 }
 
 }
