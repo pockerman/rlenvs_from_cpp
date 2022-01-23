@@ -83,7 +83,7 @@ TEST(TestTiledCartPoleEnv, TestReset)
     }
 }
 
-TEST(TestMountainCar, TestStep)
+TEST(TestTiledCartPoleEnv, TestStep)
 {
 
     try{
@@ -108,7 +108,7 @@ TEST(TestMountainCar, TestStep)
 }
 
 
-TEST(TestMountainCar, TestRender)
+TEST(TestTiledCartPoleEnv, TestRender)
 {
 
     try{

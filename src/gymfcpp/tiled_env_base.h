@@ -42,6 +42,12 @@ public:
     using EnvMixin<typename EnvType::env_data_type>::full_name;
     using EnvMixin<typename EnvType::env_data_type>::render;
     using EnvMixin<typename EnvType::env_data_type>::close;
+    using EnvMixin<typename EnvType::env_data_type>::is_created;
+    using EnvMixin<typename EnvType::env_data_type>::py_env_name;
+    using EnvMixin<typename EnvType::env_data_type>::py_reset_result_name;
+    using EnvMixin<typename EnvType::env_data_type>::py_step_result_name;
+    using EnvMixin<typename EnvType::env_data_type>::py_state_name;
+    using EnvMixin<typename EnvType::env_data_type>::idx;
 
     ///
     /// \brief Destructor
@@ -113,6 +119,8 @@ TiledEnviromentBase<EnvType>::TiledEnviromentBase(const std::string version, obj
 #ifdef GYMFCPP_DEBUG
  assert(n_states_ != 0 && "Number of states cannot be zero");
 #endif
+
+
 }
 
 template<typename EnvType>
@@ -124,6 +132,15 @@ TiledEnviromentBase<EnvType>::make(){
 
     // make the environment
     env_.make();
+
+    py_env_name = env_.py_env_name;
+
+    py_reset_result_name = env_.py_reset_result_name;
+    py_step_result_name = env_.py_step_result_name;
+    py_state_name = env_.py_state_name;
+
+    // make the flag true
+    is_created = true;
 
 }
 

@@ -207,7 +207,7 @@ CartPole::time_step_type
 CartPole::step(const action_type action){
 
 #ifdef GYMFCPP_DEBUG
-    assert(data_.is_created && "Environment has not been created");
+    assert(is_created && "Environment has not been created");
 #endif
 
     if(current_state.last()){
@@ -238,7 +238,7 @@ CartPole::Screen
 CartPole::get_screen()const{
 
 #ifdef GYMFCPP_DEBUG
-    assert(data_.is_created && "Environment has not been created");
+    assert(is_created && "Environment has not been created");
 #endif
 
     auto str = "screen = " + py_env_name + ".render(mode='rgb_array').transpose((2, 0, 1))\n";
