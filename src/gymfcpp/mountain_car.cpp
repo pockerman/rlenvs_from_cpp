@@ -44,7 +44,8 @@ MountainCarData::extract_state(obj_t gym_namespace, std::string result_name){
     }
 #ifdef GYMFCPP_DEBUG
     else{
-        assert(false && result_name + "not " + MountainCarData::py_reset_result_name + " or " + MountainCarData::py_step_result_name);
+        std::string msg(result_name + "not " + MountainCarData::py_reset_result_name + " or " + MountainCarData::py_step_result_name);
+        assert(false && msg.c_str());
     }
 #endif
 

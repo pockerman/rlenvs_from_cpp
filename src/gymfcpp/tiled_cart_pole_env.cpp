@@ -69,6 +69,8 @@ TiledCartPole::get_state(const CartPole::state_type& obs)const{
     else if (state_idx_ == 3){
         return {digitize(cart_theta_dot, pole_theta_velocity_space_)};
     }
+
+
 }
 
 void
@@ -107,7 +109,7 @@ TiledCartPole::_build_cart_velocity_space(){
 
     auto low = boundaries_.cart_pole_vel.first;
     auto high = boundaries_.cart_pole_vel.second;
-    cart_pos_space_ = linspace(low, high, this->n_states());
+    cart_vel_space_ = linspace(low, high, this->n_states());
 }
 
 void
@@ -123,7 +125,7 @@ TiledCartPole::_build_pole_theta_velocity_space(){
 
     auto low = boundaries_.cart_pole_theta_vel.first;
     auto high = boundaries_.cart_pole_theta_vel.second;
-    cart_pos_space_ = linspace(low, high, this->n_states());
+    pole_theta_velocity_space_ = linspace(low, high, this->n_states());
 }
 
 
