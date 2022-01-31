@@ -1,5 +1,5 @@
 #include "gymfcpp/gymfcpp_config.h"
-#include "gymfcpp/mountain_car.h"
+#include "gymfcpp/mountain_car_env.h"
 #include "gymfcpp/time_step.h"
 
 #ifdef GYMFCPP_DEBUG

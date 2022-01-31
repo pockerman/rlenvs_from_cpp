@@ -1,4 +1,4 @@
-#include "gymfcpp/cliff_world.h"
+#include "gymfcpp/cliff_world_env.h"
 #include "gymfcpp/time_step.h"
 #include "gymfcpp/time_step_type.h"
 #include "gymfcpp/gymfcpp_types.h"
