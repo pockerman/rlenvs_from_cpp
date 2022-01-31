@@ -1,4 +1,4 @@
-#include "gymfcpp/black_jack.h"
+#include "gymfcpp/black_jack_env.h"
 #include "gymfcpp/config.h"
 
 #ifdef GYMFCPP_DEBUG

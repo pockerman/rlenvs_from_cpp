@@ -1,4 +1,4 @@
-#include "gymfcpp/cliff_world.h"
+#include "gymfcpp/cliff_world_env.h"
 #include "gymfcpp/config.h"
 
 #ifdef GYMFCPP_DEBUG
