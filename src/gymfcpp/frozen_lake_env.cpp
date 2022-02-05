@@ -1,4 +1,4 @@
-#include "gymfcpp/frozen_lake.h"
+#include "gymfcpp/frozen_lake_env.h"
 #include "gymfcpp/config.h"
 
 #include <boost/python.hpp>

@@ -1,4 +1,4 @@
-#include "gymfcpp/frozen_lake.h"
+#include "gymfcpp/frozen_lake_env.h"
 #include "gymfcpp/time_step.h"
 #include "gymfcpp/time_step_type.h"
 #include "gymfcpp/gymfcpp_types.h"
