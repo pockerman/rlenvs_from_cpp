@@ -77,27 +77,50 @@ void
 TiledCartPole::create_bins(){
 
     if(state_idx_ == 4){
-         _build_pole_theta_velocity_space();
-         _build_pole_theta_space();
-         _build_cart_position_space();
-         _build_cart_velocity_space();
+         build_pole_theta_velocity_space_();
+         build_pole_theta_space_();
+         build_cart_position_space_();
+         build_cart_velocity_space_();
     }
     else if(state_idx_ == 2 ){
-        _build_pole_theta_velocity_space();
+        build_pole_theta_velocity_space_();
     }
     else if( state_idx_ == 0 ){
-        _build_cart_position_space();
+        build_cart_position_space_();
     }
     else if( state_idx_ == 1){
-        _build_cart_velocity_space();
+        build_cart_velocity_space_();
     }
     else if( state_idx_ == 3){
-        _build_pole_theta_velocity_space();
+        build_pole_theta_velocity_space_();
     }
 }
 
 void
-TiledCartPole::_build_cart_position_space(){
+TiledCartPole::create_states_(){
+
+    if(state_idx_ == 4){
+                for(uint_t i=0; i < cart_pos_space_.size() + 1; ++i){
+                    for(uint_t j=0; j < cart_vel_space_.size() + 1; ++j){
+                        for(uint_t k=0; k < pole_theta_space_.size() + 1; ++k){
+                            for(uint_t l=0; l < pole_theta_velocity_space_.size() + 1; ++l){
+                                discrete_observation_space_.push_back(std::make_tuple(i, j, k, l));
+                            }
+                        }
+                    }
+                }
+    }
+    else{
+        for(uint_t l=0; l < n_states() + 1; ++l){
+            discrete_observation_space_.push_back(std::make_tuple(l, 0, 0, 0));
+        }
+    }
+
+
+}
+
+void
+TiledCartPole::build_cart_position_space_(){
 
     auto low = boundaries_.cart_pole_pos.first;
     auto high = boundaries_.cart_pole_pos.second;
@@ -105,7 +128,7 @@ TiledCartPole::_build_cart_position_space(){
 }
 
 void
-TiledCartPole::_build_cart_velocity_space(){
+TiledCartPole::build_cart_velocity_space_(){
 
     auto low = boundaries_.cart_pole_vel.first;
     auto high = boundaries_.cart_pole_vel.second;
@@ -113,7 +136,7 @@ TiledCartPole::_build_cart_velocity_space(){
 }
 
 void
-TiledCartPole::_build_pole_theta_space(){
+TiledCartPole::build_pole_theta_space_(){
 
     auto low = boundaries_.cart_pole_theta.first;
     auto high = boundaries_.cart_pole_theta.second;
@@ -121,7 +144,7 @@ TiledCartPole::_build_pole_theta_space(){
 }
 
 void
-TiledCartPole::_build_pole_theta_velocity_space(){
+TiledCartPole::build_pole_theta_velocity_space_(){
 
     auto low = boundaries_.cart_pole_theta_vel.first;
     auto high = boundaries_.cart_pole_theta_vel.second;

@@ -44,6 +44,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <tuple>
 
 namespace gymfcpp{
 
@@ -111,6 +112,18 @@ public:
     ///
     uint_t n_actions()const noexcept{return this->env_.n_actions();}
 
+    ///
+    /// \brief get_states
+    /// \return
+    ///
+    const std::vector<std::tuple<uint_t, uint_t, uint_t, uint_t>>& get_states()const noexcept{return discrete_observation_space_;}
+
+    ///
+    /// \brief get_states
+    /// \return
+    ///
+    std::vector<std::tuple<uint_t, uint_t, uint_t, uint_t>> get_states() noexcept{return discrete_observation_space_;}
+
 private:
 
     ///
@@ -144,14 +157,20 @@ private:
     std::vector<real_t> cart_vel_space_;
 
     ///
+    /// \brief discrete_observation_space_
+    ///
+    std::vector<std::tuple<uint_t, uint_t, uint_t, uint_t> > discrete_observation_space_;
+
+    ///
     /// \brief current_state_
     ///
     time_step_type current_state_;
 
-    void _build_pole_theta_space();
-    void _build_cart_position_space();
-    void _build_cart_velocity_space();
-    void _build_pole_theta_velocity_space();
+    void build_pole_theta_space_();
+    void build_cart_position_space_();
+    void build_cart_velocity_space_();
+    void build_pole_theta_velocity_space_();
+    void create_states_();
 };
 
 
