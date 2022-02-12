@@ -1,4 +1,5 @@
 #include "gymfcpp/frozen_lake_env.h"
+#include "gymfcpp/names_generator.h"
 #include "gymfcpp/config.h"
 
 #include <boost/python.hpp>
@@ -15,20 +16,24 @@
 namespace gymfcpp{
 
 
-std::string FrozenLake::name = "FrozenLake";
-std::string FrozenLake::py_env_name = "frozen_env";
+std::string FrozenLakeData::name = "FrozenLake";
 
 
-FrozenLake::FrozenLake(const std::string& version, obj_t gym_namespace, bool do_create, bool is_slipery)
+
+FrozenLake::FrozenLake(const std::string& version, obj_t main_namespace,
+                       bool do_create,  std::string map_type, bool is_slippery)
     :
-      v_(version),
-      is_created_(false),
-      gym_namespace_(gym_namespace),
-      world_(),
-      current_state_()
+      EnvMixin<FrozenLakeData>(version, main_namespace),
+      map_type_(map_type),
+      is_slippery_(is_slippery)
 {
+    this->py_env_name = get_py_env_name(FrozenLakeData::name);
+    this->py_reset_result_name = get_py_reset_rslt_name(FrozenLakeData::name);
+    this->py_step_result_name = get_py_step_rslt_name(FrozenLakeData::name);
+    this->py_state_name = get_py_state_name(FrozenLakeData::name);
+
     if(do_create){
-        make(is_slipery);
+        make();
     }
 }
 
@@ -39,20 +44,29 @@ FrozenLake::~FrozenLake(){
 
 
 void
-FrozenLake::make(bool is_slipery){
+FrozenLake::make(){
 
-    std::string  python_str = "import gym \n";
-    python_str +=  FrozenLake::py_env_name + " = gym.make('FrozenLake-v0', is_slippery=True).unwrapped \n";
-
-    if(!is_slipery){
-        python_str = "import gym \n";
-        python_str +=  FrozenLake::py_env_name + " = gym.make('FrozenLake-v0', is_slippery=False).unwrapped \n";
+    if(is_created){
+        return;
     }
 
+    /*std::string  python_str = "import gym \n";
+    python_str +=  FrozenLake::py_env_name + " = gym.make('FrozenLake-v0', is_slippery=True).unwrapped \n";
+
+    if(!is_slipery_){
+        python_str = "import gym \n";
+        python_str +=  FrozenLake::py_env_name + " = gym.make('FrozenLake-v0', is_slippery=False).unwrapped \n";
+    }*/
+    std::string cpp_str = construct_python_string_();
+
+    auto ignored = boost::python::exec(cpp_str.c_str(), gym_namespace);
+    env = boost::python::extract<boost::python::api::object>(gym_namespace[FrozenLake::py_env_name]);
+    is_created = true;
+
     // create an environment
-    auto ignored = boost::python::exec(python_str.c_str(), gym_namespace_);
+    /*auto ignored = boost::python::exec(python_str.c_str(), gym_namespace_);
     world_ = boost::python::extract<boost::python::api::object>(gym_namespace_["frozen_env"]);
-    is_created_ = true;
+    is_created_ = true;*/
 }
 
 
@@ -68,7 +82,7 @@ FrozenLake::n_states()const{
 }
 
 
-uint_t
+/*uint_t
 FrozenLake::n_actions()const{
 
 #ifdef GYMFCPP_DEBUG
@@ -78,9 +92,9 @@ FrozenLake::n_actions()const{
     auto world_dict = boost::python::extract<boost::python::dict>(world_.attr("__dict__"));
     auto action_space = boost::python::extract<boost::python::api::object>(world_dict()["action_space"]);
     return boost::python::extract<uint_t>(action_space().attr("__dict__")["n"]);
-}
+}*/
 
-FrozenLake::time_step_t
+FrozenLake::time_step_type
 FrozenLake::reset(){
 
 #ifdef GYMFCPP_DEBUG
@@ -99,8 +113,8 @@ FrozenLake::reset(){
 }
 
 
-FrozenLake::time_step_t
-FrozenLake::step(action_t action, bool query_extra){
+FrozenLake::time_step_type
+FrozenLake::step(action_type action, bool query_extra){
 
 #ifdef GYMFCPP_DEBUG
     assert(is_created_ && "Environment has not been created");
@@ -182,7 +196,36 @@ FrozenLake::render(std::string mode){
 
 }
 
-void
+std::string
+FrozenLake::construct_python_string_()const noexcept{
+
+    std::string cpp_str = "import gym \n";
+
+    if(is_slippery()){
+
+        if(map_type() == "4x4"){
+            cpp_str += py_env_name + " = gym.make('" + FrozenLakeData::name +"-" + version + "', map_name='4x4', is_slippery=True).unwrapped\n";
+        }
+        else if(map_type() == "8x8"){
+            cpp_str += py_env_name + " = gym.make('" + FrozenLakeData::name +"-" + version + "', map_name='8x8', is_slippery=True).unwrapped\n";
+        }
+    }
+    else{
+
+        if(map_type() == "4x4"){
+            cpp_str += py_env_name + " = gym.make('" + FrozenLakeData::name +"-" + version + "', map_name='4x4', is_slippery=False).unwrapped\n";
+        }
+        else if(map_type() == "8x8"){
+            cpp_str += py_env_name + " = gym.make('" + FrozenLakeData::name +"-" + version + "', map_name='8x8', is_slippery=False).unwrapped\n";
+        }
+    }
+
+
+    return cpp_str;
+
+}
+
+/*void
 FrozenLake::close(){
 
     if(!is_created_){
@@ -192,7 +235,7 @@ FrozenLake::close(){
     auto str = FrozenLake::py_env_name + ".close()\n";
     boost::python::exec(str.c_str(), gym_namespace_);
 
-}
+}*/
 
 
 
