@@ -1,5 +1,5 @@
-#ifndef TILED_CART_POLE_ENV_H
-#define TILED_CART_POLE_ENV_H
+#ifndef STATE_AGGREGATION_CART_POLE_ENV_H
+#define STATE_AGGREGATION_CART_POLE_ENV_H
 
 /**
   *
@@ -39,7 +39,7 @@
 
 #include "gymfcpp/gymfcpp_types.h"
 #include "gymfcpp/cart_pole_env.h"
-#include "gymfcpp/tiled_env_base.h"
+#include "gymfcpp/state_aggregation_env_base.h"
 
 #include <string>
 #include <utility>
@@ -55,7 +55,7 @@ template<typename StateTp> class TimeStep;
 /// \brief The TiledCartPoleBoundaries struct. Boundaries for
 /// the state variables in the CartPole environment
 ///
-struct TiledCartPoleBoundaries
+struct StateAggregationCartPoleBoundaries
 {
 
     std::pair<real_t,real_t> cart_pole_pos{-2.4, 2.4};
@@ -67,19 +67,19 @@ struct TiledCartPoleBoundaries
 ///
 /// \brief The TiledCartPole class
 ///
-class TiledCartPole final: public TiledEnviromentBase<CartPole, std::tuple<uint_t, uint_t, uint_t, uint_t>>
+class StateAggregationCartPole final: public StateAggregationEnvBase<CartPole, std::tuple<uint_t, uint_t, uint_t, uint_t>>
 {
 public:
 
-    typedef TiledEnviromentBase<CartPole, std::tuple<uint_t, uint_t, uint_t, uint_t>>::time_step_type time_step_type;
-    typedef TiledEnviromentBase<CartPole, std::tuple<uint_t, uint_t, uint_t, uint_t>>::state_type state_type;
-    typedef TiledEnviromentBase<CartPole, std::tuple<uint_t, uint_t, uint_t, uint_t>>::action_type action_type;
+    typedef StateAggregationEnvBase<CartPole, std::tuple<uint_t, uint_t, uint_t, uint_t>>::time_step_type time_step_type;
+    typedef StateAggregationEnvBase<CartPole, std::tuple<uint_t, uint_t, uint_t, uint_t>>::state_type state_type;
+    typedef StateAggregationEnvBase<CartPole, std::tuple<uint_t, uint_t, uint_t, uint_t>>::action_type action_type;
 
     ///
     /// \brief Constructor
     ///
-    TiledCartPole(const std::string version, obj_t main_namespace, uint_t n_states,
-                  uint_t state_idx=4, const TiledCartPoleBoundaries& boundaries=TiledCartPoleBoundaries());
+    StateAggregationCartPole(const std::string version, obj_t main_namespace, uint_t n_states,
+                  uint_t state_idx=4, const StateAggregationCartPoleBoundaries& boundaries=StateAggregationCartPoleBoundaries());
 
     ///
     /// \brief reset
@@ -139,7 +139,7 @@ private:
     ///
     /// \brief boundaries_
     ///
-    const TiledCartPoleBoundaries boundaries_;
+    const StateAggregationCartPoleBoundaries boundaries_;
 
     ///
     /// \brief bins for the pole position space
