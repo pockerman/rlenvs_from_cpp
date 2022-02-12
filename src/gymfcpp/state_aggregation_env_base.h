@@ -1,5 +1,5 @@
-#ifndef TILED_ENV_BASE_H
-#define TILED_ENV_BASE_H
+#ifndef STATE_AGGREGATION_ENV_BASE_H
+#define STATE_AGGREGATION_ENV_BASE_H
 
 #include "gymfcpp/gymfcpp_types.h"
 # include "gymfcpp/env_mixin.h"
@@ -25,7 +25,7 @@ template<typename StateTp> class TimeStep;
 /// of bins.
 ///
 template<typename EnvType, typename StateTp>
-class TiledEnviromentBase: protected EnvMixin<typename EnvType::env_data_type>
+class StateAggregationEnvBase: protected EnvMixin<typename EnvType::env_data_type>
 {
 public:
 
@@ -50,7 +50,7 @@ public:
     ///
     /// \brief Destructor
     ///
-    virtual ~TiledEnviromentBase()=default;
+    virtual ~StateAggregationEnvBase()=default;
 
     ///
     /// \brief make
@@ -94,7 +94,7 @@ protected:
     ///
     /// \brief Constructor
     ///
-    TiledEnviromentBase(const std::string version, obj_t main_namespace, uint_t n_states);
+    StateAggregationEnvBase(const std::string version, obj_t main_namespace, uint_t n_states);
 
     ///
     /// \brief env_ The actual environment
@@ -108,7 +108,7 @@ protected:
 };
 
 template<typename EnvType, typename StateTp>
-TiledEnviromentBase<EnvType, StateTp>::TiledEnviromentBase(const std::string version, obj_t main_namespace, uint_t n_states)
+StateAggregationEnvBase<EnvType, StateTp>::StateAggregationEnvBase(const std::string version, obj_t main_namespace, uint_t n_states)
     :
     EnvMixin<typename EnvType::env_data_type>(version,  main_namespace),
     env_(version, main_namespace),
@@ -123,7 +123,7 @@ TiledEnviromentBase<EnvType, StateTp>::TiledEnviromentBase(const std::string ver
 
 template<typename EnvType, typename StateTp>
 void
-TiledEnviromentBase<EnvType, StateTp>::make(){
+StateAggregationEnvBase<EnvType, StateTp>::make(){
 
     // create the bins
     create_bins();

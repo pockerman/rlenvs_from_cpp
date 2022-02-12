@@ -1,4 +1,4 @@
-#include "gymfcpp/tiled_cart_pole_env.h"
+#include "gymfcpp/state_aggregation_cart_pole_env.h"
 #include "gymfcpp/numpy_cpp_utils.h"
 #include "gymfcpp/time_step_type.h"
 #include "gymfcpp/time_step.h"
@@ -6,10 +6,10 @@
 namespace gymfcpp
 {
 
-TiledCartPole::TiledCartPole(const std::string version, obj_t main_namespace, uint_t n_states,
-                             uint_t state_idx, const TiledCartPoleBoundaries& boundaries)
+StateAggregationCartPole::StateAggregationCartPole(const std::string version, obj_t main_namespace, uint_t n_states,
+                             uint_t state_idx, const StateAggregationCartPoleBoundaries& boundaries)
     :
-      TiledEnviromentBase<CartPole, std::tuple<uint_t, uint_t, uint_t, uint_t>>(version, main_namespace, n_states),
+      StateAggregationEnvBase<CartPole, std::tuple<uint_t, uint_t, uint_t, uint_t>>(version, main_namespace, n_states),
       state_idx_(state_idx),
       boundaries_(boundaries),
       pole_theta_space_(),
@@ -18,8 +18,8 @@ TiledCartPole::TiledCartPole(const std::string version, obj_t main_namespace, ui
       cart_vel_space_()
 {}
 
-TiledCartPole::time_step_type
-TiledCartPole::reset(){
+StateAggregationCartPole::time_step_type
+StateAggregationCartPole::reset(){
 
     auto step = env_.reset();
 
@@ -30,15 +30,15 @@ TiledCartPole::reset(){
 }
 
 void
-TiledCartPole::make(){
+StateAggregationCartPole::make(){
 
-    this->TiledEnviromentBase<CartPole, std::tuple<uint_t, uint_t, uint_t, uint_t>>::make();
+    this->StateAggregationEnvBase<CartPole, std::tuple<uint_t, uint_t, uint_t, uint_t>>::make();
     create_states_();
 
 }
 
-TiledCartPole::time_step_type
-TiledCartPole::step(const action_type& action){
+StateAggregationCartPole::time_step_type
+StateAggregationCartPole::step(const action_type& action){
 
     auto step = env_.step(action);
 
@@ -49,8 +49,8 @@ TiledCartPole::step(const action_type& action){
 }
 
 
-TiledCartPole::state_type
-TiledCartPole::get_state(const CartPole::state_type& obs)const{
+StateAggregationCartPole::state_type
+StateAggregationCartPole::get_state(const CartPole::state_type& obs)const{
 
     auto cart_x = obs[0];
     auto cart_x_dot = obs[1];
@@ -80,7 +80,7 @@ TiledCartPole::get_state(const CartPole::state_type& obs)const{
 }
 
 void
-TiledCartPole::create_bins(){
+StateAggregationCartPole::create_bins(){
 
     if(state_idx_ == 4){
          build_pole_theta_velocity_space_();
@@ -103,7 +103,7 @@ TiledCartPole::create_bins(){
 }
 
 void
-TiledCartPole::create_states_(){
+StateAggregationCartPole::create_states_(){
 
     if(state_idx_ == 4){
                 for(uint_t i=0; i < cart_pos_space_.size() + 1; ++i){
@@ -126,7 +126,7 @@ TiledCartPole::create_states_(){
 }
 
 void
-TiledCartPole::build_cart_position_space_(){
+StateAggregationCartPole::build_cart_position_space_(){
 
     auto low = boundaries_.cart_pole_pos.first;
     auto high = boundaries_.cart_pole_pos.second;
@@ -134,7 +134,7 @@ TiledCartPole::build_cart_position_space_(){
 }
 
 void
-TiledCartPole::build_cart_velocity_space_(){
+StateAggregationCartPole::build_cart_velocity_space_(){
 
     auto low = boundaries_.cart_pole_vel.first;
     auto high = boundaries_.cart_pole_vel.second;
@@ -142,7 +142,7 @@ TiledCartPole::build_cart_velocity_space_(){
 }
 
 void
-TiledCartPole::build_pole_theta_space_(){
+StateAggregationCartPole::build_pole_theta_space_(){
 
     auto low = boundaries_.cart_pole_theta.first;
     auto high = boundaries_.cart_pole_theta.second;
@@ -150,7 +150,7 @@ TiledCartPole::build_pole_theta_space_(){
 }
 
 void
-TiledCartPole::build_pole_theta_velocity_space_(){
+StateAggregationCartPole::build_pole_theta_velocity_space_(){
 
     auto low = boundaries_.cart_pole_theta_vel.first;
     auto high = boundaries_.cart_pole_theta_vel.second;

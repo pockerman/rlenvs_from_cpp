@@ -1,4 +1,4 @@
-#include "gymfcpp/tiled_cart_pole_env.h"
+#include "gymfcpp/state_aggregation_cart_pole_env.h"
 #include "gymfcpp/time_step.h"
 #include "gymfcpp/time_step_type.h"
 #include "gymfcpp/gymfcpp_types.h"
@@ -16,7 +16,7 @@ using gymfcpp::real_t;
 }
 
 
-TEST(TestTiledCartPoleEnv, TestConstructor) {
+TEST(TestStateAggregationCartPole, TestConstructor) {
 
     try{
 
@@ -24,7 +24,7 @@ TEST(TestTiledCartPoleEnv, TestConstructor) {
         boost::python::numpy::initialize();
         auto main_module = boost::python::import("__main__");
         auto main_namespace = main_module.attr("__dict__");
-        gymfcpp::TiledCartPole env("v0", main_namespace, 10);
+        gymfcpp::StateAggregationCartPole env("v0", main_namespace, 10);
     }
     catch(const boost::python::error_already_set&)
     {
@@ -35,7 +35,7 @@ TEST(TestTiledCartPoleEnv, TestConstructor) {
 }
 
 
-TEST(TestTiledCartPoleEnv, TestMake)
+TEST(TestStateAggregationCartPole, TestMake)
 {
 
     try{
@@ -45,7 +45,7 @@ TEST(TestTiledCartPoleEnv, TestMake)
         auto main_module = boost::python::import("__main__");
         auto main_namespace = main_module.attr("__dict__");
 
-        gymfcpp::TiledCartPole env("v0", main_namespace, 10);
+        gymfcpp::StateAggregationCartPole env("v0", main_namespace, 10);
         env.make();
 
         ASSERT_EQ(env.n_actions(), static_cast<uint_t>(2));
@@ -59,7 +59,7 @@ TEST(TestTiledCartPoleEnv, TestMake)
 }
 
 
-TEST(TestTiledCartPoleEnv, TestReset)
+TEST(TestStateAggregationCartPole, TestReset)
 {
 
     try{
@@ -69,7 +69,7 @@ TEST(TestTiledCartPoleEnv, TestReset)
         auto main_module = boost::python::import("__main__");
         auto main_namespace = main_module.attr("__dict__");
 
-        gymfcpp::TiledCartPole env("v0", main_namespace, 10);
+        gymfcpp::StateAggregationCartPole env("v0", main_namespace, 10);
         env.make();
 
         auto state = env.reset();
@@ -83,7 +83,7 @@ TEST(TestTiledCartPoleEnv, TestReset)
     }
 }
 
-TEST(TestTiledCartPoleEnv, TestStep)
+TEST(TestStateAggregationCartPole, TestStep)
 {
 
     try{
@@ -93,7 +93,7 @@ TEST(TestTiledCartPoleEnv, TestStep)
         auto main_module = boost::python::import("__main__");
         auto main_namespace = main_module.attr("__dict__");
 
-        gymfcpp::TiledCartPole env("v0", main_namespace, 10);
+        gymfcpp::StateAggregationCartPole env("v0", main_namespace, 10);
         env.make();
         env.reset();
 
@@ -108,7 +108,7 @@ TEST(TestTiledCartPoleEnv, TestStep)
 }
 
 
-TEST(TestTiledCartPoleEnv, TestRender)
+TEST(TestStateAggregationCartPole, TestRender)
 {
 
     try{
@@ -118,7 +118,7 @@ TEST(TestTiledCartPoleEnv, TestRender)
         auto main_module = boost::python::import("__main__");
         auto main_namespace = main_module.attr("__dict__");
 
-        gymfcpp::TiledCartPole env("v0", main_namespace, 10);
+        gymfcpp::StateAggregationCartPole env("v0", main_namespace, 10);
         env.make();
         env.reset();
 
