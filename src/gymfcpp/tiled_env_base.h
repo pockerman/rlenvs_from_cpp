@@ -24,15 +24,13 @@ template<typename StateTp> class TimeStep;
 /// enviroments that discretize the continues state into a discrete number
 /// of bins.
 ///
-template<typename EnvType>
+template<typename EnvType, typename StateTp>
 class TiledEnviromentBase: protected EnvMixin<typename EnvType::env_data_type>
 {
 public:
 
     typedef EnvType env_type;
-
-    //typedef typename env_type::time_step_type time_step_type;
-    typedef std::vector<uint_t> state_type;
+    typedef StateTp state_type;
     typedef TimeStep<state_type> time_step_type;
     typedef typename env_type::action_type action_type;
 
@@ -109,8 +107,8 @@ protected:
     uint_t n_states_;
 };
 
-template<typename EnvType>
-TiledEnviromentBase<EnvType>::TiledEnviromentBase(const std::string version, obj_t main_namespace, uint_t n_states)
+template<typename EnvType, typename StateTp>
+TiledEnviromentBase<EnvType, StateTp>::TiledEnviromentBase(const std::string version, obj_t main_namespace, uint_t n_states)
     :
     EnvMixin<typename EnvType::env_data_type>(version,  main_namespace),
     env_(version, main_namespace),
@@ -123,9 +121,9 @@ TiledEnviromentBase<EnvType>::TiledEnviromentBase(const std::string version, obj
 
 }
 
-template<typename EnvType>
+template<typename EnvType, typename StateTp>
 void
-TiledEnviromentBase<EnvType>::make(){
+TiledEnviromentBase<EnvType, StateTp>::make(){
 
     // create the bins
     create_bins();

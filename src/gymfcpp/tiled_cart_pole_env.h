@@ -67,13 +67,13 @@ struct TiledCartPoleBoundaries
 ///
 /// \brief The TiledCartPole class
 ///
-class TiledCartPole final: public TiledEnviromentBase<CartPole>
+class TiledCartPole final: public TiledEnviromentBase<CartPole, std::tuple<uint_t, uint_t, uint_t, uint_t>>
 {
 public:
 
-    typedef TiledEnviromentBase<CartPole>::time_step_type time_step_type;
-    typedef TiledEnviromentBase<CartPole>::state_type state_type;
-    typedef TiledEnviromentBase<CartPole>::action_type action_type;
+    typedef TiledEnviromentBase<CartPole, std::tuple<uint_t, uint_t, uint_t, uint_t>>::time_step_type time_step_type;
+    typedef TiledEnviromentBase<CartPole, std::tuple<uint_t, uint_t, uint_t, uint_t>>::state_type state_type;
+    typedef TiledEnviromentBase<CartPole, std::tuple<uint_t, uint_t, uint_t, uint_t>>::action_type action_type;
 
     ///
     /// \brief Constructor
@@ -86,6 +86,11 @@ public:
     /// \return
     ///
     time_step_type reset();
+
+    ///
+    /// \brief make
+    ///
+    virtual void make() override final;
 
     ///
     /// \brief step

@@ -9,7 +9,7 @@ namespace gymfcpp
 TiledCartPole::TiledCartPole(const std::string version, obj_t main_namespace, uint_t n_states,
                              uint_t state_idx, const TiledCartPoleBoundaries& boundaries)
     :
-      TiledEnviromentBase<CartPole>(version, main_namespace, n_states),
+      TiledEnviromentBase<CartPole, std::tuple<uint_t, uint_t, uint_t, uint_t>>(version, main_namespace, n_states),
       state_idx_(state_idx),
       boundaries_(boundaries),
       pole_theta_space_(),
@@ -27,6 +27,14 @@ TiledCartPole::reset(){
 
     current_state_ = time_step_type(TimeStepTp::FIRST, step.reward(), discrete_step);
     return current_state_;
+}
+
+void
+TiledCartPole::make(){
+
+    this->TiledEnviromentBase<CartPole, std::tuple<uint_t, uint_t, uint_t, uint_t>>::make();
+    create_states_();
+
 }
 
 TiledCartPole::time_step_type
@@ -55,22 +63,20 @@ TiledCartPole::get_state(const CartPole::state_type& obs)const{
         auto cart_theta_int = digitize(cart_theta, pole_theta_space_);
         auto cart_theta_dot_int = digitize(cart_theta_dot, pole_theta_velocity_space_);
 
-        return {cart_x_int, cart_x_dot_int, cart_theta_int, cart_theta_dot_int};
+        return std::make_tuple(cart_x_int, cart_x_dot_int, cart_theta_int, cart_theta_dot_int);
     }
     else if (state_idx_ == 0 ){
-        return {digitize(cart_x, cart_pos_space_)};
+        return std::make_tuple(digitize(cart_x, cart_pos_space_), this->n_states() + 1, this->n_states() + 1, this->n_states() + 1);
     }
     else if (state_idx_ == 1){
-        return {digitize(cart_x_dot, cart_vel_space_)};
+        return std::make_tuple(this->n_states() + 1, digitize(cart_x_dot, cart_vel_space_), this->n_states() + 1, this->n_states() + 1);
     }
     else if( state_idx_ == 2 ){
-        return {digitize(cart_theta, pole_theta_space_)};
+        return std::make_tuple(this->n_states() + 1, this->n_states() + 1, digitize(cart_theta, pole_theta_space_), this->n_states() + 1);
     }
     else if (state_idx_ == 3){
-        return {digitize(cart_theta_dot, pole_theta_velocity_space_)};
+        return std::make_tuple(this->n_states() + 1, this->n_states() + 1, this->n_states() + 1, digitize(cart_theta_dot, pole_theta_velocity_space_));
     }
-
-
 }
 
 void
