@@ -68,13 +68,14 @@ Step with prob=0.333333
 
 ## Environments implemented
 
-- ```FrozenLake```
+- ```FrozenLake``` with ```4x4``` map
+- ```FrozenLake``` with ```8x8``` map
 - ```Blackjack```
 - ```CliffWalking```
 - ```CartPole```
 - ```MountainCar```
 - ```Taxi```
-- ```TiledCartPole``` (implements state aggregation for ```CartPole```)
+- ```StateAggregationCartPole``` (implements state aggregation for ```CartPole```)
 
 ## Dependencies
 

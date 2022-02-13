@@ -31,9 +31,7 @@ std::vector<real_t> extract_obs(const ObsTp& observation){
 
     return obs;
 }
-
 }
-
 
 CartPoleData::state_type
 CartPoleData::extract_state_from_reset(obj_t gym_namespace, std::string py_state_name, std::string result_name){
