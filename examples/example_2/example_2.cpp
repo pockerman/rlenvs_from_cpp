@@ -9,11 +9,11 @@ int main(){
     try
     {
         Py_Initialize();
-        auto gym_module = boost::python::import("gym");
-        auto gym_namespace = gym_module.attr("__dict__");
-        gymfcpp::FrozenLake env("v0", gym_namespace, false);
+        auto main_module = boost::python::import("__main__");
+        auto main_namespace = main_module.attr("__dict__");
+        gymfcpp::FrozenLake<4> env("v0", main_namespace, false);
 
-        env.make(true);
+        env.make();
 
         auto step = env.reset();
         std::cout<<step<<std::endl;

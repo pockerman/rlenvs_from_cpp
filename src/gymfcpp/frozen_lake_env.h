@@ -67,6 +67,52 @@
 
 namespace gymfcpp {
 
+template<uint_t side_size>
+struct discrete_state_space_frozen_lake;
+
+template<>
+struct discrete_state_space_frozen_lake<4>
+{
+    ///
+    /// \brief item_t
+    ///
+    typedef uint_t item_type;
+
+
+    ///
+    /// \brief size
+    ///
+    static constexpr uint_t size = 16;
+
+    ///
+    /// \brief sample
+    /// \return
+    ///
+    static item_type sample();
+};
+
+template<>
+struct discrete_state_space_frozen_lake<8>
+{
+    ///
+    /// \brief item_t
+    ///
+    typedef uint_t item_type;
+
+
+    ///
+    /// \brief size
+    ///
+    static constexpr uint_t size = 64;
+
+    ///
+    /// \brief sample
+    /// \return
+    ///
+    static item_type sample();
+};
+
+template<uint_t side_size>
 struct FrozenLakeData
 {
     ///
@@ -82,12 +128,12 @@ struct FrozenLakeData
     ///
     /// \brief state_space_type
     ///
-    typedef DiscreteSpace<1> state_space_type;
+    typedef discrete_state_space_frozen_lake<side_size> state_space_type;
 
     ///
     /// \brief state_type
     ///
-    typedef state_space_type::item_t state_type;
+    typedef typename state_space_type::item_type state_type;
 
     ///
     /// \brief state_boost_python_t
@@ -109,14 +155,14 @@ struct FrozenLakeData
     /// \param boost_type
     /// \return
     ///
-    static state_type state_transform_from_boost(state_boost_python_type boost_type);
+    static state_type state_transform_from_boost(state_boost_python_type /*boost_type*/);
 
     ///
     /// \brief extract_state
     /// \param gym_namespace
     /// \return
     ///
-    static state_type extract_state(obj_t gym_namespace, std::string result_name);
+    static state_type extract_state(obj_t /*gym_namespace*/, std::string /*result_name*/);
 
     ///
     /// \brief extract_state_from_reset
@@ -135,14 +181,14 @@ struct FrozenLakeData
     ///
     static state_type extract_state_from_step(obj_t gym_namespace, std::string py_state_name, std::string result_name);
 
-
 };
 
 ///
 /// \brief The FrozenLake class. Wrapper to OpenAI-Gym FrozenLake
 /// environment
 ///
-class FrozenLake: protected EnvMixin<FrozenLakeData>
+template<uint_t side_size>
+class FrozenLake: protected EnvMixin<FrozenLakeData<side_size>>
 {
 public:
 
@@ -154,38 +200,38 @@ public:
     ///
     /// \brief env_data_t
     ///
-    typedef FrozenLakeData  env_data_type;
+    typedef FrozenLakeData<side_size>  env_data_type;
 
     ///
     /// \brief action_space_t. The type of the action space
     ///
-    typedef FrozenLakeData::action_space_type action_space_type;
+    typedef typename FrozenLakeData<side_size>::action_space_type action_space_type;
 
     ///
     /// \brief action_t
     ///
-    typedef FrozenLakeData::action_type action_type;
+    typedef typename FrozenLakeData<side_size>::action_type action_type;
 
     ///
     /// \brief state_space_t
     ///
-    typedef FrozenLakeData::state_space_type state_space_type;
+    typedef typename FrozenLakeData<side_size>::state_space_type state_space_type;
 
     ///
     /// \brief state_t
     ///
-    typedef FrozenLakeData::state_type state_type;
+    typedef typename FrozenLakeData<side_size>::state_type state_type;
 
     ///
     /// \brief time_step_t. The type of the time step
     ///
-    typedef FrozenLakeData::time_step_type time_step_type;
+    typedef typename FrozenLakeData<side_size>::time_step_type time_step_type;
 
     ///
     /// \brief FrozenLake. Constructor
     ///
-    FrozenLake(const std::string& version, obj_t main_namespace, bool do_create=true,
-               std::string map_type="4x4", bool is_slippery=true);
+    FrozenLake(const std::string& version, obj_t main_namespace,
+               bool do_create=true, bool is_slippery=true);
 
     ///
     /// \brief ~FrozenLake. Destructor.
@@ -196,18 +242,18 @@ public:
     /// \brief Expose the functionality this class is using
     /// from the Mixin
     ///
-    using EnvMixin<FrozenLakeData>::close;
-    using EnvMixin<FrozenLakeData>::full_name;
-    using EnvMixin<FrozenLakeData>::reset;
-    using EnvMixin<FrozenLakeData>::is_created;
-    using EnvMixin<FrozenLakeData>::version;
-    using EnvMixin<FrozenLakeData>::gym_namespace;
-    using EnvMixin<FrozenLakeData>::render;
-    using EnvMixin<FrozenLakeData>::idx;
-    using EnvMixin<FrozenLakeData>::py_env_name;
-    using EnvMixin<FrozenLakeData>::py_reset_result_name;
-    using EnvMixin<FrozenLakeData>::py_step_result_name;
-    using EnvMixin<FrozenLakeData>::py_state_name;
+    using EnvMixin<FrozenLakeData<side_size>>::close;
+    using EnvMixin<FrozenLakeData<side_size>>::full_name;
+    using EnvMixin<FrozenLakeData<side_size>>::reset;
+    using EnvMixin<FrozenLakeData<side_size>>::is_created;
+    using EnvMixin<FrozenLakeData<side_size>>::version;
+    using EnvMixin<FrozenLakeData<side_size>>::gym_namespace;
+    using EnvMixin<FrozenLakeData<side_size>>::render;
+    using EnvMixin<FrozenLakeData<side_size>>::idx;
+    using EnvMixin<FrozenLakeData<side_size>>::py_env_name;
+    using EnvMixin<FrozenLakeData<side_size>>::py_reset_result_name;
+    using EnvMixin<FrozenLakeData<side_size>>::py_step_result_name;
+    using EnvMixin<FrozenLakeData<side_size>>::py_state_name;
 
     ///
     /// \brief make. Builds the environment. Optionally we can choose if the
@@ -218,18 +264,12 @@ public:
     ///
     /// \brief n_states. Returns the number of states
     ///
-    uint_t n_states()const;
+    uint_t n_states()const noexcept{ return side_size == 4 ? 16 : 64; }
 
     ///
     /// \brief n_actions. Returns the number of actions
     ///
     uint_t n_actions()const noexcept{return action_space_type::size;}
-
-    ///
-    /// \brief reset
-    /// \return
-    ///
-    time_step_type reset();
 
     ///
     /// \brief step
@@ -246,15 +286,10 @@ public:
     dynamics_t p(uint_t sidx, uint_t aidx)const;
 
     ///
-    /// \brief render. Render the environment
-    ///
-    void render(std::string mode="human");
-
-    ///
     /// \brief map_type
     /// \return
     ///
-    std::string map_type()const noexcept{return map_type_;}
+    std::string map_type()const noexcept{return side_size == 4 ? "4x4" : "8x8";}
 
     ///
     /// \brief is_slipery
@@ -264,11 +299,6 @@ public:
 
 
 private:
-
-    ///
-    /// \brief map_type_
-    ///
-    const std::string map_type_;
 
     ///
     /// \brief is_slipery_
