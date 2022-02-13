@@ -41,7 +41,7 @@ discrete_state_space_frozen_lake<8>::sample(){
 }
 
 template<uint_t side_size>
-std::string FrozenLakeData<side_size>::name = "FrozenLake";
+const std::string FrozenLakeData<side_size>::name = "FrozenLake";
 
 
 template<uint_t side_size>
