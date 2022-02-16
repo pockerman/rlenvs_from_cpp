@@ -178,28 +178,6 @@ CartPole::make(){
     is_created = true;
 }
 
-/*CartPole::time_step_type
-CartPole::reset(){
-
-#ifdef GYMFCPP_DEBUG
-    assert(is_created && "Environment has not been created");
-#endif
-
-    auto cpp_str = std::string(CartPole::py_reset_result_name + " = ");
-    cpp_str += CartPole::py_env_name + ".reset().tolist()";
-
-    // reset the python environment
-    boost::python::exec(cpp_str.c_str(), gym_namespace);
-
-    // the observation
-    auto observation =  boost::python::extract<boost::python::list>(gym_namespace[CartPole::py_reset_result_name]);
-    auto obs = extract_obs(observation);
-
-    current_state = time_step_type(TimeStepTp::FIRST, 0.0, obs);
-    return current_state;
-
-}*/
-
 
 CartPole::time_step_type
 CartPole::step(const action_type action){

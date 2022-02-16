@@ -1,10 +1,10 @@
-#include "gymfcpp/frozen_lake_env.h"
+#include "gymfcpp/grid_world_env.h"
+
 #include "gymfcpp/time_step.h"
 #include "gymfcpp/time_step_type.h"
 #include "gymfcpp/gymfcpp_types.h"
 
 #include <gtest/gtest.h>
-#include <boost/python.hpp>
 
 namespace{
 
@@ -14,49 +14,48 @@ using gymfcpp::real_t;
 }
 
 
-TEST(TestFrozenLake, TestConstructor4x4) {
+TEST(TestGridworld, TestConstructor4x4) {
 
     try{
 
-        Py_Initialize();
-        auto main_module = boost::python::import("__main__");
-        auto main_namespace = main_module.attr("__dict__");
-        gymfcpp::FrozenLake<4> env("v0", main_namespace);
+        rlenvs::Gridworld<4> env("v0", rlenvs::GridworldInitType::STATIC, false);
 
         ASSERT_EQ(env.n_states(), static_cast<uint_t>(16));
         ASSERT_EQ(env.n_actions(), static_cast<uint_t>(4));
-        ASSERT_EQ(env.map_type(), "4x4");
+        ASSERT_EQ(env.version(), "v0");
+        ASSERT_FALSE(env.is_created());
+
+        // TODO: Think how to test this
+        ASSERT_TRUE(rlenvs::to_string(env.init_type()) == rlenvs::to_string(rlenvs::GridworldInitType::STATIC));
+        ASSERT_EQ(env.name, "Gridworld");
 
     }
-    catch(const boost::python::error_already_set&)
+    catch(...)
     {
-        PyErr_Print();
-        FAIL();
+        FAIL()<<"Unknown exception thrown";
     }
 }
 
-TEST(TestFrozenLake, TestConstructor8x8) {
+
+TEST(TestGridworld, TestMake) {
 
     try{
 
-        Py_Initialize();
-        auto main_module = boost::python::import("__main__");
-        auto main_namespace = main_module.attr("__dict__");
-        gymfcpp::FrozenLake<8> env("v0", main_namespace);
+        rlenvs::Gridworld<4> env("v0", rlenvs::GridworldInitType::STATIC, false);
+        env.make();
 
-        ASSERT_EQ(env.n_states(), static_cast<uint_t>(64));
+        ASSERT_TRUE(env.is_created());
+        ASSERT_EQ(env.n_states(), static_cast<uint_t>(16));
         ASSERT_EQ(env.n_actions(), static_cast<uint_t>(4));
-        ASSERT_EQ(env.map_type(), "8x8");
 
     }
-    catch(const boost::python::error_already_set&)
+    catch(...)
     {
-        PyErr_Print();
-        FAIL();
+        FAIL()<<"Unknown exception thrown";
     }
 }
 
-TEST(TestFrozenLake, Test_Make)
+/*TEST(TestFrozenLake, Test_Make)
 {
 
     try{
@@ -202,4 +201,4 @@ TEST(TestFrozenLake, TestRender)
         FAIL()<<"Error could not step in the environment";
     }
 }
-
+*/
