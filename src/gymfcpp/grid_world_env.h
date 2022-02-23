@@ -194,6 +194,21 @@ private:
     ///
     void build_player_mode_();
 
+    ///
+    /// \brief check_move_
+    /// \param row
+    /// \param col
+    ///
+    void check_move_(uint_t row, uint_t col)const;
+
+    ///
+    /// \brief validate_move_
+    /// \param piece
+    /// \param row
+    /// \param col
+    ///
+    void validate_move_(const std::string piece, uint_t row, uint_t col);
+
 
     typedef std::pair<uint_t,  uint_t> Position;
 
@@ -230,7 +245,7 @@ private:
         {}
 
         ///
-        ///
+        /// \brief Default constructor
         ///
         BoardPiece()=default;
     };
@@ -342,6 +357,62 @@ template<uint_t side_size>
 typename Gridworld<side_size>::time_step_type
 Gridworld<side_size>::step(action_type action){
 
+    // need to determine what object (if any)
+    // is in the new grid spot the player is moving to
+    // actions in {u,d,l,r}
+    //def checkMove(addpos):
+    //        if self.validateMove('Player', addpos) in [0, 2]:
+    //            new_pos = addTuple(self.board.components['Player'].pos, addpos)
+    //            self.board.movePiece('Player', new_pos)
+
+        switch( action ){
+            case 0:
+            {
+                // move up
+                 check_move_(-1, 0);
+                 break;
+            }
+            case 1:
+            {
+                //down
+                check_move_(1, 0);
+                break;
+            }
+            case 2:
+            {
+                // left
+                 check_move_(0, -1);
+                 break;
+            }
+            case 3:
+            {
+                // right
+                check_move_(0, 1);
+                break;
+            }
+#ifdef GYMFCPP_DEBUG
+            default:
+            {
+                assert(false && "Invalid move");
+            }
+#endif
+
+        }
+
+
+
+        /*if self.add_noise_on_state:
+            obs = self.board.render_np().reshape(1, 64) + np.random.rand(1, 64) / self.noise_factor
+        else:
+            obs = self.board.render_np().reshape(1, 64)
+
+        reward = self.get_reward()
+        step_type = StepType.LAST if reward != -1 else StepType.MID
+        time_step = TimeStep(step_type=step_type, reward=reward,
+                             info={}, observation=obs, discount=0.0)
+        return time_step*/
+
+        return time_step_type();
 }
 
 template<uint_t side_size>
@@ -372,6 +443,12 @@ Gridworld<side_size>::init_board_(){
     board_.components["Goal"] = BoardPiece("Goal", "G", std::make_pair(1, 0));
     board_.components["Pit"] = BoardPiece("Pit", "-", std::make_pair(2, 0));
     board_.components["Wall"] = BoardPiece("Wall", "W", std::make_pair(3, 0));
+}
+
+template<uint_t side_size>
+void
+Gridworld<side_size>::check_move_(uint_t row, uint_t col)const{
+
 }
 
 template<uint_t side_size>

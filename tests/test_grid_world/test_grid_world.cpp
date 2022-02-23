@@ -55,55 +55,51 @@ TEST(TestGridworld, TestMake) {
     }
 }
 
-/*TEST(TestFrozenLake, Test_Make)
+TEST(TestGridworld, TestStepInvalidMove)
 {
 
     try{
 
-        Py_Initialize();
-
-        auto main_module = boost::python::import("__main__");
-        auto main_namespace = main_module.attr("__dict__");
-
-        gymfcpp::FrozenLake<4> env("v0", main_namespace, false);
+        rlenvs::Gridworld<4> env("v0", rlenvs::GridworldInitType::STATIC, false);
         env.make();
 
-        //ASSERT_EQ(env.n_states(), static_cast<uint_t>(16));
-        //ASSERT_EQ(env.n_actions(), static_cast<uint_t>(4));
+        // make sure we have the right world
+        ASSERT_TRUE(env.is_created());
+        ASSERT_EQ(env.n_states(), static_cast<uint_t>(16));
+        ASSERT_EQ(env.n_actions(), static_cast<uint_t>(4));
 
+        EXPECT_DEATH(env.step(5), "Invalid move");
     }
-    catch(const boost::python::error_already_set&)
+    catch(...)
     {
-        PyErr_Print();
-        FAIL();
+        FAIL()<<"Unknown exception thrown";
     }
 }
 
 
-TEST(TestFrozenLake, Test_Reset)
+TEST(TestGridworld, TestStepValidMove)
 {
 
     try{
 
-        Py_Initialize();
-
-        auto main_module = boost::python::import("__main__");
-        auto main_namespace = main_module.attr("__dict__");
-
-        gymfcpp::FrozenLake<4> env("v0", main_namespace, false);
+        rlenvs::Gridworld<4> env("v0", rlenvs::GridworldInitType::STATIC, false);
         env.make();
 
-        auto state = env.reset();
-        ASSERT_TRUE(state.first());
+        // make sure we have the right world
+        ASSERT_TRUE(env.is_created());
+        ASSERT_EQ(env.n_states(), static_cast<uint_t>(16));
+        ASSERT_EQ(env.n_actions(), static_cast<uint_t>(4));
+
+        env.step(1);
 
     }
-    catch(const boost::python::error_already_set&)
+    catch(...)
     {
-        PyErr_Print();
-        FAIL()<<"Error could not reset the environment";
+        FAIL()<<"Unknown exception thrown";
     }
 }
 
+/*
 TEST(TestFrozenLake, Test_Step)
 {
 
