@@ -38,4 +38,5 @@ ADD_SUBDIRECTORY(test_mountain_car)
 ADD_SUBDIRECTORY(test_taxi)
 ADD_SUBDIRECTORY(test_tiled_cart_pole)
 ADD_SUBDIRECTORY(test_numpy_cpp_utils)
+ADD_SUBDIRECTORY(test_grid_world)
 

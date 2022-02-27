@@ -25,3 +25,6 @@ cd ..
 echo "Running TiledCartPole environment tests"
 cd test_tiled_cart_pole/ && ./test_tiled_cart_pole
 cd ..
+echo "Running GridWorld environment tests"
+cd test_grid_world/ && ./test_grid_world
+cd ..

@@ -8,6 +8,7 @@
 #include <cassert>
 #endif
 
+#include <random>
 #include <vector>
 
 namespace gymfcpp{
@@ -59,7 +60,8 @@ std::vector<real_t> linspace(T start_in, T end_in, uint_t num_in)
 /// The SerialContainer is expected to be sorted in ascending order.
 ///
 template<typename T, typename SerialContainer>
-uint_t digitize(const T x, const SerialContainer& container){
+uint_t
+digitize(const T x, const SerialContainer& container){
 
 #ifdef GYMFCPP_DEBUG
     assert(container.empty() == false && "The given container is empty");
@@ -87,6 +89,85 @@ uint_t digitize(const T x, const SerialContainer& container){
 
     return bin;
 }
+
+///
+///
+///
+template<typename SerialVector, typename T>
+std::vector<T>
+to_1d_from_2d(uint_t dim1, uint_t dim2, const SerialVector& v){
+
+#ifdef GYMFCPP_DEBUG
+    assert(dim1 == v.size() && "Invalid vector first dimension != dim1");
+    assert(dim2 == v[0].size() && "Invalid vector second dimension != dim2");
+#endif
+
+    std::vector<T> result(dim1 * dim2);
+    auto counter = 0;
+    for(uint_t i=0; i<dim1; ++i){
+        for(uint_t j=0; j<dim2; ++j){
+            result[counter] = v[i][j];
+            counter += 1;
+        }
+    }
+    return result;
+}
+
+///
+///
+///
+template<typename SerialVector, typename T>
+std::vector<T>
+to_1d_from_3d(uint_t dim1, uint_t dim2, uint_t dim3, const SerialVector& v){
+
+#ifdef GYMFCPP_DEBUG
+    assert(dim1 == v.size() && "Invalid vector first dimension != dim1");
+    assert(dim2 == v[0].size() && "Invalid vector second dimension != dim2");
+    assert(dim3 == v[0][0].size() && "Invalid vector third dimension != dim3");
+#endif
+
+    std::vector<T> result(dim1 * dim2 * dim2);
+    auto counter = 0;
+    for(uint_t i=0; i<dim1; ++i){
+        for(uint_t j=0; j<dim2; ++j){
+            for(uint_t k=0; k<dim3; ++k)
+            result[counter++] = v[i][j][k];
+        }
+    }
+    return result;
+}
+
+///
+///
+///
+template<typename SerialVector>
+void
+add_uniform_noise(SerialVector& vector, uint_t seed){
+
+   std::mt19937 gen(seed);
+   std::uniform_real_distribution<> real_dist_(0.0, 1.0);
+
+   for(uint_t i=0; i<vector.size(); ++i){
+       vector[i] += real_dist_(gen);
+   }
+}
+
+///
+///
+///
+template<typename SerialVector>
+void
+add_uniform_noise(SerialVector& vector, uint_t seed, real_t scale){
+
+
+   add_uniform_noise(vector, seed);
+
+   for(uint_t i=0; i<vector.size(); ++i){
+       vector[i] /= scale;
+   }
+}
+
+
 
 }
 

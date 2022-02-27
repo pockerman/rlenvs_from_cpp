@@ -143,7 +143,7 @@ struct FrozenLakeData
     ///
     /// \brief name
     ///
-    static  std::string name;
+    static  const std::string name;
 
     ///
     /// \brief time_step_t. The type of the time step
