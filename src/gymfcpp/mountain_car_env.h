@@ -51,26 +51,6 @@ struct MountainCarData
     static  const std::string name;
 
     ///
-    /// \brief py_env_name. The name of the environment in Python REPL
-    ///
-    //static std::string py_env_name;
-
-    ///
-    /// \brief py_step_result_name. The name of the result when stepping in the Python REPL
-    ///
-    //static std::string py_step_result_name;
-
-    ///
-    /// \brief py_step_reset_result_name
-    ///
-    //static std::string py_reset_result_name;
-
-    ///
-    /// \brief py_step_reset_result_name
-    ///
-    //static std::string py_state_name;
-
-    ///
     /// \brief time_step_t. The type of the time step
     ///
     typedef TimeStep<state_type> time_step_type;
@@ -83,29 +63,12 @@ struct MountainCarData
     static state_type state_transform_from_boost(state_boost_python_type boost_type);
 
     ///
-    /// \brief extract_state
-    /// \param gym_namespace
-    /// \return
-    ///
-    static state_type extract_state(obj_t gym_namespace, std::string result_name);
-
-    ///
     /// \brief extract_state_from_reset
     /// \param gym_namespace
     /// \param py_env_n
     /// \return
     ///
     static state_type extract_state_from_reset(obj_t gym_namespace, std::string py_state_name, std::string result_name);
-
-    ///
-    /// \brief extract_state_from_step
-    /// \param gym_namespace
-    /// \param py_state_name
-    /// \param result_name
-    /// \return
-    ///
-    static state_type extract_state_from_step(obj_t gym_namespace, std::string py_state_name, std::string result_name);
-
 };
 
 ///
@@ -191,7 +154,7 @@ public:
     time_step_type step(action_type action);
 
     ///
-    /// \brief sample
+    /// \brief sample Samples an action from the action space
     /// \return
     ///
     action_type sample()const noexcept{return MountainCarData::action_space_type::sample();}

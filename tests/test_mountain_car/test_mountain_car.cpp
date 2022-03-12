@@ -22,7 +22,7 @@ TEST(TestMountainCar, TestConstructor) {
 
         Py_Initialize();
         boost::python::numpy::initialize();
-        auto gym_module = boost::python::import("gym");
+        auto gym_module = boost::python::import("__main__");
         auto gym_namespace = gym_module.attr("__dict__");
         gymfcpp::MountainCar env("v0", gym_namespace);
     }
@@ -93,7 +93,7 @@ TEST(TestMountainCar, Test_Step)
 
         Py_Initialize();
         boost::python::numpy::initialize();
-        auto gym_module = boost::python::import("gym");
+        auto gym_module = boost::python::import("__main__");
         auto gym_namespace = gym_module.attr("__dict__");
 
         gymfcpp::MountainCar env("v0", gym_namespace, false);
