@@ -196,9 +196,9 @@ public:
     time_step_type step(action_type action);
 
     ///
-    /// \brief render
+    /// \brief render. Does nothing simply here to respect the contract.
     ///
-    void render();
+    void render(){return;}
 
     ///
     /// \brief close
@@ -411,6 +411,11 @@ private:
         /// \return
         ///
         raw_state_type get_observation()const;
+
+        ///
+        /// \brief close
+        ///
+        void close();
     };
 
     ///
@@ -591,16 +596,11 @@ Gridworld<side_size>::get_raw_observation()const{
     return board_.get_observation();
 }
 
-template<uint_t side_size>
-void
-Gridworld<side_size>::render(){
-
-}
 
 template<uint_t side_size>
 void
 Gridworld<side_size>::close(){
-
+    board_.close();
 }
 
 template<uint_t side_size>
@@ -690,6 +690,14 @@ Gridworld<side_size>:: build_player_mode_(){
 // Board inner struct
 
 template<uint_t side_size>
+void
+Gridworld<side_size>::Board::close(){
+
+    components.clear();
+    masks.clear();
+}
+
+template<uint_t side_size>
 typename Gridworld<side_size>::raw_state_type
 Gridworld<side_size>::Board::get_observation()const{
 
@@ -744,8 +752,8 @@ Gridworld<side_size>::Board::move_piece(BoardComponentType piece, Position pos){
     auto move = true;
 
     // check if we can move the piece
-    auto mask_begin = masks.begin();
-    auto mask_end = masks.end();
+    //auto mask_begin = masks.begin();
+    //auto mask_end = masks.end();
 
     /*for(; mask_begin != mask_end; ++mask_begin){
         position =
