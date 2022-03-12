@@ -1,6 +1,7 @@
 #include "gymfcpp/gymfcpp_config.h"
 #include "gymfcpp/mountain_car_env.h"
 #include "gymfcpp/time_step.h"
+#include "gymfcpp/names_generator.h"
 
 #ifdef GYMFCPP_DEBUG
 #include <cassert>
@@ -11,11 +12,11 @@
 namespace gymfcpp{
 
 
-std::string MountainCarData::name = "MountainCar";
-std::string MountainCarData::py_env_name = "py_mountain_car";
-std::string MountainCarData::py_step_result_name = "py_mountain_car_step_rslt";
-std::string MountainCarData::py_reset_result_name = "py_mountain_car_reset_rslt";
-std::string MountainCarData::py_state_name = "py_mountain_car_state";
+const std::string MountainCarData::name = "MountainCar";
+//std::string MountainCarData::py_env_name = "py_mountain_car";
+//std::string MountainCarData::py_step_result_name = "py_mountain_car_step_rslt";
+//std::string MountainCarData::py_reset_result_name = "py_mountain_car_reset_rslt";
+//std::string MountainCarData::py_state_name = "py_mountain_car_state";
 
 MountainCarData::state_type
 MountainCarData::state_transform_from_boost(state_boost_python_type boost_type){
@@ -31,20 +32,14 @@ MountainCarData::state_transform_from_boost(state_boost_python_type boost_type){
 
 }
 
-MountainCarData::state_type
-MountainCarData::extract_state(obj_t gym_namespace, std::string result_name){
+/*MountainCarData::state_type
+MountainCarData::extract_state_from_step(obj_t gym_namespace, std::string py_state_name, std::string py_step_result_name, std::string result_name){
 
-    std::string s;
-    if(result_name == MountainCarData::py_reset_result_name){
-        s = MountainCarData::py_state_name +   " = " +  result_name + ".tolist()\n";
-    }
-    else if(result_name == MountainCarData::py_step_result_name){
+    std::string s = py_state_name + " = " + result_name + "[0]\n";
 
-        s = MountainCarData::py_state_name + " = " + result_name + "[0]\n";
-    }
 #ifdef GYMFCPP_DEBUG
     else{
-        std::string msg(result_name + "not " + MountainCarData::py_reset_result_name + " or " + MountainCarData::py_step_result_name);
+        std::string msg(result_name + "not " + py_step_result_name);
         assert(false && msg.c_str());
     }
 #endif
@@ -54,9 +49,12 @@ MountainCarData::extract_state(obj_t gym_namespace, std::string result_name){
     auto obs =  boost::python::extract<MountainCarData::state_boost_python_type>(gym_namespace[MountainCarData::py_state_name]);
     return MountainCarData::state_transform_from_boost(obs);
 
+}*/
+
+MountainCarData::state_type
+MountainCarData::extract_state(obj_t /*gym_namespace*/, std::string /*result_name*/){
+
 }
-
-
 
 MountainCarData::state_type
 MountainCarData::extract_state_from_reset(obj_t gym_namespace, std::string py_state_name, std::string result_name){
@@ -85,6 +83,11 @@ MountainCar::MountainCar(std::string version, obj_t gym_namespace, bool do_creat
       EnvMixin<MountainCarData>(version, gym_namespace)
 {
 
+    this->py_env_name = get_py_env_name(MountainCarData::name);
+    this->py_reset_result_name = get_py_reset_rslt_name(MountainCarData::name);
+    this->py_step_result_name = get_py_step_rslt_name(MountainCarData::name);
+    this->py_state_name = get_py_state_name(MountainCarData::name);
+
     if(do_create){
         make();
     }
@@ -103,11 +106,11 @@ MountainCar::make(){
 
     std::string cpp_str = "import gym \n";
     cpp_str += "import numpy as np \n";
-    cpp_str += MountainCarData::py_env_name + " = gym.make('" + MountainCarData::name + "-" + version + "').unwrapped\n";
+    cpp_str += this->py_env_name + " = gym.make('" + MountainCarData::name + "-" + version + "').unwrapped\n";
 
     // create an environment
     auto ignored = boost::python::exec(cpp_str.c_str(), gym_namespace);
-    env = boost::python::extract<boost::python::api::object>(gym_namespace[MountainCarData::py_env_name]);
+    env = boost::python::extract<boost::python::api::object>(gym_namespace[this->py_env_name]);
     is_created = true;
 
 }
@@ -124,16 +127,16 @@ MountainCar::step(action_type action){
         return reset();
     }
 
-    std::string s = MountainCarData::py_step_result_name + " = " + MountainCarData::py_env_name +".step("+std::to_string(action)+")\n";
-    s += MountainCarData::py_step_result_name + " = (" + MountainCarData::py_step_result_name + "[0].tolist(),";
-    s += "float(" + MountainCarData::py_step_result_name + "[1]),";
-    s += MountainCarData::py_step_result_name + "[2])\n";
+    std::string s = this->py_step_result_name + " = " + this->py_env_name +".step("+std::to_string(action)+")\n";
+    s += this->py_step_result_name + " = (" + this->py_step_result_name + "[0].tolist(),";
+    s += "float(" + this->py_step_result_name + "[1]),";
+    s += this->py_step_result_name + "[2])\n";
 
     boost::python::exec(s.c_str(), gym_namespace);
 
-    auto obs = MountainCarData::extract_state(gym_namespace, MountainCarData::py_step_result_name);
+    auto obs = MountainCarData::extract_state_from_step(gym_namespace, this->py_step_result_name, this->py_step_result_name);
 
-    auto result =  boost::python::extract<boost::python::tuple>(gym_namespace[MountainCarData::py_step_result_name]);
+    auto result =  boost::python::extract<boost::python::tuple>(gym_namespace[this->py_step_result_name]);
 
     auto reward = boost::python::extract<real_t>(result()[1]);
     auto done = boost::python::extract<bool>(result()[2]);

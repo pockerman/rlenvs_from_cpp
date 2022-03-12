@@ -15,7 +15,6 @@ namespace gymfcpp
 {
 
 
-
 ///
 /// \brief The MountainCarData struct. Wrapper for the environment data
 ///
@@ -49,27 +48,27 @@ struct MountainCarData
     ///
     /// \brief name
     ///
-    static  std::string name;
+    static  const std::string name;
 
     ///
     /// \brief py_env_name. The name of the environment in Python REPL
     ///
-    static std::string py_env_name;
+    //static std::string py_env_name;
 
     ///
     /// \brief py_step_result_name. The name of the result when stepping in the Python REPL
     ///
-    static std::string py_step_result_name;
+    //static std::string py_step_result_name;
 
     ///
     /// \brief py_step_reset_result_name
     ///
-    static std::string py_reset_result_name;
+    //static std::string py_reset_result_name;
 
     ///
     /// \brief py_step_reset_result_name
     ///
-    static std::string py_state_name;
+    //static std::string py_state_name;
 
     ///
     /// \brief time_step_t. The type of the time step
@@ -158,6 +157,10 @@ public:
     using EnvMixin<MountainCarData>::version;
     using EnvMixin<MountainCarData>::gym_namespace;
     using EnvMixin<MountainCarData>::render;
+    using EnvMixin<MountainCarData>::py_env_name;
+    using EnvMixin<MountainCarData>::py_reset_result_name;
+    using EnvMixin<MountainCarData>::py_step_result_name;
+    using EnvMixin<MountainCarData>::py_state_name;
 
     ///
     /// \brief MountainCar. Constructor. Creates an environment.
