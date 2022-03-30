@@ -27,6 +27,13 @@ struct DiscreteSpace
     /// \return
     ///
     static item_t sample();
+
+    ///
+    /// \brief sample
+    /// \param seed
+    /// \return
+    ///
+    static item_t sample(uint_t seed);
 };
 
 template<uint_t SpaceSize>
@@ -37,6 +44,17 @@ DiscreteSpace<SpaceSize>::sample(){
 
     std::random_device rd;
     std::mt19937 gen(rd());
+
+    return dist(gen);
+}
+
+template<uint_t SpaceSize>
+typename DiscreteSpace<SpaceSize>::item_t
+DiscreteSpace<SpaceSize>::sample(uint_t seed){
+
+    std::uniform_int_distribution<> dist(0, SpaceSize - 1);
+
+    std::mt19937 gen(seed);
 
     return dist(gen);
 }
