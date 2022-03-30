@@ -1,11 +1,12 @@
 #include "gymfcpp/cliff_world_env.h"
 #include "gymfcpp/time_step.h"
 #include "gymfcpp/time_step_type.h"
+#include "gymfcpp/render_mode_enum.h"
 #include "gymfcpp/gymfcpp_types.h"
 
 #include <gtest/gtest.h>
 #include <boost/python.hpp>
-#include <boost/python/numpy.hpp>
+//#include <boost/python/numpy.hpp>
 
 namespace{
 
@@ -14,14 +15,13 @@ using gymfcpp::real_t;
 
 }
 
-
 TEST(TestCliffWorld, TestConstructor) {
 
     try{
 
         Py_Initialize();
-        boost::python::numpy::initialize();
-        auto gym_module = boost::python::import("gym");
+
+        auto gym_module = boost::python::import("__main__");
         auto gym_namespace = gym_module.attr("__dict__");
         gymfcpp::CliffWorld env("v0", gym_namespace);
     }
@@ -33,36 +33,14 @@ TEST(TestCliffWorld, TestConstructor) {
 
 }
 
-
-TEST(TestCliffWorld, Test_Not_Created_Assert_Is_Thrown)
-{
-
-    try{
-
-        Py_Initialize();
-        boost::python::numpy::initialize();
-        auto gym_module = boost::python::import("gym");
-        auto gym_namespace = gym_module.attr("__dict__");
-        gymfcpp::CliffWorld env("v0", gym_namespace, false);
-
-        ASSERT_DEATH(env.n_states(), "Environment has not been created");
-
-    }
-    catch(const boost::python::error_already_set&)
-    {
-        PyErr_Print();
-        FAIL();
-    }
-}
-
 TEST(TestCliffWorld, Test_Make)
 {
 
     try{
 
         Py_Initialize();
-        boost::python::numpy::initialize();
-        auto gym_module = boost::python::import("gym");
+
+        auto gym_module = boost::python::import("__main__");
         auto gym_namespace = gym_module.attr("__dict__");
 
         gymfcpp::CliffWorld env("v0", gym_namespace, false);
@@ -86,8 +64,8 @@ TEST(TestCliffWorld, Test_Reset)
     try{
 
         Py_Initialize();
-        boost::python::numpy::initialize();
-        auto gym_module = boost::python::import("gym");
+
+        auto gym_module = boost::python::import("__main__");
         auto gym_namespace = gym_module.attr("__dict__");
 
         gymfcpp::CliffWorld env("v0", gym_namespace, false);
@@ -95,6 +73,7 @@ TEST(TestCliffWorld, Test_Reset)
 
         auto state = env.reset();
         ASSERT_TRUE(state.first());
+        ASSERT_EQ(state.observation(), static_cast<uint_t>(36));
 
     }
     catch(const boost::python::error_already_set&)
@@ -110,8 +89,8 @@ TEST(TestCliffWorld, Test_Step)
     try{
 
         Py_Initialize();
-        boost::python::numpy::initialize();
-        auto gym_module = boost::python::import("gym");
+
+        auto gym_module = boost::python::import("__main__");
         auto gym_namespace = gym_module.attr("__dict__");
 
         gymfcpp::CliffWorld env("v0", gym_namespace, false);
@@ -134,8 +113,8 @@ TEST(TestCliffWorld, Test_Step_With_Query)
     try{
 
         Py_Initialize();
-        boost::python::numpy::initialize();
-        auto gym_module = boost::python::import("gym");
+
+        auto gym_module = boost::python::import("__main__");
         auto gym_namespace = gym_module.attr("__dict__");
 
         gymfcpp::CliffWorld env("v0", gym_namespace, false);
@@ -160,8 +139,8 @@ TEST(TestCliffWorld, Test_Get_Dynamics)
     try{
 
         Py_Initialize();
-        boost::python::numpy::initialize();
-        auto gym_module = boost::python::import("gym");
+
+        auto gym_module = boost::python::import("__main__");
         auto gym_namespace = gym_module.attr("__dict__");
 
         gymfcpp::CliffWorld env("v0", gym_namespace, false);
@@ -185,8 +164,8 @@ TEST(TestCliffWorld, Test_Not_Done)
     try{
 
         Py_Initialize();
-        boost::python::numpy::initialize();
-        auto gym_module = boost::python::import("gym");
+
+        auto gym_module = boost::python::import("__main__");
         auto gym_namespace = gym_module.attr("__dict__");
 
         gymfcpp::CliffWorld env("v0", gym_namespace, false);
@@ -211,8 +190,8 @@ TEST(TestCliffWorld, Test_Done_1)
     try{
 
         Py_Initialize();
-        boost::python::numpy::initialize();
-        auto gym_module = boost::python::import("gym");
+
+        auto gym_module = boost::python::import("__main__");
         auto gym_namespace = gym_module.attr("__dict__");
 
         gymfcpp::CliffWorld env("v0", gym_namespace, false);
@@ -237,8 +216,8 @@ TEST(TestCliffWorld, Test_Done_2)
     try{
 
         Py_Initialize();
-        boost::python::numpy::initialize();
-        auto gym_module = boost::python::import("gym");
+
+        auto gym_module = boost::python::import("__main__");
         auto gym_namespace = gym_module.attr("__dict__");
 
         gymfcpp::CliffWorld env("v0", gym_namespace, false);
@@ -248,6 +227,31 @@ TEST(TestCliffWorld, Test_Done_2)
         auto step_result = env.step(0);
 
         ASSERT_FALSE(step_result.done());
+
+    }
+    catch(const boost::python::error_already_set&)
+    {
+        PyErr_Print();
+        FAIL()<<"Error could not step in the environment";
+    }
+}
+
+
+TEST(TestCliffWorld, Test_render)
+{
+
+    try{
+
+        Py_Initialize();
+
+        auto gym_module = boost::python::import("__main__");
+        auto gym_namespace = gym_module.attr("__dict__");
+
+        gymfcpp::CliffWorld env("v0", gym_namespace, false);
+        env.make();
+        env.reset();
+
+        env.render(gymfcpp::RenderModeType::human);
 
     }
     catch(const boost::python::error_already_set&)
