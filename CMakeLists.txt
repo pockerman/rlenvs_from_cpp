@@ -110,7 +110,7 @@ MESSAGE(STATUS "Boost include: ${Boost_INCLUDE_DIRS}")
 MESSAGE(STATUS "Torch include: ${TORCH_INCLUDE_DIRS}")
 
 
-FILE(GLOB SRCS src/gymfcpp/*.cpp)
+FILE(GLOB SRCS src/gymfcpp/*.cpp src/gymfcpp/detail/*.cpp)
 ADD_LIBRARY(gymfcpplib SHARED ${SRCS})
 
 SET_TARGET_PROPERTIES(gymfcpplib PROPERTIES LINKER_LANGUAGE CXX)
