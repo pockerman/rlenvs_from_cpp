@@ -1,4 +1,6 @@
-#include "gymfcpp/state_aggregation_cart_pole_env.h"
+#include "gymfcpp/stable_baseline_vector_env_wrapper.h"
+
+#include "gymfcpp/cart_pole_env.h"
 #include "gymfcpp/time_step.h"
 #include "gymfcpp/time_step_type.h"
 #include "gymfcpp/gymfcpp_types.h"
@@ -6,25 +8,35 @@
 
 #include <gtest/gtest.h>
 #include <boost/python.hpp>
-#include <boost/python/numpy.hpp>
+
+#include <chrono>
+#include <thread>
 
 namespace{
 
 using gymfcpp::uint_t;
 using gymfcpp::real_t;
+using gymfcpp::CartPole;
+using rlenvs::StableBaselineVectorEnvWrapper;
+using rlenvs::StableBaselineVectorEnvWrapperConfig;
 
 }
 
 
-TEST(TestStateAggregationCartPole, TestConstructor) {
+TEST(TestVectorEnv, Constructor) {
 
     try{
 
         Py_Initialize();
-        boost::python::numpy::initialize();
+
         auto main_module = boost::python::import("__main__");
         auto main_namespace = main_module.attr("__dict__");
-        gymfcpp::StateAggregationCartPole env("v0", main_namespace, 10);
+
+        StableBaselineVectorEnvWrapperConfig config;
+        config.env_id = "CartPole-v0";
+
+        StableBaselineVectorEnvWrapper<CartPole::time_step_type> env(config, main_namespace);
+        env.make();
     }
     catch(const boost::python::error_already_set&)
     {
@@ -35,7 +47,7 @@ TEST(TestStateAggregationCartPole, TestConstructor) {
 }
 
 
-TEST(TestStateAggregationCartPole, TestMake)
+/*TEST(TestStateAggregationCartPole, TestMake)
 {
 
     try{
@@ -56,10 +68,10 @@ TEST(TestStateAggregationCartPole, TestMake)
         PyErr_Print();
         FAIL()<<"Error could not make the environment";
     }
-}
+}*/
 
 
-TEST(TestStateAggregationCartPole, TestReset)
+/*TEST(TestStateAggregationCartPole, TestReset)
 {
 
     try{
@@ -81,9 +93,9 @@ TEST(TestStateAggregationCartPole, TestReset)
         PyErr_Print();
         FAIL()<<"Error could not reset the environment";
     }
-}
+}*/
 
-TEST(TestStateAggregationCartPole, TestStep)
+/*TEST(TestStateAggregationCartPole, TestStep)
 {
 
     try{
@@ -105,10 +117,10 @@ TEST(TestStateAggregationCartPole, TestStep)
         PyErr_Print();
         FAIL()<<"Error could not step in the environment";
     }
-}
+}*/
 
 
-TEST(TestStateAggregationCartPole, TestRender)
+/*TEST(TestStateAggregationCartPole, TestRender)
 {
 
     try{
@@ -130,7 +142,7 @@ TEST(TestStateAggregationCartPole, TestRender)
         PyErr_Print();
         FAIL()<<"Error could not step in the environment";
     }
-}
+}*/
 
 
 

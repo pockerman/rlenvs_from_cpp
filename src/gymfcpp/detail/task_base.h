@@ -17,7 +17,7 @@ namespace detail{
 /// \brief Base class for task execution. A task cannot be
 /// copied not copy assigned. It can only be moved
 ///
-class TaskBase
+class task_base
 {
 
 public:
@@ -29,23 +29,23 @@ public:
     ///
     /// \brief Destructor
     ///
-    virtual ~TaskBase();
+    virtual ~task_base()=default;
 
-    TaskBase(const TaskBase&)=delete;
-    TaskBase& operator=(const TaskBase&)=delete ;
+    task_base(const task_base&)=delete;
+    task_base& operator=(const task_base&)=delete ;
 
     ///
-    /// \brief TaskBase
+    /// \brief task_base
     /// \param other
     ///
-    TaskBase(TaskBase&& other);
+    task_base(task_base&& other) noexcept;
 
     ///
     /// \brief operator =
     /// \param other
     /// \return
     ///
-    TaskBase& operator=(TaskBase&& other) ;
+    virtual task_base& operator=(task_base&& other) noexcept;
 
     ///
     /// \brief Set the state of the task
@@ -67,7 +67,7 @@ public:
     /// will override any TaskState has been set. By default it sets the
     /// task state to TaskState::PENDING
     ///
-    virtual void reschedule()noexcept{set_state(TaskBase::TaskState::PENDING);}
+    virtual void reschedule()noexcept{set_state(task_base::TaskState::PENDING);}
 
     ///
     /// \brief Execute the task
@@ -100,7 +100,7 @@ protected:
     ///
     /// \brief Constructor
     ///
-    explicit TaskBase(uint_t id = INVALID_ID);
+    explicit task_base(uint_t id = INVALID_ID) noexcept;
 
     ///
     /// \brief Function to overrided by defived classes.
@@ -118,7 +118,7 @@ protected:
 
 inline
 void
-TaskBase::execute(){
+task_base::execute(){
     (*this)();
 }
 
