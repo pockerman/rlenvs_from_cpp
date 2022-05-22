@@ -1,4 +1,4 @@
-#include "gymfcpp/stable_baseline_vector_env_wrapper.h"
+#include "gymfcpp/serial_vector_env_wrapper.h"
 
 #include "gymfcpp/cart_pole_env.h"
 #include "gymfcpp/time_step.h"
@@ -17,8 +17,8 @@ namespace{
 using gymfcpp::uint_t;
 using gymfcpp::real_t;
 using gymfcpp::CartPole;
-using rlenvs::StableBaselineVectorEnvWrapper;
-using rlenvs::StableBaselineVectorEnvWrapperConfig;
+using rlenvs::SerialVectorEnvWrapper;
+using rlenvs::SerialVectorEnvWrapperConfig;
 
 }
 
@@ -32,10 +32,10 @@ TEST(TestVectorEnv, Constructor) {
         auto main_module = boost::python::import("__main__");
         auto main_namespace = main_module.attr("__dict__");
 
-        StableBaselineVectorEnvWrapperConfig config;
-        config.env_id = "CartPole-v0";
+        SerialVectorEnvWrapperConfig config;
+        config.env_id = "v0";
 
-        StableBaselineVectorEnvWrapper<CartPole::time_step_type> env(config, main_namespace);
+        SerialVectorEnvWrapper<CartPole> env(config, main_namespace);
         env.make();
     }
     catch(const boost::python::error_already_set&)
