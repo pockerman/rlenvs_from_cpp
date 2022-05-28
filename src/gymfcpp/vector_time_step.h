@@ -18,9 +18,34 @@ public:
 
     VectorTimeStep()=default;
 
-
+    ///
+    /// \brief reserve
+    /// \param ncopies
+    ///
     void reserve(uint_t ncopies){time_steps_.reserve(ncopies);}
-    void add_time_step(TimeStep<StateType>&& step);
+
+    ///
+    /// \brief clear
+    ///
+    void clear()noexcept{time_steps_.clear();}
+
+    ///
+    /// \brief add_time_step
+    /// \param step
+    ///
+    void add_time_step(const TimeStep<StateType>& step);
+
+    ///
+    /// \brief size
+    /// \return
+    ///
+    uint_t size()const noexcept{return time_steps_.size();}
+
+    ///
+    /// \brief empty
+    /// \return
+    ///
+    bool empty()const noexcept{return time_steps_.empty();}
 
 private:
 
@@ -30,7 +55,7 @@ private:
 
 template<typename StateType, typename StateAdaptor>
 void
-VectorTimeStep<StateType, StateAdaptor>::add_time_step(TimeStep<StateType>&& step){
+VectorTimeStep<StateType, StateAdaptor>::add_time_step(const TimeStep<StateType>& step){
     time_steps_.push_back(step);
 }
 

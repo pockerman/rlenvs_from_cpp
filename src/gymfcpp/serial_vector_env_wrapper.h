@@ -33,12 +33,15 @@ struct SerialVectorEnvWrapperConfig
 };
 
 
+///
+///
+///
 template<typename EnvType, typename StateAdaptor=void>
 class SerialVectorEnvWrapper: private boost::noncopyable
 {
 public:
 
-    typedef VectorTimeStep<typename EnvType::time_step_type, StateAdaptor> time_step_type;
+    typedef VectorTimeStep<typename EnvType::state_type, StateAdaptor> time_step_type;
 
     ///
     /// \brief VectorEnvWrapper
@@ -61,6 +64,11 @@ public:
     ///
     ///
     time_step_type reset();
+
+    ///
+    ///
+    ///
+    time_step_type step(const std::vector<typename EnvType::action_type>& actions);
 
     ///
     /// \brief close. Close down the environment
@@ -143,11 +151,37 @@ SerialVectorEnvWrapper<EnvType, StateAdaptor>::reset(){
     assert(is_created_ && "Environment has not been created");
 #endif
 
+    current_state_.clear();
+    current_state_.reserve(config_.n_copies);
+
     for(uint_t env=0; env<envs_.size(); ++env){
-        current_state_.add_time_step(envs_[env]->reset());
+        auto time_step = envs_[env]->reset();
+        current_state_.add_time_step(time_step);
     }
 
     return current_state_;
+}
+
+template<typename EnvType, typename StateAdaptor>
+typename SerialVectorEnvWrapper<EnvType, StateAdaptor>::time_step_type
+SerialVectorEnvWrapper<EnvType, StateAdaptor>::step(const std::vector<typename EnvType::action_type>& actions){
+
+
+#ifdef GYMFCPP_DEBUG
+    assert(is_created_ && "Environment has not been created");
+    assert(actions.size() == envs_.size() && "Invalid number of actions. Number of actions does not equal number of environments");
+#endif
+
+    current_state_.clear();
+    current_state_.reserve(config_.n_copies);
+
+    for(uint_t env=0; env<envs_.size(); ++env){
+        auto time_step = envs_[env]->step(actions[env]);
+        current_state_.add_time_step(time_step);
+    }
+
+    return current_state_;
+
 }
 
 template<typename EnvType, typename StateAdaptor>
@@ -164,8 +198,9 @@ SerialVectorEnvWrapper<EnvType, StateAdaptor>::make(){
         envs_.back()->make();
     }
 
+    // reserve space for time steps
     current_state_.reserve(config_.n_copies);
-    is_created_ = false;
+    is_created_ = true;
 }
 
 }

@@ -23,7 +23,7 @@ using rlenvs::SerialVectorEnvWrapperConfig;
 }
 
 
-TEST(TestVectorEnv, Constructor) {
+TEST(SerialVectorEnvWrapper, Constructor) {
 
     try{
 
@@ -47,20 +47,24 @@ TEST(TestVectorEnv, Constructor) {
 }
 
 
-/*TEST(TestStateAggregationCartPole, TestMake)
+TEST(SerialVectorEnvWrapper, TestReset)
 {
 
     try{
 
-        Py_Initialize();
-        boost::python::numpy::initialize();
         auto main_module = boost::python::import("__main__");
         auto main_namespace = main_module.attr("__dict__");
 
-        gymfcpp::StateAggregationCartPole env("v0", main_namespace, 10);
+        SerialVectorEnvWrapperConfig config;
+        config.env_id = "v0";
+        config.n_copies = 2;
+
+        SerialVectorEnvWrapper<CartPole> env(config, main_namespace);
         env.make();
 
-        ASSERT_EQ(env.n_actions(), static_cast<uint_t>(2));
+        auto time_step = env.reset();
+
+        ASSERT_EQ(time_step.size(), static_cast<uint_t>(2));
 
     }
     catch(const boost::python::error_already_set&)
@@ -68,24 +72,30 @@ TEST(TestVectorEnv, Constructor) {
         PyErr_Print();
         FAIL()<<"Error could not make the environment";
     }
-}*/
+}
 
 
-/*TEST(TestStateAggregationCartPole, TestReset)
+TEST(TestStateAggregationCartPole, TestStep)
 {
 
     try{
 
-        Py_Initialize();
-        boost::python::numpy::initialize();
         auto main_module = boost::python::import("__main__");
         auto main_namespace = main_module.attr("__dict__");
 
-        gymfcpp::StateAggregationCartPole env("v0", main_namespace, 10);
+        SerialVectorEnvWrapperConfig config;
+        config.env_id = "v0";
+        config.n_copies = 2;
+
+        SerialVectorEnvWrapper<CartPole> env(config, main_namespace);
         env.make();
 
-        auto state = env.reset();
-        ASSERT_TRUE(state.first());
+        env.reset();
+        std::vector<CartPole::action_type> actions(env.n_copies(), 0);
+
+        auto time_step = env.step(actions);
+
+        ASSERT_EQ(time_step.size(), static_cast<uint_t>(2));
 
     }
     catch(const boost::python::error_already_set&)
@@ -93,7 +103,7 @@ TEST(TestVectorEnv, Constructor) {
         PyErr_Print();
         FAIL()<<"Error could not reset the environment";
     }
-}*/
+}
 
 /*TEST(TestStateAggregationCartPole, TestStep)
 {
