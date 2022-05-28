@@ -1,5 +1,5 @@
 #include "gymfcpp/black_jack_env.h"
-#include "gymfcpp/config.h"
+#include "gymfcpp/gymfcpp_config.h"
 
 #ifdef GYMFCPP_DEBUG
 #include <cassert>
