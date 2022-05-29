@@ -1,6 +1,6 @@
 #include "gymfcpp/cliff_world_env.h"
 #include "gymfcpp/names_generator.h"
-#include "gymfcpp/config.h"
+#include "gymfcpp/gymfcpp_config.h"
 
 #ifdef GYMFCPP_DEBUG
 #include <cassert>
