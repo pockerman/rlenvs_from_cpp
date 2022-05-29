@@ -76,6 +76,7 @@ Step with prob=0.333333
 - ```MountainCar```
 - ```Taxi```
 - ```StateAggregationCartPole``` (implements state aggregation for ```CartPole```)
+- ```SerialVectorEnvWrapper``` a vector wrapper for various environments
 
 ## Dependencies
 
