@@ -32,43 +32,24 @@ struct SerialVectorEnvWrapperConfig
     uint_t seed{42};
 };
 
+namespace  {
 
-///
-///
-///
-template<typename EnvType, typename StateAdaptor=void>
-class SerialVectorEnvWrapper: private boost::noncopyable
+template<typename EnvType>
+class serial_vector_env_wrapper_base: private boost::noncopyable
 {
 public:
 
-    typedef VectorTimeStep<typename EnvType::state_type, StateAdaptor> time_step_type;
-
     ///
-    /// \brief VectorEnvWrapper
-    /// \param n_copies
-    /// \param version
+    /// \brief serial_vector_env_wrapper_base
+    /// \param config
+    /// \param p_namespace
     ///
-    SerialVectorEnvWrapper(SerialVectorEnvWrapperConfig config, obj_t p_namespace);
-
-    ///
-    /// \brief ~VectorEnvWrapper
-    ///
-    ~SerialVectorEnvWrapper();
-
-    ///
-    /// \brief make
-    ///
-    void make();
+    serial_vector_env_wrapper_base(SerialVectorEnvWrapperConfig config, obj_t p_namespace);
 
     ///
     ///
     ///
-    time_step_type reset();
-
-    ///
-    ///
-    ///
-    time_step_type step(const std::vector<typename EnvType::action_type>& actions);
+    ~serial_vector_env_wrapper_base();
 
     ///
     /// \brief close. Close down the environment
@@ -81,12 +62,7 @@ public:
     ///
     uint_t n_copies()const noexcept{return config_.n_copies;}
 
-private:
-
-    ///
-    /// \brief current_state
-    ///
-    time_step_type current_state_;
+protected:
 
     ///
     /// \brief p_namespace_ The main Python namespace
@@ -110,11 +86,9 @@ private:
 
 };
 
-
-template<typename EnvType, typename StateAdaptor>
-SerialVectorEnvWrapper<EnvType, StateAdaptor>::SerialVectorEnvWrapper(SerialVectorEnvWrapperConfig config, obj_t p_namespace)
+template<typename EnvType>
+serial_vector_env_wrapper_base<EnvType>::serial_vector_env_wrapper_base(SerialVectorEnvWrapperConfig config, obj_t p_namespace)
     :
-   current_state_(),
    p_namespace_(p_namespace),
    envs_(),
    config_(config),
@@ -128,80 +102,145 @@ SerialVectorEnvWrapper<EnvType, StateAdaptor>::SerialVectorEnvWrapper(SerialVect
 
 }
 
-template<typename EnvType, typename StateAdaptor>
-SerialVectorEnvWrapper<EnvType, StateAdaptor>::~SerialVectorEnvWrapper(){
+template<typename EnvType>
+serial_vector_env_wrapper_base<EnvType>::~serial_vector_env_wrapper_base(){
 
     close();
 }
 
-template<typename EnvType, typename StateAdaptor>
+template<typename EnvType>
 void
-SerialVectorEnvWrapper<EnvType, StateAdaptor>::close(){
+serial_vector_env_wrapper_base<EnvType>::close(){
 
     for(uint_t t=0; t < config_.n_copies; ++t){
         envs_[t]->close();
     }
 }
 
-template<typename EnvType, typename StateAdaptor>
-typename SerialVectorEnvWrapper<EnvType, StateAdaptor>::time_step_type
-SerialVectorEnvWrapper<EnvType, StateAdaptor>::reset(){
+}
+
+
+
+template<typename EnvType>
+class SerialVectorEnvWrapper: protected serial_vector_env_wrapper_base<EnvType>
+{
+public:
+
+    typedef VectorTimeStep<typename EnvType::state_type> time_step_type;
+
+    ///
+    /// \brief VectorEnvWrapper
+    /// \param n_copies
+    /// \param version
+    ///
+    SerialVectorEnvWrapper(SerialVectorEnvWrapperConfig config, obj_t p_namespace);
+
+    ///
+    /// \brief ~VectorEnvWrapper
+    ///
+    ~SerialVectorEnvWrapper()=default;
+
+    using serial_vector_env_wrapper_base<EnvType>::n_copies;
+    using serial_vector_env_wrapper_base<EnvType>::close;
+
+    ///
+    /// \brief make
+    ///
+    void make();
+
+    ///
+    ///
+    ///
+    time_step_type reset();
+
+    ///
+    ///
+    ///
+    time_step_type step(const std::vector<typename EnvType::action_type>& actions);
+
+private:
+
+    ///
+    /// \brief current_state
+    ///
+    time_step_type current_state_;
+
+};
+
+template<typename EnvType>
+SerialVectorEnvWrapper<EnvType>::SerialVectorEnvWrapper(SerialVectorEnvWrapperConfig config, obj_t p_namespace)
+    :
+   serial_vector_env_wrapper_base<EnvType>(config, p_namespace),
+   current_state_()
+{}
+
+template<typename EnvType>
+typename SerialVectorEnvWrapper<EnvType>::time_step_type
+SerialVectorEnvWrapper<EnvType>::reset(){
 
 #ifdef GYMFCPP_DEBUG
-    assert(is_created_ && "Environment has not been created");
+    assert(this->is_created_ && "Environment has not been created");
 #endif
 
     current_state_.clear();
-    current_state_.reserve(config_.n_copies);
+    current_state_.reserve(this->config_.n_copies);
 
-    for(uint_t env=0; env<envs_.size(); ++env){
-        auto time_step = envs_[env]->reset();
+    for(uint_t env=0; env<this->envs_.size(); ++env){
+        auto time_step = this->envs_[env]->reset();
         current_state_.add_time_step(time_step);
     }
 
     return current_state_;
 }
 
-template<typename EnvType, typename StateAdaptor>
-typename SerialVectorEnvWrapper<EnvType, StateAdaptor>::time_step_type
-SerialVectorEnvWrapper<EnvType, StateAdaptor>::step(const std::vector<typename EnvType::action_type>& actions){
+template<typename EnvType>
+typename SerialVectorEnvWrapper<EnvType>::time_step_type
+SerialVectorEnvWrapper<EnvType>::step(const std::vector<typename EnvType::action_type>& actions){
 
 
 #ifdef GYMFCPP_DEBUG
-    assert(is_created_ && "Environment has not been created");
-    assert(actions.size() == envs_.size() && "Invalid number of actions. Number of actions does not equal number of environments");
+    assert(this->is_created_ && "Environment has not been created");
+    assert(actions.size() == this->envs_.size() && "Invalid number of actions. Number of actions does not equal number of environments");
 #endif
 
     current_state_.clear();
-    current_state_.reserve(config_.n_copies);
+    current_state_.reserve(this->config_.n_copies);
 
-    for(uint_t env=0; env<envs_.size(); ++env){
-        auto time_step = envs_[env]->step(actions[env]);
+    for(uint_t env=0; env<this->envs_.size(); ++env){
+        auto time_step = this->envs_[env]->step(actions[env]);
         current_state_.add_time_step(time_step);
+
+        // if the current environment finished
+        // reset it
+        if(time_step.last()){
+            this->envs_[env]->reset();
+        }
     }
 
     return current_state_;
 
 }
 
-template<typename EnvType, typename StateAdaptor>
+
+template<typename EnvType>
 void
-SerialVectorEnvWrapper<EnvType, StateAdaptor>::make(){
+SerialVectorEnvWrapper<EnvType>::make(){
 
-    if(is_created_){
+    if(this->is_created_){
         return;
     }
 
-    envs_.reserve(config_.n_copies);
-    for(uint_t env=0; env < config_.n_copies; ++env){
-        envs_.push_back(std::make_shared<EnvType>(config_.env_id, p_namespace_, false));
-        envs_.back()->make();
+    this->envs_.reserve(this->config_.n_copies);
+    for(uint_t env=0; env < this->config_.n_copies; ++env){
+        this->envs_.push_back(std::make_shared<EnvType>(this->config_.env_id, this->p_namespace_, false));
+        this->envs_.back()->make();
     }
 
     // reserve space for time steps
-    current_state_.reserve(config_.n_copies);
-    is_created_ = true;
+    current_state_.reserve(this->config_.n_copies);
+    this->is_created_ = true;
 }
+
 
 }
 

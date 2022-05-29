@@ -114,6 +114,18 @@ public:
     template<typename T>
     const T& get_extra(std::string name)const;
 
+    ///
+    /// \brief info
+    /// \return
+    ///
+    const std::unordered_map<std::string, std::any>& info()const noexcept{return extra_;}
+
+    ///
+    /// \brief info
+    /// \return
+    ///
+    std::unordered_map<std::string, std::any>& info()noexcept{return extra_;}
+
 private:
 
     ///
