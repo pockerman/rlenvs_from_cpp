@@ -8,15 +8,26 @@ namespace torch_utils{
 
 
 torch_tensor_t
-rlenvs::torch_utils::TorchStateAdaptor::operator()(const std::vector<real_t>& data){
+TorchStateAdaptor::operator()(real_t value)const{
+    return this->operator()(std::vector<real_t>(1, value));
+}
+
+torch_tensor_t
+TorchStateAdaptor::operator()(const std::vector<real_t>& data)const{
     return torch::tensor(data);
 }
 
 torch_tensor_t
-rlenvs::torch_utils::TorchStateAdaptor::operator()(const std::vector<int>& data){
+TorchStateAdaptor::operator()(const std::vector<int>& data)const{
 
     return torch::tensor(data);
 };
+
+TorchStateAdaptor::value_type
+TorchStateAdaptor::stack(const std::vector<value_type>& values)const{
+
+    return torch::stack(values, 0);
+}
 
 }
 

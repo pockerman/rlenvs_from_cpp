@@ -1,4 +1,11 @@
+
 #include "gymfcpp/serial_vector_env_wrapper.h"
+
+#include "gymfcpp/gymfcpp_config.h"
+
+#ifdef USE_PYTORCH
+#include "gymfcpp/torch_state_adaptor.h"
+#endif
 
 #include "gymfcpp/cart_pole_env.h"
 #include "gymfcpp/time_step.h"
@@ -43,7 +50,6 @@ TEST(SerialVectorEnvWrapper, Constructor) {
         PyErr_Print();
         FAIL();
     }
-
 }
 
 
@@ -105,54 +111,8 @@ TEST(TestStateAggregationCartPole, TestStep)
     }
 }
 
-/*TEST(TestStateAggregationCartPole, TestStep)
-{
-
-    try{
-
-        Py_Initialize();
-        boost::python::numpy::initialize();
-        auto main_module = boost::python::import("__main__");
-        auto main_namespace = main_module.attr("__dict__");
-
-        gymfcpp::StateAggregationCartPole env("v0", main_namespace, 10);
-        env.make();
-        env.reset();
-
-        auto step_result = env.step(0);
-        ASSERT_TRUE(step_result.mid());
-    }
-    catch(const boost::python::error_already_set&)
-    {
-        PyErr_Print();
-        FAIL()<<"Error could not step in the environment";
-    }
-}*/
 
 
-/*TEST(TestStateAggregationCartPole, TestRender)
-{
-
-    try{
-
-        Py_Initialize();
-        boost::python::numpy::initialize();
-        auto main_module = boost::python::import("__main__");
-        auto main_namespace = main_module.attr("__dict__");
-
-        gymfcpp::StateAggregationCartPole env("v0", main_namespace, 10);
-        env.make();
-        env.reset();
-
-        env.render(gymfcpp::RenderModeType::human);
-
-    }
-    catch(const boost::python::error_already_set&)
-    {
-        PyErr_Print();
-        FAIL()<<"Error could not step in the environment";
-    }
-}*/
 
 
 

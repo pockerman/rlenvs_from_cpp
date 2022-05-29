@@ -16,8 +16,14 @@ using namespace gymfcpp;
 struct TorchStateAdaptor{
 
 
-    torch_tensor_t operator()(const std::vector<real_t>& data);
-    torch_tensor_t operator()(const std::vector<int>& data);
+    typedef torch_tensor_t value_type;
+    typedef torch_tensor_t state_type;
+
+    torch_tensor_t operator()(real_t value)const;
+    torch_tensor_t operator()(const std::vector<real_t>& data)const;
+    torch_tensor_t operator()(const std::vector<int>& data)const;
+
+    value_type stack(const std::vector<value_type>& values)const;
 };
 
 
