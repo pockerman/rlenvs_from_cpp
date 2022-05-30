@@ -11,7 +11,7 @@
 #include <type_traits>
 #include <iostream>
 
-namespace gymfcpp
+namespace rlenvs_cpp
 {
 
 ///

@@ -5,7 +5,7 @@
 
 #include <random>
 
-namespace gymfcpp {
+namespace rlenvs_cpp {
 
 template<uint_t SpaceSize>
 struct DiscreteSpace

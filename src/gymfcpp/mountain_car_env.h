@@ -11,6 +11,7 @@
 #include <boost/noncopyable.hpp>
 #include <string>
 
+namespace rlenvs_cpp{
 namespace gymfcpp
 {
 
@@ -167,5 +168,6 @@ private:
     using EnvMixin<MountainCarData>::env;
 
 };
+}
 }
 #endif // MOUNTAIN_CAR_H

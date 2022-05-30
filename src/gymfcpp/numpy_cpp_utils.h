@@ -11,7 +11,7 @@
 #include <random>
 #include <vector>
 
-namespace gymfcpp{
+namespace rlenvs_cpp{
 
 ///
 /// \detailed Various utilities from numpy implemented in C++

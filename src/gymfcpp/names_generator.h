@@ -3,7 +3,7 @@
 
 #include <string>
 
-namespace gymfcpp {
+namespace rlenvs_cpp {
 
 ///
 ///

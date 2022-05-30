@@ -44,7 +44,7 @@
 #include "boost/noncopyable.hpp"
 #include <string>
 
-
+namespace rlenvs_cpp{
 namespace gymfcpp {
 
 ///
@@ -238,5 +238,5 @@ private:
 };
 
 }
-
+}
 #endif // CLIFF_WORLD_H

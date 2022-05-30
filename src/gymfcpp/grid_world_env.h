@@ -30,11 +30,11 @@
 /// Different namespace so that we differentiate
 /// from OpenAI-Gym environment
 ///
-namespace rlenvs
+namespace rlenvs_cpp
 {
 
 // still we may want to use some utilities
-using namespace gymfcpp;
+//using namespace gymfcpp;
 
 namespace{
 

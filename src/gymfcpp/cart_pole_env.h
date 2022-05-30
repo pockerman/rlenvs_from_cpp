@@ -51,6 +51,7 @@
 #include <array>
 #include <tuple>
 
+namespace rlenvs_cpp{
 namespace gymfcpp{
 
 /// Forward declaration
@@ -278,6 +279,7 @@ private:
 
 };
 
+}
 }
 
 #endif // CART_POLE_H
