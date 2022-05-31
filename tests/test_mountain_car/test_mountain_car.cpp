@@ -10,8 +10,9 @@
 
 namespace{
 
-using gymfcpp::uint_t;
-using gymfcpp::real_t;
+using rlenvs_cpp::uint_t;
+using rlenvs_cpp::real_t;
+using rlenvs_cpp::gymfcpp::MountainCar;
 
 }
 
@@ -24,7 +25,7 @@ TEST(TestMountainCar, TestConstructor) {
         boost::python::numpy::initialize();
         auto gym_module = boost::python::import("__main__");
         auto gym_namespace = gym_module.attr("__dict__");
-        gymfcpp::MountainCar env("v0", gym_namespace);
+        MountainCar env("v0", gym_namespace);
     }
     catch(const boost::python::error_already_set&)
     {
@@ -45,7 +46,7 @@ TEST(TestMountainCar, Test_Make)
         auto gym_module = boost::python::import("gym");
         auto gym_namespace = gym_module.attr("__dict__");
 
-        gymfcpp::MountainCar env("v0", gym_namespace, false);
+        MountainCar env("v0", gym_namespace, false);
         env.make();
 
         ASSERT_EQ(env.n_actions(), static_cast<uint_t>(3));
@@ -69,7 +70,7 @@ TEST(TestMountainCar, Test_Reset)
         auto gym_module = boost::python::import("gym");
         auto gym_namespace = gym_module.attr("__dict__");
 
-        gymfcpp::MountainCar env("v0", gym_namespace, false);
+        MountainCar env("v0", gym_namespace, false);
         env.make();
 
         auto state = env.reset();
@@ -96,7 +97,7 @@ TEST(TestMountainCar, Test_Step)
         auto gym_module = boost::python::import("__main__");
         auto gym_namespace = gym_module.attr("__dict__");
 
-        gymfcpp::MountainCar env("v0", gym_namespace, false);
+        MountainCar env("v0", gym_namespace, false);
         env.make();
         env.reset();
 
@@ -125,7 +126,7 @@ TEST(TestMountainCar, Test_Render)
         auto gym_module = boost::python::import("gym");
         auto gym_namespace = gym_module.attr("__dict__");
 
-        gymfcpp::MountainCar env("v0", gym_namespace, false);
+        MountainCar env("v0", gym_namespace, false);
         env.make();
         env.reset();
 

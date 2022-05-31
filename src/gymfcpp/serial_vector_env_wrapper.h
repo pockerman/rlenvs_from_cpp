@@ -20,11 +20,13 @@
 #include <iostream>
 #include <memory>
 
-namespace rlenvs{
-
-using namespace gymfcpp;
+namespace rlenvs_cpp{
 
 
+
+///
+/// \brief The SerialVectorEnvWrapperConfig struct
+///
 struct SerialVectorEnvWrapperConfig
 {
     std::string env_id{""};

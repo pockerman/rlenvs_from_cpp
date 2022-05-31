@@ -8,8 +8,8 @@
 
 namespace{
 
-using gymfcpp::uint_t;
-using gymfcpp::real_t;
+using rlenvs_cpp::uint_t;
+using rlenvs_cpp::real_t;
 
 }
 
@@ -33,7 +33,7 @@ TEST(TestDisigtize, MaxBound)
     try{
 
         std::vector<uint_t> bins{1, 2, 3};
-        auto bin = gymfcpp::digitize(static_cast<uint_t>(4), bins);
+        auto bin = rlenvs_cpp::digitize(static_cast<uint_t>(4), bins);
         ASSERT_EQ(bin, static_cast<uint_t>(3));
     }
     catch(...){
@@ -46,7 +46,7 @@ TEST(TestDisigtize, InBound)
 
     try{
         std::vector<real_t> bins{1., 2., 3.};
-        auto bin = gymfcpp::digitize(1.5, bins);
+        auto bin = rlenvs_cpp::digitize(1.5, bins);
         ASSERT_EQ(bin, static_cast<uint_t>(1));
     }
     catch(...){
@@ -59,7 +59,7 @@ TEST(TestDisigtize, InBoundLowerBound)
 
     try{
         std::vector<real_t> bins{1., 2., 3.};
-        auto bin = gymfcpp::digitize(1., bins);
+        auto bin = rlenvs_cpp::digitize(1., bins);
         ASSERT_EQ(bin, static_cast<uint_t>(1));
     }
     catch(...){
@@ -72,7 +72,7 @@ TEST(TestDisigtize, OutBoundMaxBound)
 
     try{
         std::vector<real_t> bins{1., 2., 3.};
-        auto bin = gymfcpp::digitize(3., bins);
+        auto bin = rlenvs_cpp::digitize(3., bins);
 
         // this sould also be out of bounds
         ASSERT_EQ(bin, static_cast<uint_t>(3));

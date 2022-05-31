@@ -5,7 +5,7 @@
 
 #include<string>
 
-namespace gymfcpp {
+namespace rlenvs_cpp {
 
 ///
 /// \brief The RenderModeType enum

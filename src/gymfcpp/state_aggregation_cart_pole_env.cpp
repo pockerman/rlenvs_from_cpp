@@ -3,6 +3,7 @@
 #include "gymfcpp/time_step_type.h"
 #include "gymfcpp/time_step.h"
 
+namespace rlenvs_cpp{
 namespace gymfcpp
 {
 
@@ -158,4 +159,5 @@ StateAggregationCartPole::build_pole_theta_velocity_space_(){
 }
 
 
+}
 }

@@ -9,13 +9,14 @@
 
 namespace{
 
-using gymfcpp::uint_t;
-using gymfcpp::real_t;
+using rlenvs_cpp::uint_t;
+using rlenvs_cpp::real_t;
+using rlenvs_cpp::gymfcpp::CliffWorld;
 
 }
 
 
-TEST(TestCliffWorld, TestConstructor) {
+/*TEST(TestCliffWorld, TestConstructor) {
 
     try{
 
@@ -23,7 +24,7 @@ TEST(TestCliffWorld, TestConstructor) {
         boost::python::numpy::initialize();
         auto gym_module = boost::python::import("gym");
         auto gym_namespace = gym_module.attr("__dict__");
-        gymfcpp::CliffWorld env("v0", gym_namespace);
+        CliffWorld env("v0", gym_namespace);
     }
     catch(const boost::python::error_already_set&)
     {
@@ -255,4 +256,4 @@ TEST(TestCliffWorld, Test_Done_2)
         PyErr_Print();
         FAIL()<<"Error could not step in the environment";
     }
-}
+}*/

@@ -11,7 +11,7 @@
 #include <vector>
 #include <ostream>
 
-namespace gymfcpp {
+namespace rlenvs_cpp {
 
 
 ///

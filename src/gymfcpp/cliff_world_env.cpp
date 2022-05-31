@@ -8,6 +8,7 @@
 
 #include <boost/python/numpy.hpp>
 
+namespace rlenvs_cpp{
 namespace gymfcpp{
 
 const std::string CliffWorldData::name = "CliffWalking";
@@ -140,4 +141,5 @@ CliffWorld::p(uint_t sidx, uint_t aidx)const{
     return dyn;
 }
 
+}
 }

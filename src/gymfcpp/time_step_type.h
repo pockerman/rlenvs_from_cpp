@@ -4,7 +4,7 @@
 #include "gymfcpp/extern/enum.h"
 #include <string>
 
-namespace gymfcpp
+namespace rlenvs_cpp
 {
 
 ///

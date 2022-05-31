@@ -2,6 +2,7 @@
 #include "gymfcpp/names_generator.h"
 #include "gymfcpp/gymfcpp_consts.h"
 
+namespace rlenvs_cpp
 namespace gymfcpp
 {
 
@@ -122,5 +123,5 @@ Taxi::copy(std::map<std::string, std::string>&& names)const{
     return Taxi(this->version, this->gym_namespace, std::move(names));
 }
 
-
+}
 }

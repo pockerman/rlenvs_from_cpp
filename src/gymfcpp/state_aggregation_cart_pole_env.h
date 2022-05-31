@@ -46,6 +46,7 @@
 #include <vector>
 #include <tuple>
 
+namespace rlenvs_cpp{
 namespace gymfcpp{
 
 /// Forward declaration
@@ -179,7 +180,7 @@ private:
 };
 
 
-
+}
 }
 
 #endif // TILED_CART_POLE_ENV_H

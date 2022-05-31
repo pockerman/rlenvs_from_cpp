@@ -5,6 +5,8 @@
 #include <cassert>
 #endif
 
+
+namespace rlenvs_cpp{
 namespace gymfcpp
 {
 
@@ -188,4 +190,5 @@ BlackJack::close(){
 
 }
 
+}
 }

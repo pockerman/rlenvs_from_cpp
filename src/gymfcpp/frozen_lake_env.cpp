@@ -14,6 +14,7 @@
 #include <cassert>
 #endif
 
+namespace rlenvs_cpp{
 namespace gymfcpp{
 
 discrete_state_space_frozen_lake<4>::item_type
@@ -237,4 +238,5 @@ FrozenLake<side_size>::construct_python_string_()const noexcept{
 template class FrozenLake<4>;
 template class FrozenLake<8>;
 
+}
 }

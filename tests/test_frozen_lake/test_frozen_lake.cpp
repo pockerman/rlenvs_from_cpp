@@ -8,9 +8,9 @@
 
 namespace{
 
-using gymfcpp::uint_t;
-using gymfcpp::real_t;
-
+using rlenvs_cpp::uint_t;
+using rlenvs_cpp::real_t;
+using rlenvs_cpp::gymfcpp::FrozenLake;
 }
 
 
@@ -21,7 +21,7 @@ TEST(TestFrozenLake, TestConstructor4x4) {
         Py_Initialize();
         auto main_module = boost::python::import("__main__");
         auto main_namespace = main_module.attr("__dict__");
-        gymfcpp::FrozenLake<4> env("v0", main_namespace);
+        FrozenLake<4> env("v0", main_namespace);
 
         ASSERT_EQ(env.n_states(), static_cast<uint_t>(16));
         ASSERT_EQ(env.n_actions(), static_cast<uint_t>(4));
@@ -42,7 +42,7 @@ TEST(TestFrozenLake, TestConstructor8x8) {
         Py_Initialize();
         auto main_module = boost::python::import("__main__");
         auto main_namespace = main_module.attr("__dict__");
-        gymfcpp::FrozenLake<8> env("v0", main_namespace);
+        FrozenLake<8> env("v0", main_namespace);
 
         ASSERT_EQ(env.n_states(), static_cast<uint_t>(64));
         ASSERT_EQ(env.n_actions(), static_cast<uint_t>(4));
@@ -66,7 +66,7 @@ TEST(TestFrozenLake, Test_Make)
         auto main_module = boost::python::import("__main__");
         auto main_namespace = main_module.attr("__dict__");
 
-        gymfcpp::FrozenLake<4> env("v0", main_namespace, false);
+        FrozenLake<4> env("v0", main_namespace, false);
         env.make();
 
         //ASSERT_EQ(env.n_states(), static_cast<uint_t>(16));
@@ -91,7 +91,7 @@ TEST(TestFrozenLake, Test_Reset)
         auto main_module = boost::python::import("__main__");
         auto main_namespace = main_module.attr("__dict__");
 
-        gymfcpp::FrozenLake<4> env("v0", main_namespace, false);
+        FrozenLake<4> env("v0", main_namespace, false);
         env.make();
 
         auto state = env.reset();
@@ -115,7 +115,7 @@ TEST(TestFrozenLake, Test_Step)
         auto main_module = boost::python::import("__main__");
         auto main_namespace = main_module.attr("__dict__");
 
-        gymfcpp::FrozenLake<4> env("v0", main_namespace, false);
+        FrozenLake<4> env("v0", main_namespace, false);
         env.make();
 
         auto step_result = env.step(0);
@@ -139,7 +139,7 @@ TEST(TestFrozenLake, Test_Step_With_Query)
         auto main_module = boost::python::import("__main__");
         auto main_namespace = main_module.attr("__dict__");
 
-        gymfcpp::FrozenLake<4> env("v0", main_namespace, false);
+        FrozenLake<4> env("v0", main_namespace, false);
         env.make();
 
         auto step_result = env.step(0, true);
@@ -164,7 +164,7 @@ TEST(TestFrozenLake, Test_Get_Dynamics)
         auto main_module = boost::python::import("__main__");
         auto main_namespace = main_module.attr("__dict__");
 
-        gymfcpp::FrozenLake<4> env("v0", main_namespace, false);
+        FrozenLake<4> env("v0", main_namespace, false);
         env.make();
 
         auto dynamics = env.p(1, 3);
@@ -189,7 +189,7 @@ TEST(TestFrozenLake, TestRender)
         auto main_module = boost::python::import("__main__");
         auto main_namespace = main_module.attr("__dict__");
 
-        gymfcpp::FrozenLake<4> env("v0", main_namespace, false);
+        FrozenLake<4> env("v0", main_namespace, false);
         env.make();
         env.reset();
 
