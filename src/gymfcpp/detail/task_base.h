@@ -7,10 +7,7 @@
 #include <boost/noncopyable.hpp>
 #include <string>
 
-namespace rlenvs{
-
-using namespace gymfcpp;
-
+namespace rlenvs_cpp{
 namespace detail{
 
 ///

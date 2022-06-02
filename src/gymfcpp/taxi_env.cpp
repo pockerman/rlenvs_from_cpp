@@ -2,7 +2,7 @@
 #include "gymfcpp/names_generator.h"
 #include "gymfcpp/gymfcpp_consts.h"
 
-namespace rlenvs_cpp
+namespace rlenvs_cpp{
 namespace gymfcpp
 {
 

@@ -238,7 +238,7 @@ template<typename StateTp>
 inline
 std::ostream& operator<<(std::ostream& out, const TimeStep<StateTp>& step){
 
-    out<<"Step type.... "<<gymfcpp::to_string(step.type())<<std::endl;
+    out<<"Step type.... "<<rlenvs_cpp::to_string(step.type())<<std::endl;
     out<<"Reward..... .."<<step.reward()<<std::endl;
     out<<"Observation.. "<<step.observation()<<std::endl;
     return out;

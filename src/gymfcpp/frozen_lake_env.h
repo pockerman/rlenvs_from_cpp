@@ -65,7 +65,7 @@
 #include <vector>
 #include <tuple>
 
-namespace rlsenvs_cpp{
+namespace rlenvs_cpp{
 namespace gymfcpp {
 
 template<uint_t side_size>
