@@ -10,8 +10,9 @@
 
 namespace{
 
-using gymfcpp::uint_t;
-using gymfcpp::real_t;
+using rlenvs_cpp::uint_t;
+using rlenvs_cpp::real_t;
+using rlenvs_cpp::gymfcpp::CliffWorld;
 
 }
 
@@ -23,7 +24,7 @@ TEST(TestCliffWorld, TestConstructor) {
 
         auto gym_module = boost::python::import("__main__");
         auto gym_namespace = gym_module.attr("__dict__");
-        gymfcpp::CliffWorld env("v0", gym_namespace);
+        CliffWorld env("v0", gym_namespace);
     }
     catch(const boost::python::error_already_set&)
     {
@@ -43,7 +44,7 @@ TEST(TestCliffWorld, Test_Make)
         auto gym_module = boost::python::import("__main__");
         auto gym_namespace = gym_module.attr("__dict__");
 
-        gymfcpp::CliffWorld env("v0", gym_namespace, false);
+        CliffWorld env("v0", gym_namespace, false);
         env.make();
 
         ASSERT_EQ(env.n_states(), static_cast<uint_t>(48));
@@ -68,7 +69,7 @@ TEST(TestCliffWorld, Test_Reset)
         auto gym_module = boost::python::import("__main__");
         auto gym_namespace = gym_module.attr("__dict__");
 
-        gymfcpp::CliffWorld env("v0", gym_namespace, false);
+        CliffWorld env("v0", gym_namespace, false);
         env.make();
 
         auto state = env.reset();
@@ -93,7 +94,7 @@ TEST(TestCliffWorld, Test_Step)
         auto gym_module = boost::python::import("__main__");
         auto gym_namespace = gym_module.attr("__dict__");
 
-        gymfcpp::CliffWorld env("v0", gym_namespace, false);
+        CliffWorld env("v0", gym_namespace, false);
         env.make();
 
         auto step_result = env.step(0);
@@ -117,7 +118,7 @@ TEST(TestCliffWorld, Test_Step_With_Query)
         auto gym_module = boost::python::import("__main__");
         auto gym_namespace = gym_module.attr("__dict__");
 
-        gymfcpp::CliffWorld env("v0", gym_namespace, false);
+        CliffWorld env("v0", gym_namespace, false);
         env.make();
 
         auto step_result = env.step(0, true);
@@ -143,7 +144,7 @@ TEST(TestCliffWorld, Test_Get_Dynamics)
         auto gym_module = boost::python::import("__main__");
         auto gym_namespace = gym_module.attr("__dict__");
 
-        gymfcpp::CliffWorld env("v0", gym_namespace, false);
+        CliffWorld env("v0", gym_namespace, false);
         env.make();
 
         auto dynamics = env.p(1, 3);
@@ -168,7 +169,7 @@ TEST(TestCliffWorld, Test_Not_Done)
         auto gym_module = boost::python::import("__main__");
         auto gym_namespace = gym_module.attr("__dict__");
 
-        gymfcpp::CliffWorld env("v0", gym_namespace, false);
+        CliffWorld env("v0", gym_namespace, false);
         env.make();
         env.reset();
 
@@ -194,7 +195,7 @@ TEST(TestCliffWorld, Test_Done_1)
         auto gym_module = boost::python::import("__main__");
         auto gym_namespace = gym_module.attr("__dict__");
 
-        gymfcpp::CliffWorld env("v0", gym_namespace, false);
+        CliffWorld env("v0", gym_namespace, false);
         env.make();
         env.reset();
 
@@ -220,7 +221,7 @@ TEST(TestCliffWorld, Test_Done_2)
         auto gym_module = boost::python::import("__main__");
         auto gym_namespace = gym_module.attr("__dict__");
 
-        gymfcpp::CliffWorld env("v0", gym_namespace, false);
+        CliffWorld env("v0", gym_namespace, false);
         env.make();
         env.reset();
 
@@ -247,11 +248,11 @@ TEST(TestCliffWorld, Test_render)
         auto gym_module = boost::python::import("__main__");
         auto gym_namespace = gym_module.attr("__dict__");
 
-        gymfcpp::CliffWorld env("v0", gym_namespace, false);
+        CliffWorld env("v0", gym_namespace, false);
         env.make();
         env.reset();
 
-        env.render(gymfcpp::RenderModeType::human);
+        env.render(rlenvs_cpp::RenderModeType::human);
 
     }
     catch(const boost::python::error_already_set&)

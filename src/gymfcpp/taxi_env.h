@@ -11,6 +11,8 @@
 #include <map>
 #include <string>
 
+
+namespace rlenvs_cpp{
 namespace gymfcpp
 {
 
@@ -188,6 +190,6 @@ private:
 
 };
 
-
+}
 }
 #endif // TAXI_H

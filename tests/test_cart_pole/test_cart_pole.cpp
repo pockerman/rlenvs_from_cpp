@@ -8,8 +8,9 @@
 
 namespace{
 
-using gymfcpp::uint_t;
-using gymfcpp::real_t;
+using rlenvs_cpp::uint_t;
+using rlenvs_cpp::real_t;
+using rlenvs_cpp::gymfcpp::CartPole;
 
 }
 
@@ -21,7 +22,7 @@ TEST(TestCartPole, TestConstructor) {
         Py_Initialize();
         auto gym_module = boost::python::import("gym");
         auto gym_namespace = gym_module.attr("__dict__");
-        gymfcpp::CartPole env("v0", gym_namespace, false);
+        CartPole env("v0", gym_namespace, false);
     }
     catch(const boost::python::error_already_set&)
     {
@@ -40,7 +41,7 @@ TEST(TestCartPole, Test_Not_Created)
         Py_Initialize();
         auto gym_module = boost::python::import("gym");
         auto gym_namespace = gym_module.attr("__dict__");
-        gymfcpp::CartPole env("v0", gym_namespace, false);
+        CartPole env("v0", gym_namespace, false);
 
         ASSERT_FALSE(env.is_created);
 
@@ -62,7 +63,7 @@ TEST(TestCartPole, Test_Make)
         auto gym_module = boost::python::import("gym");
         auto gym_namespace = gym_module.attr("__dict__");
 
-        gymfcpp::CartPole env("v0", gym_namespace, false);
+        CartPole env("v0", gym_namespace, false);
         env.make();
 
         ASSERT_TRUE(env.is_created);
@@ -87,7 +88,7 @@ TEST(TestCartPole, Test_Reset)
         auto gym_module = boost::python::import("gym");
         auto gym_namespace = gym_module.attr("__dict__");
 
-        gymfcpp::CartPole env("v0", gym_namespace, false);
+        CartPole env("v0", gym_namespace, false);
         env.make();
 
         auto state = env.reset();
@@ -111,7 +112,7 @@ TEST(TestCartPole, Test_Step)
         auto gym_module = boost::python::import("gym");
         auto gym_namespace = gym_module.attr("__dict__");
 
-        gymfcpp::CartPole env("v0", gym_namespace, false);
+        CartPole env("v0", gym_namespace, false);
         env.make();
         env.reset();
 
@@ -134,7 +135,7 @@ TEST(TestCartPole, Test_Get_Screen)
         auto gym_module = boost::python::import("gym");
         auto gym_namespace = gym_module.attr("__dict__");
 
-        gymfcpp::CartPole env("v0", gym_namespace, false);
+        CartPole env("v0", gym_namespace, false);
         env.make();
         env.reset();
 
@@ -156,7 +157,7 @@ TEST(TestCartPole, Test_Get_Screen_as_vector)
         auto gym_module = boost::python::import("gym");
         auto gym_namespace = gym_module.attr("__dict__");
 
-        gymfcpp::CartPole env("v0", gym_namespace, false);
+        CartPole env("v0", gym_namespace, false);
         env.make();
         env.reset();
 

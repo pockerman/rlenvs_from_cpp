@@ -9,6 +9,7 @@
 
 #include <iostream>
 
+namespace rlenvs_cpp{
 namespace gymfcpp{
 
 
@@ -113,4 +114,5 @@ MountainCar::step(action_type action){
 
 }
 
+}
 }

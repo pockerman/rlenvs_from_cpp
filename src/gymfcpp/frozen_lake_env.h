@@ -65,6 +65,7 @@
 #include <vector>
 #include <tuple>
 
+namespace rlenvs_cpp{
 namespace gymfcpp {
 
 template<uint_t side_size>
@@ -316,5 +317,5 @@ private:
 };
 
 }
-
+}
 #endif // FROZEN_LAKE_H

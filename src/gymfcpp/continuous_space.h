@@ -6,7 +6,7 @@
 
 #include <vector>
 
-namespace gymfcpp
+namespace rlenvs_cpp
 {
 
 ///

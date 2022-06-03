@@ -4,7 +4,7 @@
 #include "gymfcpp/gymfcpp_types.h"
 #include <string>
 
-namespace gymfcpp {
+namespace rlenvs_cpp {
 
 ///
 /// \brief PY_ENV_NAME

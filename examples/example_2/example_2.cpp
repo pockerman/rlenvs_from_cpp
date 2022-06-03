@@ -1,3 +1,4 @@
+#include "gymfcpp/gymfcpp_types.h"
 #include "gymfcpp/frozen_lake_env.h"
 
 #include <boost/python.hpp>
@@ -11,7 +12,7 @@ int main(){
         Py_Initialize();
         auto main_module = boost::python::import("__main__");
         auto main_namespace = main_module.attr("__dict__");
-        gymfcpp::FrozenLake<4> env("v0", main_namespace, false);
+        rlenvs_cpp::gymfcpp::FrozenLake<4> env("v0", main_namespace, false);
 
         env.make();
 
@@ -21,7 +22,7 @@ int main(){
         step = env.step(1, true);
         std::cout<<step<<std::endl;
 
-        std::cout<<"Step with prob="<<step.get_extra<gymfcpp::real_t>("prob")<<std::endl;
+        std::cout<<"Step with prob="<<step.get_extra<rlenvs_cpp::real_t>("prob")<<std::endl;
 
     }
     catch(boost::python::error_already_set const &)

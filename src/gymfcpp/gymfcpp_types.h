@@ -12,7 +12,7 @@
 #include <cstddef>
 
 
-namespace gymfcpp {
+namespace rlenvs_cpp {
 
 ///
 /// \brief str_t

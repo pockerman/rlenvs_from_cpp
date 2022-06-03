@@ -11,6 +11,8 @@
 
 #include <iostream>
 
+
+namespace rlenvs_cpp{
 namespace gymfcpp{
 
 // static data
@@ -258,4 +260,5 @@ CartPole::get_screen()const{
 }
 
 
+}
 }

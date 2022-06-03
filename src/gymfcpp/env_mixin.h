@@ -11,7 +11,7 @@
 #include <type_traits>
 #include <iostream>
 
-namespace gymfcpp
+namespace rlenvs_cpp
 {
 
 ///
@@ -169,7 +169,7 @@ EnvMixin<EnvImpl>::render(RenderModeType render_mode){
     assert(is_created && "Environment has not been created");
 #endif
 
-    auto str = "screen = " + py_env_name + ".render(mode='" + gymfcpp::to_string(render_mode) + "')\n";
+    auto str = "screen = " + py_env_name + ".render(mode='" + rlenvs_cpp::to_string(render_mode) + "')\n";
     boost::python::exec(str.c_str(), gym_namespace);
 
 }

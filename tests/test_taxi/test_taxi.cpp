@@ -10,8 +10,9 @@
 
 namespace{
 
-using gymfcpp::uint_t;
-using gymfcpp::real_t;
+using rlenvs_cpp::uint_t;
+using rlenvs_cpp::real_t;
+using rlenvs_cpp::gymfcpp::Taxi;
 
 }
 
@@ -25,7 +26,7 @@ TEST(TestTaxi, TestConstructor) {
         auto main_module = boost::python::import("__main__");
         auto main_namespace = main_module.attr("__dict__");
 
-        gymfcpp::Taxi env("v3", main_namespace);
+        Taxi env("v3", main_namespace);
     }
     catch(const boost::python::error_already_set&)
     {
@@ -46,7 +47,7 @@ TEST(TestTaxi, Test_Make)
         auto main_module = boost::python::import("__main__");
         auto main_namespace = main_module.attr("__dict__");
 
-        gymfcpp::Taxi env("v3", main_namespace, false);
+        Taxi env("v3", main_namespace, false);
         env.make();
 
 
@@ -71,14 +72,11 @@ TEST(TestTaxi, Test_Reset)
         auto main_module = boost::python::import("__main__");
         auto main_namespace = main_module.attr("__dict__");
 
-        gymfcpp::Taxi env("v3", main_namespace, false);
+        Taxi env("v3", main_namespace, false);
         env.make();
 
         auto state = env.reset();
         ASSERT_TRUE(state.first());
-
-        //auto obs = state.observation();
-        //ASSERT_EQ(obs.size(), static_cast<uint_t>(2));
 
     }
     catch(const boost::python::error_already_set&)
@@ -98,15 +96,12 @@ TEST(TestMountainCar, Test_Step)
         auto main_module = boost::python::import("__main__");
         auto main_namespace = main_module.attr("__dict__");
 
-        gymfcpp::Taxi env("v3", main_namespace, false);
+        Taxi env("v3", main_namespace, false);
         env.make();
         env.reset();
 
         auto step_result = env.step(0);
         ASSERT_TRUE(step_result.mid());
-
-        //auto obs = step_result.observation();
-        //ASSERT_EQ(obs, static_cast<uint_t>(327));
 
     }
     catch(const boost::python::error_already_set&)
@@ -127,11 +122,11 @@ TEST(TestMountainCar, Test_Render)
         auto main_module = boost::python::import("__main__");
         auto main_namespace = main_module.attr("__dict__");
 
-        gymfcpp::Taxi env("v3", main_namespace, false);
+        Taxi env("v3", main_namespace, false);
         env.make();
         env.reset();
 
-        env.render(gymfcpp::RenderModeType::human);
+        env.render(rlenvs_cpp::RenderModeType::human);
 
     }
     catch(const boost::python::error_already_set&)

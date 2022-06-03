@@ -3,7 +3,7 @@
 
 #ifdef USE_PYTORCH
 
-namespace rlenvs{
+namespace rlenvs_cpp{
 namespace torch_utils{
 
 

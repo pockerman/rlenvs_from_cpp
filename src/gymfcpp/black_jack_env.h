@@ -10,6 +10,7 @@
 #include <vector>
 #include <tuple>
 
+namespace rlenvs_cpp{
 namespace gymfcpp {
 
 ///
@@ -150,6 +151,7 @@ private:
 
 };
 
+}
 }
 
 #endif // BLACK_JACK_H

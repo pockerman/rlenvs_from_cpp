@@ -7,10 +7,12 @@
 
 #include <vector>
 
-namespace rlenvs{
+namespace rlenvs_cpp{
 
-using namespace gymfcpp;
 
+///
+/// \brief VectorTimeSetp class
+///
 template<typename StateType>
 class VectorTimeStep
 {

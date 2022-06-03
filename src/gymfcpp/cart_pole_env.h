@@ -51,10 +51,12 @@
 #include <array>
 #include <tuple>
 
-namespace gymfcpp{
+namespace rlenvs_cpp{
 
 /// Forward declaration
 template<typename StateTp> class TimeStep;
+
+namespace gymfcpp{
 
 ///
 /// \brief The CartPoleData struct. Wraps various data
@@ -128,6 +130,8 @@ struct CartPoleData
     /// \return
     ///
     static state_type extract_state_from_step(obj_t gym_namespace, std::string py_state_name, std::string result_name);
+    
+    CartPoleData()=default;
 
 };
 
@@ -278,6 +282,7 @@ private:
 
 };
 
+}
 }
 
 #endif // CART_POLE_H

@@ -8,8 +8,9 @@
 
 namespace{
 
-using gymfcpp::uint_t;
-using gymfcpp::real_t;
+using rlenvs_cpp::uint_t;
+using rlenvs_cpp::real_t;
+using rlenvs_cpp::gymfcpp::BlackJack;
 
 }
 
@@ -21,7 +22,7 @@ TEST(TestBlackJack, TestConstructor) {
         Py_Initialize();
         auto gym_module = boost::python::import("gym");
         auto gym_namespace = gym_module.attr("__dict__");
-        gymfcpp::BlackJack env("v0", gym_namespace, false);
+        BlackJack env("v0", gym_namespace, false);
     }
     catch(const boost::python::error_already_set&)
     {
@@ -41,7 +42,7 @@ TEST(TestBlackJack, Test_Make_NO_NATURAL)
         auto gym_module = boost::python::import("gym");
         auto gym_namespace = gym_module.attr("__dict__");
 
-        gymfcpp::BlackJack env("v0", gym_namespace, false);
+        BlackJack env("v0", gym_namespace, false);
         env.make();
         ASSERT_EQ(env.n_actions(), static_cast<uint_t>(2));
 
@@ -63,7 +64,7 @@ TEST(TestBlackJack, Test_Make_NATURAL)
         auto gym_module = boost::python::import("gym");
         auto gym_namespace = gym_module.attr("__dict__");
 
-        gymfcpp::BlackJack env("v0", gym_namespace, false);
+        BlackJack env("v0", gym_namespace, false);
         env.make(true);
         ASSERT_EQ(env.n_actions(), static_cast<uint_t>(2));
 
@@ -84,7 +85,7 @@ TEST(TestBlackJack, Test_N_Actions_Not_Created_Assert_Is_Thrown)
         Py_Initialize();
         auto gym_module = boost::python::import("gym");
         auto gym_namespace = gym_module.attr("__dict__");
-        gymfcpp::BlackJack env("v0", gym_namespace, false);
+        BlackJack env("v0", gym_namespace, false);
 
         ASSERT_DEATH(env.n_actions(), "Environment has not been created");
 
@@ -107,7 +108,7 @@ TEST(TestBlackJack, Test_Reset)
         auto gym_module = boost::python::import("gym");
         auto gym_namespace = gym_module.attr("__dict__");
 
-        gymfcpp::BlackJack env("v0", gym_namespace, false);
+        BlackJack env("v0", gym_namespace, false);
         env.make();
 
         auto state = env.reset();
@@ -131,7 +132,7 @@ TEST(TestBlackJack, Test_Step)
         auto gym_module = boost::python::import("gym");
         auto gym_namespace = gym_module.attr("__dict__");
 
-        gymfcpp::BlackJack env("v0", gym_namespace, false);
+        BlackJack env("v0", gym_namespace, false);
         env.make();
 
         auto step_result = env.step(0);
@@ -157,7 +158,7 @@ TEST(TestBlackJack, Test_Observation_Space)
         auto gym_module = boost::python::import("gym");
         auto gym_namespace = gym_module.attr("__dict__");
 
-        gymfcpp::BlackJack env("v0", gym_namespace, false);
+        BlackJack env("v0", gym_namespace, false);
         env.make();
 
         auto obs_space = env.observation_space();

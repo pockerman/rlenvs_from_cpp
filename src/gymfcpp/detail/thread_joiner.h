@@ -3,7 +3,7 @@
 
 #include "boost/noncopyable.hpp"
 
-namespace rlenvs{
+namespace rlenvs_cpp{
 namespace detail {
 
 ///

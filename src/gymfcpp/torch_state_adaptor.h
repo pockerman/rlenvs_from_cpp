@@ -8,11 +8,13 @@
 #include "gymfcpp/gymfcpp_types.h"
 #include <vector>
 
-namespace rlenvs{
+namespace rlenvs_cpp{
 namespace torch_utils {
 
-using namespace gymfcpp;
 
+///
+/// \brief The TorchStateAdaptor struct
+///
 struct TorchStateAdaptor{
 
 

@@ -13,7 +13,7 @@
 #include <vector>
 #include <string>
 
-namespace gymfcpp
+namespace rlenvs_cpp
 {
 
 /// Forward declaration

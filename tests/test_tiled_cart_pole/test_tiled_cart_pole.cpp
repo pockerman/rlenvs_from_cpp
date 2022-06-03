@@ -10,8 +10,9 @@
 
 namespace{
 
-using gymfcpp::uint_t;
-using gymfcpp::real_t;
+using rlenvs_cpp::uint_t;
+using rlenvs_cpp::real_t;
+using rlenvs_cpp::gymfcpp::StateAggregationCartPole;
 
 }
 
@@ -24,7 +25,7 @@ TEST(TestStateAggregationCartPole, TestConstructor) {
         boost::python::numpy::initialize();
         auto main_module = boost::python::import("__main__");
         auto main_namespace = main_module.attr("__dict__");
-        gymfcpp::StateAggregationCartPole env("v0", main_namespace, 10);
+        StateAggregationCartPole env("v0", main_namespace, 10);
     }
     catch(const boost::python::error_already_set&)
     {
@@ -45,7 +46,7 @@ TEST(TestStateAggregationCartPole, TestMake)
         auto main_module = boost::python::import("__main__");
         auto main_namespace = main_module.attr("__dict__");
 
-        gymfcpp::StateAggregationCartPole env("v0", main_namespace, 10);
+        StateAggregationCartPole env("v0", main_namespace, 10);
         env.make();
 
         ASSERT_EQ(env.n_actions(), static_cast<uint_t>(2));
@@ -69,7 +70,7 @@ TEST(TestStateAggregationCartPole, TestReset)
         auto main_module = boost::python::import("__main__");
         auto main_namespace = main_module.attr("__dict__");
 
-        gymfcpp::StateAggregationCartPole env("v0", main_namespace, 10);
+        StateAggregationCartPole env("v0", main_namespace, 10);
         env.make();
 
         auto state = env.reset();
@@ -93,7 +94,7 @@ TEST(TestStateAggregationCartPole, TestStep)
         auto main_module = boost::python::import("__main__");
         auto main_namespace = main_module.attr("__dict__");
 
-        gymfcpp::StateAggregationCartPole env("v0", main_namespace, 10);
+        StateAggregationCartPole env("v0", main_namespace, 10);
         env.make();
         env.reset();
 
@@ -118,11 +119,11 @@ TEST(TestStateAggregationCartPole, TestRender)
         auto main_module = boost::python::import("__main__");
         auto main_namespace = main_module.attr("__dict__");
 
-        gymfcpp::StateAggregationCartPole env("v0", main_namespace, 10);
+        StateAggregationCartPole env("v0", main_namespace, 10);
         env.make();
         env.reset();
 
-        env.render(gymfcpp::RenderModeType::human);
+        env.render(rlenvs_cpp::RenderModeType::human);
 
     }
     catch(const boost::python::error_already_set&)

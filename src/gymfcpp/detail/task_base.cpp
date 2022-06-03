@@ -1,6 +1,6 @@
 #include "gymfcpp/detail/task_base.h"
 
-namespace rlenvs{
+namespace rlenvs_cpp{
 namespace detail {
 
 
