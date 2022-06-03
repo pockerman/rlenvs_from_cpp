@@ -123,7 +123,7 @@ TEST(TestStateAggregationCartPole, TestRender)
         env.make();
         env.reset();
 
-        env.render(gymfcpp::RenderModeType::human);
+        env.render(rlenvs_cpp::RenderModeType::human);
 
     }
     catch(const boost::python::error_already_set&)

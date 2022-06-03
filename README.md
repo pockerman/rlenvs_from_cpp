@@ -14,7 +14,8 @@ should abide with <a href="https://github.com/deepmind/dm_env/blob/master/docs/i
 ## Basic example
 
 ```
-#include "gymfcpp/frozen_lake.h"
+#include "gymfcpp/gymfcpp_types.h"
+#include "gymfcpp/frozen_lake_env.h"
 #include <boost/python.hpp>
 #include <iostream>
 
@@ -22,25 +23,20 @@ int main(){
 
     try
     {
-    	// initialize the interpreter
-        Py_Initialize();
-        auto gym_module = boost::python::import("gym");
-        auto gym_namespace = gym_module.attr("__dict__");
-        
-        gymfcpp::FrozenLake env("v0", gym_namespace, false);
+    	Py_Initialize();
+        auto main_module = boost::python::import("__main__");
+        auto main_namespace = main_module.attr("__dict__");
+        rlenvs_cpp::gymfcpp::FrozenLake<4> env("v0", main_namespace, false);
 
-	// make slipery
-        env.make(true);
+        env.make();
 
-	// reset the environment
         auto step = env.reset();
         std::cout<<step<<std::endl;
 
-	// step and compute any extra
         step = env.step(1, true);
         std::cout<<step<<std::endl;
 
-        std::cout<<"Step with prob="<<step.get_extra<gymfcpp::real_t>("prob")<<std::endl;
+        std::cout<<"Step with prob="<<step.get_extra<rlenvs_cpp::real_t>("prob")<<std::endl;
 
     }
     catch(boost::python::error_already_set const &)

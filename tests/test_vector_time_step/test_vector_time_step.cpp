@@ -25,8 +25,8 @@ namespace{
 using rlenvs_cpp::uint_t;
 using rlenvs_cpp::real_t;
 using rlenvs_cpp::gymfcpp::CartPole;
-using rlenvs::VectorTimeStep;
-using rlenvs::torch_utils::TorchStateAdaptor;
+using rlenvs_cpp::VectorTimeStep;
+using rlenvs_cpp::torch_utils::TorchStateAdaptor;
 using rlenvs_cpp::TimeStep;
 using rlenvs_cpp::TimeStepTp;
 }

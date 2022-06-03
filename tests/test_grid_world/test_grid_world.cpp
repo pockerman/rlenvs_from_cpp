@@ -8,8 +8,9 @@
 
 namespace{
 
-using gymfcpp::uint_t;
-using gymfcpp::real_t;
+using rlenvs_cpp::uint_t;
+using rlenvs_cpp::real_t;
+using rlenvs_cpp::Gridworld;
 
 }
 
@@ -18,7 +19,7 @@ TEST(TestGridworld, TestConstructor4x4) {
 
     try{
 
-        rlenvs::Gridworld<4> env("v0", rlenvs::GridworldInitType::STATIC, false);
+        Gridworld<4> env("v0", rlenvs_cpp::GridworldInitType::STATIC, false);
 
         ASSERT_EQ(env.n_states(), static_cast<uint_t>(16));
         ASSERT_EQ(env.n_actions(), static_cast<uint_t>(4));
@@ -26,7 +27,7 @@ TEST(TestGridworld, TestConstructor4x4) {
         ASSERT_FALSE(env.is_created());
 
         // TODO: Think how to test this
-        ASSERT_TRUE(rlenvs::to_string(env.init_type()) == rlenvs::to_string(rlenvs::GridworldInitType::STATIC));
+        ASSERT_TRUE(rlenvs_cpp::to_string(env.init_type()) == rlenvs_cpp::to_string(rlenvs_cpp::GridworldInitType::STATIC));
         ASSERT_EQ(env.name, "Gridworld");
 
     }
@@ -41,7 +42,7 @@ TEST(TestGridworld, TestMake) {
 
     try{
 
-        rlenvs::Gridworld<4> env("v0", rlenvs::GridworldInitType::STATIC, false);
+        Gridworld<4> env("v0", rlenvs_cpp::GridworldInitType::STATIC, false);
         env.make();
 
         ASSERT_TRUE(env.is_created());
@@ -60,7 +61,7 @@ TEST(TestGridworld, TestStepInvalidMove)
 
     try{
 
-        rlenvs::Gridworld<4> env("v0", rlenvs::GridworldInitType::STATIC, false);
+        Gridworld<4> env("v0", rlenvs_cpp::GridworldInitType::STATIC, false);
         env.make();
 
         // make sure we have the right world
@@ -82,7 +83,7 @@ TEST(TestGridworld, TestStepValidMove)
 
     try{
 
-        rlenvs::Gridworld<4> env("v0", rlenvs::GridworldInitType::STATIC, false);
+        Gridworld<4> env("v0", rlenvs_cpp::GridworldInitType::STATIC, false);
         env.make();
 
         // make sure we have the right world
@@ -105,7 +106,7 @@ TEST(TestGridworld, TestGetObservationFail)
 {
     try{
 
-        rlenvs::Gridworld<4> env("v0", rlenvs::GridworldInitType::STATIC, false);
+        Gridworld<4> env("v0", rlenvs_cpp::GridworldInitType::STATIC, false);
 
         EXPECT_DEATH(env.get_raw_observation(), "Environment has not been created. Have you called make?");
     }
@@ -122,7 +123,7 @@ TEST(TestGridworld, TestGetObservation)
 
     try{
 
-        rlenvs::Gridworld<4> env("v0", rlenvs::GridworldInitType::STATIC, false);
+        Gridworld<4> env("v0", rlenvs_cpp::GridworldInitType::STATIC, false);
         env.make();
 
         // make sure we have the right world
@@ -150,7 +151,7 @@ TEST(TestGridworld, TestConstructor4x4Random)
 
     try{
 
-        rlenvs::Gridworld<4> env("v0", rlenvs::GridworldInitType::STATIC, 42, 10.0, false);
+        Gridworld<4> env("v0", rlenvs_cpp::GridworldInitType::STATIC, 42, 10.0, false);
 
         ASSERT_EQ(env.n_states(), static_cast<uint_t>(16));
         ASSERT_EQ(env.n_actions(), static_cast<uint_t>(4));
@@ -161,7 +162,7 @@ TEST(TestGridworld, TestConstructor4x4Random)
         ASSERT_EQ(env.noise_factor(), 10.0);
 
         // TODO: Think how to test this
-        ASSERT_TRUE(rlenvs::to_string(env.init_type()) == rlenvs::to_string(rlenvs::GridworldInitType::STATIC));
+        ASSERT_TRUE(rlenvs_cpp::to_string(env.init_type()) == rlenvs_cpp::to_string(rlenvs_cpp::GridworldInitType::STATIC));
         ASSERT_EQ(env.name, "Gridworld");
 
     }
@@ -172,28 +173,3 @@ TEST(TestGridworld, TestConstructor4x4Random)
     }
 }
 
-/*
-TEST(TestFrozenLake, TestRender)
-{
-
-    try{
-
-        Py_Initialize();
-
-        auto main_module = boost::python::import("__main__");
-        auto main_namespace = main_module.attr("__dict__");
-
-        gymfcpp::FrozenLake<4> env("v0", main_namespace, false);
-        env.make();
-        env.reset();
-
-        env.render(gymfcpp::RenderModeType::human);
-
-    }
-    catch(const boost::python::error_already_set&)
-    {
-        PyErr_Print();
-        FAIL()<<"Error could not step in the environment";
-    }
-}
-*/

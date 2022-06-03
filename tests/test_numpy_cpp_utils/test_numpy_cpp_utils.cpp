@@ -18,7 +18,7 @@ TEST(TestDisigtize, MinBound) {
     try{
 
         std::vector<uint_t> bins{1, 2, 3};
-        auto bin = gymfcpp::digitize(static_cast<uint_t>(0), bins);
+        auto bin = rlenvs_cpp::digitize(static_cast<uint_t>(0), bins);
         ASSERT_EQ(bin, static_cast<uint_t>(0));
     }
     catch(...)
