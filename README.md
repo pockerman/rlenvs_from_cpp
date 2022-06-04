@@ -1,16 +1,24 @@
-# gym_from_cpp
+# rlenvs_from_cpp
 
-Some utilities based on <a href="https://www.boost.org/doc/libs/1_76_0/libs/python/doc/html/tutorial/index.html">Boost.Python</a> to use 
-<a href="#">OpenAI-Gym</a> environments from C++ drivers. This repository does not aim at executing general Python code from C++ drivers. Instead, it focuses
-on simply facilitating interaction with  OpenAI-Gym environments. If you require something a lot more general, have a look at <a href="https://github.com/pybind/pybind11">pybind11</a>.
+```rlenvs_from_cpp``` is an effort to provide implementations and wrappers of environments for reinforcement learning algorithms to be used by C++ drivers. 
+Currently, we provide a minimal number of wrappers for some common OpenAI-Gym environments. Namely
 
-Thus, ```gym_from_cpp``` uses Boost.Python heavily under the hoods.  Moreover,
-it does not attempt to hide any of the  functionality provided by  Boost.Python (see basic example below). 
+- ```FrozenLake``` with ```4x4``` map
+- ```FrozenLake``` with ```8x8``` map
+- ```Blackjack```
+- ```CliffWalking```
+- ```CartPole```
+- ```MountainCar```
+- ```Taxi```
+- ```StateAggregationCartPole``` (implements state aggregation for ```CartPole```)
+- ```SerialVectorEnvWrapper``` a vector wrapper for various environments
 
-The various wrappers of the environments exposed
-should abide with <a href="https://github.com/deepmind/dm_env/blob/master/docs/index.md">dm_env</a> specification.
+In general, the environments exposed by the library  should abide with <a href="https://github.com/deepmind/dm_env/blob/master/docs/index.md">dm_env</a> specification.
 
+Using OpenAI-Gym requires <a href="https://www.boost.org/doc/libs/1_76_0/libs/python/doc/html/tutorial/index.html">Boost.Python</a> as well as
+<a href="https://github.com/openai/gym">OpenAI-Gym</a> package installed. See below for more dependencies.
 
+ 
 ## Basic example
 
 ```
@@ -61,18 +69,6 @@ Step with prob=0.333333
 
 
 ```
-
-## Environments implemented
-
-- ```FrozenLake``` with ```4x4``` map
-- ```FrozenLake``` with ```8x8``` map
-- ```Blackjack```
-- ```CliffWalking```
-- ```CartPole```
-- ```MountainCar```
-- ```Taxi```
-- ```StateAggregationCartPole``` (implements state aggregation for ```CartPole```)
-- ```SerialVectorEnvWrapper``` a vector wrapper for various environments
 
 ## Dependencies
 
