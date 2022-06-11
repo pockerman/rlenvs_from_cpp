@@ -159,6 +159,23 @@ CartPole::CartPole(const std::string& version, obj_t main_namespace, bool do_cre
     }
 }
 
+
+CartPole::CartPole(uint_t id, const std::string& version, obj_t main_namespace, bool do_create)
+    :
+     EnvMixin<CartPoleData>(version, main_namespace)
+{
+
+    this->idx = id;
+    this->py_env_name = get_py_env_name(CartPoleData::name + "_" + std::to_string(id));
+    this->py_reset_result_name = get_py_reset_rslt_name(CartPoleData::name + "_" + std::to_string(id));
+    this->py_step_result_name = get_py_step_rslt_name(CartPoleData::name + "_" + std::to_string(id));
+    this->py_state_name = get_py_state_name(CartPoleData::name + "_" + std::to_string(id));
+
+    if(do_create){
+        make();
+    }
+}
+
 CartPole::~CartPole(){
     close();
 }
