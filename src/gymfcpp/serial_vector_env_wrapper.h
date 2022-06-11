@@ -131,6 +131,7 @@ class SerialVectorEnvWrapper: protected serial_vector_env_wrapper_base<EnvType>
 public:
 
     typedef VectorTimeStep<typename EnvType::state_type> time_step_type;
+    typedef typename EnvType::action_type action_type;
 
     ///
     /// \brief VectorEnvWrapper
