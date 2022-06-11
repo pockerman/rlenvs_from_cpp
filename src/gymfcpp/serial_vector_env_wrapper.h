@@ -122,7 +122,9 @@ serial_vector_env_wrapper_base<EnvType>::close(){
 }
 
 
-
+///
+///
+///
 template<typename EnvType>
 class SerialVectorEnvWrapper: protected serial_vector_env_wrapper_base<EnvType>
 {
@@ -234,7 +236,7 @@ SerialVectorEnvWrapper<EnvType>::make(){
 
     this->envs_.reserve(this->config_.n_copies);
     for(uint_t env=0; env < this->config_.n_copies; ++env){
-        this->envs_.push_back(std::make_shared<EnvType>(this->config_.env_id, this->p_namespace_, false));
+        this->envs_.push_back(std::make_shared<EnvType>(env, this->config_.env_id, this->p_namespace_, false));
         this->envs_.back()->make();
     }
 

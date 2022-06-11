@@ -131,6 +131,9 @@ struct CartPoleData
     ///
     static state_type extract_state_from_step(obj_t gym_namespace, std::string py_state_name, std::string result_name);
     
+    ///
+    ///
+    ///
     CartPoleData()=default;
 
 };
@@ -181,7 +184,16 @@ public:
     ///
     /// \brief CartPole. Constructor
     ///
-    CartPole(const std::string& version, obj_t gym_namespace, bool do_create=true);
+    CartPole(const std::string& version, obj_t main_namespace, bool do_create=true);
+
+    ///
+    /// \brief CartPole
+    /// \param id
+    /// \param version
+    /// \param gym_namespace
+    /// \param do_create
+    ///
+    CartPole(uint_t id, const std::string& version, obj_t main_namespace, bool do_create=true);
 
     ///
     /// \brief ~CartPole. Destructor
