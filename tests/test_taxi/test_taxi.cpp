@@ -6,7 +6,7 @@
 
 #include <gtest/gtest.h>
 #include <boost/python.hpp>
-#include <boost/python/numpy.hpp>
+//#include <boost/python/numpy.hpp>
 
 namespace{
 
@@ -43,7 +43,7 @@ TEST(TestTaxi, Test_Make)
     try{
 
         Py_Initialize();
-        boost::python::numpy::initialize();
+        //boost::python::numpy::initialize();
         auto main_module = boost::python::import("__main__");
         auto main_namespace = main_module.attr("__dict__");
 
@@ -68,7 +68,7 @@ TEST(TestTaxi, Test_Reset)
     try{
 
         Py_Initialize();
-        boost::python::numpy::initialize();
+        //boost::python::numpy::initialize();
         auto main_module = boost::python::import("__main__");
         auto main_namespace = main_module.attr("__dict__");
 
@@ -92,7 +92,7 @@ TEST(TestMountainCar, Test_Step)
     try{
 
         Py_Initialize();
-        boost::python::numpy::initialize();
+        //boost::python::numpy::initialize();
         auto main_module = boost::python::import("__main__");
         auto main_namespace = main_module.attr("__dict__");
 
@@ -118,7 +118,7 @@ TEST(TestMountainCar, Test_Render)
     try{
 
         Py_Initialize();
-        boost::python::numpy::initialize();
+        //boost::python::numpy::initialize();
         auto main_module = boost::python::import("__main__");
         auto main_namespace = main_module.attr("__dict__");
 

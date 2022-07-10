@@ -6,7 +6,7 @@
 
 #include <gtest/gtest.h>
 #include <boost/python.hpp>
-#include <boost/python/numpy.hpp>
+//#include <boost/python/numpy.hpp>
 
 namespace{
 
@@ -22,7 +22,7 @@ TEST(TestStateAggregationCartPole, TestConstructor) {
     try{
 
         Py_Initialize();
-        boost::python::numpy::initialize();
+        //boost::python::numpy::initialize();
         auto main_module = boost::python::import("__main__");
         auto main_namespace = main_module.attr("__dict__");
         StateAggregationCartPole env("v0", main_namespace, 10);
@@ -42,7 +42,7 @@ TEST(TestStateAggregationCartPole, TestMake)
     try{
 
         Py_Initialize();
-        boost::python::numpy::initialize();
+        //boost::python::numpy::initialize();
         auto main_module = boost::python::import("__main__");
         auto main_namespace = main_module.attr("__dict__");
 
@@ -66,7 +66,7 @@ TEST(TestStateAggregationCartPole, TestReset)
     try{
 
         Py_Initialize();
-        boost::python::numpy::initialize();
+        //boost::python::numpy::initialize();
         auto main_module = boost::python::import("__main__");
         auto main_namespace = main_module.attr("__dict__");
 
@@ -90,7 +90,7 @@ TEST(TestStateAggregationCartPole, TestStep)
     try{
 
         Py_Initialize();
-        boost::python::numpy::initialize();
+        //boost::python::numpy::initialize();
         auto main_module = boost::python::import("__main__");
         auto main_namespace = main_module.attr("__dict__");
 
@@ -115,7 +115,7 @@ TEST(TestStateAggregationCartPole, TestRender)
     try{
 
         Py_Initialize();
-        boost::python::numpy::initialize();
+        //boost::python::numpy::initialize();
         auto main_module = boost::python::import("__main__");
         auto main_namespace = main_module.attr("__dict__");
 
