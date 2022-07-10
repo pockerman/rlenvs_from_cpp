@@ -1,7 +1,7 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.6)
 MESSAGE(STATUS "Using CMake ${CMAKE_VERSION}")
 
-PROJECT(Gym_FromCpp VERSION 0.0.5 LANGUAGES CXX)
+PROJECT(rl_envs_from_cpp VERSION 0.0.9 LANGUAGES CXX)
 
 # -----------------------------------------------------------------------------
 # Prevent in-source builds.
@@ -21,44 +21,44 @@ SET(GYMFCPP_VERSION_MAJOR 0)
 SET(GYMFCPP_VERSION_MINOR 0)
 SET(GYMFCPP_VERSION_PATCH 9)
 SET(GYMFCPP_VERSION "${GYMFCPP_VERSION_MAJOR}.${GYMFCPP_VERSION_MINOR}.${GYMFCPP_VERSION_PATCH}-alpha")
-MESSAGE(STATUS "GymFromCpp Version ${GYMFCPP_VERSION}")
+MESSAGE(STATUS "rl_envs_from_cpp Version ${GYMFCPP_VERSION}")
 
 SET(CMAKE_BUILD_TYPE "Debug")
 SET(CMAKE_CXX_COMPILER /usr/bin/g++-11)
 SET(CMAKE_C_COMPILER /usr/bin/gcc-11)
 SET(CMAKE_CXX_STANDARD 20)
 SET(CMAKE_CXX_STANDARD_REQUIRED True)
-
-IF(CMAKE_BUILD_TYPE STREQUAL "Debug")
-SET(CMAKE_INSTALL_PREFIX /home/alex/qi3/cubeAI/gymcpp/install/dbg)
-SET(CMAKE_CXX_FLAGS "-g ") # -Wall -Wextra")
-ELSEIF(CMAKE_BUILD_TYPE STREQUAL "Release")
-SET(CMAKE_INSTALL_PREFIX /home/alex/qi3/cubeAI/gymcpp/install/opt)
-SET(CMAKE_CXX_FLAGS "-O2")
-ENDIF()
-
-SET(CMAKE_LINKER_FLAGS "-pthread")
-
-
 SET(USE_PYTORCH ON)
-
-IF(CMAKE_BUILD_TYPE STREQUAL "Debug")
-SET(GYMFCPP_DEBUG ON)
-ENDIF()
+SET(GYMFCPP_DEBUG OFF)
+SET(PYTHON_LIB python3.10)
+SET(PYTHON_LID_DIR /usr/lib/python3.10/config-3.10-x86_64-linux-gnu/)
+SET(BOOST_PYTHON_LIB boost_python310)
 
 SET(ENABLE_TESTS_FLAG ON)
 SET(ENABLE_EXAMPLES_FLAG ON)
 SET(ENABLE_DOC_FLAG OFF)
+SET(CMAKE_LINKER_FLAGS "-pthread")
+
+# only neccessary if tests are enabled
+SET(GTEST_INCLUDE_DIR /home/alex/MySoftware/gtest/install/include)
+SET(GTEST_LIB_DIR /home/alex/MySoftware/gtest/install/lib)
+
+IF(CMAKE_BUILD_TYPE STREQUAL "Debug")
+	SET(CMAKE_INSTALL_PREFIX /home/alex/qi3/cubeAI/rl_envs_cpp/install/dbg)
+	SET(CMAKE_CXX_FLAGS "-g ") # -Wall -Wextra")
+	SET(GYMFCPP_DEBUG ON)
+ELSEIF(CMAKE_BUILD_TYPE STREQUAL "Release")
+	SET(CMAKE_INSTALL_PREFIX /home/alex/qi3/cubeAI/rl_envs_cpp/install/opt)
+	SET(CMAKE_CXX_FLAGS "-O2")
+ENDIF()
 
 LIST(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 
 configure_file(config.h.in ${PROJECT_SOURCE_DIR}/src/gymfcpp/gymfcpp_config.h @ONLY)
 configure_file(version.h.in ${PROJECT_SOURCE_DIR}/src/gymfcpp/gymfcpp_version.h @ONLY)
 
-
-
 # find Boost
-FIND_PACKAGE(Boost 1.65.0 REQUIRED COMPONENTS python system numpy)
+FIND_PACKAGE(Boost 1.74.0 REQUIRED COMPONENTS python310 system)
 
 if(Boost_FOUND)
   if(Boost_LIBRARY_DIR)

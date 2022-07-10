@@ -6,7 +6,7 @@
 
 #include <gtest/gtest.h>
 #include <boost/python.hpp>
-#include <boost/python/numpy.hpp>
+//#include <boost/python/numpy.hpp>
 
 namespace{
 
@@ -22,7 +22,7 @@ TEST(TestMountainCar, TestConstructor) {
     try{
 
         Py_Initialize();
-        boost::python::numpy::initialize();
+        //boost::python::numpy::initialize();
         auto gym_module = boost::python::import("__main__");
         auto gym_namespace = gym_module.attr("__dict__");
         MountainCar env("v0", gym_namespace);
@@ -42,7 +42,7 @@ TEST(TestMountainCar, Test_Make)
     try{
 
         Py_Initialize();
-        boost::python::numpy::initialize();
+        //boost::python::numpy::initialize();
         auto gym_module = boost::python::import("gym");
         auto gym_namespace = gym_module.attr("__dict__");
 
@@ -66,7 +66,7 @@ TEST(TestMountainCar, Test_Reset)
     try{
 
         Py_Initialize();
-        boost::python::numpy::initialize();
+        //boost::python::numpy::initialize();
         auto gym_module = boost::python::import("gym");
         auto gym_namespace = gym_module.attr("__dict__");
 
@@ -93,7 +93,7 @@ TEST(TestMountainCar, Test_Step)
     try{
 
         Py_Initialize();
-        boost::python::numpy::initialize();
+        //boost::python::numpy::initialize();
         auto gym_module = boost::python::import("__main__");
         auto gym_namespace = gym_module.attr("__dict__");
 
@@ -122,7 +122,7 @@ TEST(TestMountainCar, Test_Render)
     try{
 
         Py_Initialize();
-        boost::python::numpy::initialize();
+        //boost::python::numpy::initialize();
         auto gym_module = boost::python::import("gym");
         auto gym_namespace = gym_module.attr("__dict__");
 
