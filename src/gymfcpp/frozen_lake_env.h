@@ -171,7 +171,8 @@ struct FrozenLakeData
     /// \param py_env_n
     /// \return
     ///
-    static state_type extract_state_from_reset(obj_t gym_namespace, std::string py_state_name, std::string result_name);
+    static state_type extract_state_from_reset(obj_t gym_namespace,
+                                               std::string py_state_name, std::string result_name);
 
     ///
     /// \brief extract_state_from_step

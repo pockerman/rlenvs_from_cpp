@@ -28,13 +28,24 @@ SET(CMAKE_CXX_COMPILER /usr/bin/g++-11)
 SET(CMAKE_C_COMPILER /usr/bin/gcc-11)
 SET(CMAKE_CXX_STANDARD 20)
 SET(CMAKE_CXX_STANDARD_REQUIRED True)
+
+# where to install the library
+SET(INSTALL_PREFIX "/home/alex/qi3/cubeai/external/rlenvs_cpp/install")
+
+# The CUDA compiler. This is required if the
+# PyTorch lib supports CUDA
+SET(CMAKE_CUDA_COMPILER "/usr/local/cuda/bin/nvcc")
+
+# PyTorch
 SET(USE_PYTORCH ON)
+SET(PYTORCH_PATH "/home/alex/MySoftware/libtorch")
+
 SET(GYMFCPP_DEBUG OFF)
 SET(PYTHON_LIB python3.10)
 SET(PYTHON_LID_DIR /usr/lib/python3.10/config-3.10-x86_64-linux-gnu/)
 SET(BOOST_PYTHON_LIB boost_python310)
 
-SET(ENABLE_TESTS_FLAG ON)
+SET(ENABLE_TESTS_FLAG OFF)
 SET(ENABLE_EXAMPLES_FLAG ON)
 SET(ENABLE_DOC_FLAG OFF)
 SET(CMAKE_LINKER_FLAGS "-pthread")
@@ -44,11 +55,11 @@ SET(GTEST_INCLUDE_DIR /home/alex/MySoftware/gtest/install/include)
 SET(GTEST_LIB_DIR /home/alex/MySoftware/gtest/install/lib)
 
 IF(CMAKE_BUILD_TYPE STREQUAL "Debug")
-	SET(CMAKE_INSTALL_PREFIX /home/alex/qi3/cubeAI/rl_envs_cpp/install/dbg)
+	SET(CMAKE_INSTALL_PREFIX "${INSTALL_PREFIX}/dbg")
 	SET(CMAKE_CXX_FLAGS "-g ") # -Wall -Wextra")
 	SET(GYMFCPP_DEBUG ON)
 ELSEIF(CMAKE_BUILD_TYPE STREQUAL "Release")
-	SET(CMAKE_INSTALL_PREFIX /home/alex/qi3/cubeAI/rl_envs_cpp/install/opt)
+	SET(CMAKE_INSTALL_PREFIX "${INSTALL_PREFIX}/opt")
 	SET(CMAKE_CXX_FLAGS "-O2")
 ENDIF()
 
@@ -84,7 +95,7 @@ endif()
 
 
 IF( USE_PYTORCH )
-	LIST(APPEND CMAKE_PREFIX_PATH /home/alex/MySoftware/libtorch)
+	LIST(APPEND CMAKE_PREFIX_PATH ${PYTORCH_PATH})
 	FIND_PACKAGE(Torch REQUIRED CONFIG)
 ENDIF()
 

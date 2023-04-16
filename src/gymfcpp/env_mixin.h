@@ -153,9 +153,10 @@ EnvMixin<EnvImpl>::reset(){
     auto cpp_str = py_reset_result_name + " = ";
     cpp_str += py_env_name + ".reset()";
 
-    // reset the python environment
+    // reset the environment in the Python interpreter
     boost::python::exec(cpp_str.c_str(), gym_namespace);
 
+    // get the observation from the reset
     auto obs = EnvImpl::extract_state_from_reset(gym_namespace, py_state_name, py_reset_result_name);
     current_state = time_step_type(TimeStepTp::FIRST, 0.0, obs);
     return current_state;

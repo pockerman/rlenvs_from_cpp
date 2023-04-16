@@ -34,7 +34,7 @@ int main(){
     	Py_Initialize();
         auto main_module = boost::python::import("__main__");
         auto main_namespace = main_module.attr("__dict__");
-        rlenvs_cpp::gymfcpp::FrozenLake<4> env("v0", main_namespace, false);
+        rlenvs_cpp::gymfcpp::FrozenLake<4> env("v1", main_namespace, false);
 
         env.make();
 
@@ -73,12 +73,12 @@ Step with prob=0.333333
 ## Dependencies
 
 - A compiler that supports C++20 e.g. g++-11
-- Boost C++ and in particlar Boost.Python
-- OpenAI-Gym 
-- CMake >= 3.6
-- Gtest (if configured with tests)
+- <a href="https://www.boost.org/">Boost C++</a> and in particlar Boost.Python
+- <a href="https://github.com/Farama-Foundation/Gymnasium">Gymnasium</a> (<a href="https://github.com/openai/gym">OpenAI-Gym</a> development has been switched to Gymnasium)
+- <a href="https://cmake.org/">CMake</a> >= 3.6
+- <a href="https://github.com/google/googletest">Gtest</a> (if configured with tests)
 - <a href="https://github.com/aantron/better-enums">better-enums</a>
-- PyTorch (C++ bindings)
+- <a href="https://pytorch.org/">PyTorch</a> (C++ bindings with C++11 ABI)
 
 ## Installation
 

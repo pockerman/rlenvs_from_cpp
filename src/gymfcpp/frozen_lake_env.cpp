@@ -1,6 +1,7 @@
 #include "gymfcpp/frozen_lake_env.h"
 #include "gymfcpp/names_generator.h"
 #include "gymfcpp/gymfcpp_config.h"
+#include "gymfcpp/detail/boost_python_utils.h"
 
 #include <boost/python.hpp>
 
@@ -47,16 +48,19 @@ const std::string FrozenLakeData<side_size>::name = "FrozenLake";
 
 template<uint_t side_size>
 typename FrozenLakeData<side_size>::state_type
-FrozenLakeData<side_size>::extract_state_from_reset(obj_t gym_namespace, std::string py_state_name, std::string result_name){
+FrozenLakeData<side_size>::extract_state_from_reset(obj_t gym_namespace, std::string py_state_name,
+                                                    std::string result_name){
 
+    // the string to execute in Python interpreter
+    // set the state name equal to the result name
     std::string s = py_state_name + " = " + result_name + "\n";
 
     // reset the python environment
     boost::python::exec(s.c_str(), gym_namespace);
 
     // the observation
-    auto observation =  boost::python::extract<uint_t>(gym_namespace[py_state_name]);
-
+    auto reset_result = rlenvs_cpp::detail::extract_boost_type<boost::python::tuple>(gym_namespace, py_state_name);
+    auto observation = boost::python::extract<uint_t>(reset_result[0]);
     return observation;
 }
 
@@ -162,7 +166,7 @@ FrozenLake<side_size>::step(action_type action, bool query_extra){
 
     if(query_extra){
 
-        auto prob_dict = boost::python::extract<boost::python::dict>(result()[3]);
+        auto prob_dict = boost::python::extract<boost::python::dict>(result()[4]);
         auto prob = boost::python::extract<real_t>(prob_dict()["prob"]);
         extra["prob"] = std::any(prob());
     }
@@ -208,7 +212,7 @@ template<uint_t side_size>
 std::string
 FrozenLake<side_size>::construct_python_string_()const noexcept{
 
-    std::string cpp_str = "import gym \n";
+    std::string cpp_str = "import gymnasium as gym \n";
 
     if(is_slippery()){
 

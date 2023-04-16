@@ -12,7 +12,9 @@ int main(){
         Py_Initialize();
         auto main_module = boost::python::import("__main__");
         auto main_namespace = main_module.attr("__dict__");
-        rlenvs_cpp::gymfcpp::FrozenLake<4> env("v0", main_namespace, false);
+
+        // create a 4x4 FrozenLake environment
+        rlenvs_cpp::gymfcpp::FrozenLake<4> env("v1", main_namespace, false);
 
         env.make();
 
