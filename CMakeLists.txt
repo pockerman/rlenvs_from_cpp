@@ -65,8 +65,8 @@ ENDIF()
 
 LIST(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 
-configure_file(config.h.in ${PROJECT_SOURCE_DIR}/src/gymfcpp/gymfcpp_config.h @ONLY)
-configure_file(version.h.in ${PROJECT_SOURCE_DIR}/src/gymfcpp/gymfcpp_version.h @ONLY)
+configure_file(config.h.in ${PROJECT_SOURCE_DIR}/src/rlenvs/rlenvscpp_config.h @ONLY)
+configure_file(version.h.in ${PROJECT_SOURCE_DIR}/src/rlenvs/rlenvscpp_version.h @ONLY)
 
 # find Boost
 FIND_PACKAGE(Boost 1.74.0 REQUIRED COMPONENTS python310 system)
@@ -121,11 +121,11 @@ MESSAGE(STATUS "Boost include: ${Boost_INCLUDE_DIRS}")
 MESSAGE(STATUS "Torch include: ${TORCH_INCLUDE_DIRS}")
 
 
-FILE(GLOB SRCS src/gymfcpp/*.cpp src/gymfcpp/detail/*.cpp)
-ADD_LIBRARY(gymfcpplib SHARED ${SRCS})
+FILE(GLOB SRCS src/rlenvs/*.cpp src/rlenvs/detail/*.cpp src/rlenvs/envs/gymnasium/*.cpp src/rlenvs/envs/gymnasium/vector*.cpp)
+ADD_LIBRARY(rlenvscpplib SHARED ${SRCS})
 
-SET_TARGET_PROPERTIES(gymfcpplib PROPERTIES LINKER_LANGUAGE CXX)
-INSTALL(TARGETS gymfcpplib DESTINATION ${CMAKE_INSTALL_PREFIX})
+SET_TARGET_PROPERTIES(rlenvscpplib PROPERTIES LINKER_LANGUAGE CXX)
+INSTALL(TARGETS rlenvscpplib DESTINATION ${CMAKE_INSTALL_PREFIX})
 MESSAGE(STATUS "Installation destination at: ${CMAKE_INSTALL_PREFIX}")
 
 IF(ENABLE_EXAMPLES_FLAG)
