@@ -1,10 +1,10 @@
 #ifndef STATE_AGGREGATION_ENV_BASE_H
 #define STATE_AGGREGATION_ENV_BASE_H
 
-#include "gymfcpp/gymfcpp_types.h"
-# include "gymfcpp/env_mixin.h"
-#include "gymfcpp/render_mode_enum.h"
-#include "gymfcpp/gymfcpp_config.h"
+#include "rlenvs/rlenvs_types.h"
+#include "rlenvs/envs/env_mixin.h"
+#include "rlenvs/render_mode_enum.h"
+#include "rlenvs/rlenvscpp_config.h"
 
 #ifdef GYMFCPP_DEBUG
 #include <cassert>
@@ -18,6 +18,8 @@ namespace rlenvs_cpp
 
 /// Forward declaration
 template<typename StateTp> class TimeStep;
+
+namespace envs{
 
 ///
 /// \brief The TiledEnviromentBase class. Base class to derive
@@ -142,7 +144,7 @@ StateAggregationEnvBase<EnvType, StateTp>::make(){
 
 }
 
-
+}
 }
 
 #endif // TILED_ENV_BASE_H

@@ -37,9 +37,9 @@
   *      195.0 over 100 consecutive trials.
   **/
 
-#include "gymfcpp/gymfcpp_types.h"
-#include "gymfcpp/cart_pole_env.h"
-#include "gymfcpp/state_aggregation_env_base.h"
+#include "rlenvs/rlenvs_types.h"
+#include "rlenvs/envs/gymnasium/cart_pole_env.h"
+#include "rlenvs/envs/state_aggregation_env_base.h"
 
 #include <string>
 #include <utility>
@@ -47,10 +47,14 @@
 #include <tuple>
 
 namespace rlenvs_cpp{
-namespace gymfcpp{
 
 /// Forward declaration
 template<typename StateTp> class TimeStep;
+
+
+namespace envs{
+namespace gymnasium{
+
 
 ///
 /// \brief The TiledCartPoleBoundaries struct. Boundaries for
@@ -180,6 +184,7 @@ private:
 };
 
 
+}
 }
 }
 

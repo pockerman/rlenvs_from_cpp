@@ -1,7 +1,7 @@
 #ifndef GYMFCPP_CONSTS_H
 #define GYMFCPP_CONSTS_H
 
-#include "gymfcpp/gymfcpp_types.h"
+#include "rlenvs/rlenvs_types.h"
 #include <string>
 
 namespace rlenvs_cpp {

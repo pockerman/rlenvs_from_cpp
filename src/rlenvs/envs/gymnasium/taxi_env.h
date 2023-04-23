@@ -1,20 +1,20 @@
 #ifndef TAXI_H
 #define TAXI_H
 
-#include "gymfcpp/gymfcpp_config.h"
-#include "gymfcpp/gymfcpp_types.h"
-#include "gymfcpp/env_mixin.h"
-#include "gymfcpp/discrete_space.h"
-#include "gymfcpp/continuous_space.h"
-#include "gymfcpp/time_step.h"
+#include "rlenvs/rlenvscpp_config.h"
+#include "rlenvs/rlenvs_types.h"
+#include "rlenvs/envs//env_mixin.h"
+#include "rlenvs/discrete_space.h"
+#include "rlenvs/continuous_space.h"
+#include "rlenvs/time_step.h"
 
 #include <map>
 #include <string>
 
 
 namespace rlenvs_cpp{
-namespace gymfcpp
-{
+namespace envs {
+namespace gymnasium{
 
 ///
 /// \brief The TaxiData struct. Wrapper for the environment data
@@ -190,6 +190,7 @@ private:
 
 };
 
+}
 }
 }
 #endif // TAXI_H

@@ -1,11 +1,11 @@
 #ifndef TORCH_STATE_ADAPTOR_H
 #define TORCH_STATE_ADAPTOR_H
 
-#include "gymfcpp/gymfcpp_config.h"
+#include "rlenvs/rlenvscpp_config.h"
 
 #ifdef USE_PYTORCH
 
-#include "gymfcpp/gymfcpp_types.h"
+#include "rlenvs/rlenvs_types.h"
 #include <vector>
 
 namespace rlenvs_cpp{

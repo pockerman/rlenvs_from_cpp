@@ -1,7 +1,7 @@
-#include "gymfcpp/frozen_lake_env.h"
-#include "gymfcpp/names_generator.h"
-#include "gymfcpp/gymfcpp_config.h"
-#include "gymfcpp/detail/boost_python_utils.h"
+#include "rlenvs/envs/gymnasium/frozen_lake_env.h"
+#include "rlenvs/names_generator.h"
+#include "rlenvs/rlenvscpp_config.h"
+#include "rlenvs/detail/boost_python_utils.h"
 
 #include <boost/python.hpp>
 
@@ -16,7 +16,8 @@
 #endif
 
 namespace rlenvs_cpp{
-namespace gymfcpp{
+namespace envs{
+namespace gymnasium{
 
 discrete_state_space_frozen_lake<4>::item_type
 discrete_state_space_frozen_lake<4>::sample(){
@@ -242,5 +243,6 @@ FrozenLake<side_size>::construct_python_string_()const noexcept{
 template class FrozenLake<4>;
 template class FrozenLake<8>;
 
+}
 }
 }

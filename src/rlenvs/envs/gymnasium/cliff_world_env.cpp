@@ -1,6 +1,6 @@
-#include "gymfcpp/cliff_world_env.h"
-#include "gymfcpp/names_generator.h"
-#include "gymfcpp/gymfcpp_config.h"
+#include "rlenvs/envs/gymnasium/cliff_world_env.h"
+#include "rlenvs/names_generator.h"
+#include "rlenvs/rlenvscpp_config.h"
 
 #ifdef GYMFCPP_DEBUG
 #include <cassert>
@@ -9,7 +9,8 @@
 #include <boost/python/numpy.hpp>
 
 namespace rlenvs_cpp{
-namespace gymfcpp{
+namespace envs {
+namespace gymnasium{
 
 const std::string CliffWorldData::name = "CliffWalking";
 
@@ -141,5 +142,6 @@ CliffWorld::p(uint_t sidx, uint_t aidx)const{
     return dyn;
 }
 
+}
 }
 }

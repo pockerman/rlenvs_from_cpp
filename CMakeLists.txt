@@ -121,7 +121,8 @@ MESSAGE(STATUS "Boost include: ${Boost_INCLUDE_DIRS}")
 MESSAGE(STATUS "Torch include: ${TORCH_INCLUDE_DIRS}")
 
 
-FILE(GLOB SRCS src/rlenvs/*.cpp src/rlenvs/detail/*.cpp src/rlenvs/envs/gymnasium/*.cpp src/rlenvs/envs/gymnasium/vector*.cpp)
+FILE(GLOB SRCS src/rlenvs/*.cpp src/rlenvs/detail/*.cpp src/rlenvs/envs/gymnasium/*.cpp
+    src/rlenvs/envs/gymnasium/vector/*.cpp)
 ADD_LIBRARY(rlenvscpplib SHARED ${SRCS})
 
 SET_TARGET_PROPERTIES(rlenvscpplib PROPERTIES LINKER_LANGUAGE CXX)

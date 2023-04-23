@@ -3,7 +3,6 @@
 
 #include "rlenvs/rlenvscpp_config.h"
 
-
 #ifdef USE_PYTORCH
 #include <torch/torch.h>
 #endif

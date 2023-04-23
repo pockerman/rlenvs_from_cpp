@@ -1,5 +1,5 @@
-#include "gymfcpp/gymfcpp_types.h"
-#include "gymfcpp/frozen_lake_env.h"
+#include "rlenvs/rlenvs_types.h"
+#include "rlenvs/envs/gymnasium/frozen_lake_env.h"
 
 #include <boost/python.hpp>
 #include <iostream>
@@ -14,7 +14,7 @@ int main(){
         auto main_namespace = main_module.attr("__dict__");
 
         // create a 4x4 FrozenLake environment
-        rlenvs_cpp::gymfcpp::FrozenLake<4> env("v1", main_namespace, false);
+        rlenvs_cpp::envs::gymnasium::FrozenLake<4> env("v1", main_namespace, false);
 
         env.make();
 

@@ -77,8 +77,12 @@ Step with prob=0.333333
 - <a href="https://github.com/Farama-Foundation/Gymnasium">Gymnasium</a> (<a href="https://github.com/openai/gym">OpenAI-Gym</a> development has been switched to Gymnasium)
 - <a href="https://cmake.org/">CMake</a> >= 3.6
 - <a href="https://github.com/google/googletest">Gtest</a> (if configured with tests)
-- <a href="https://github.com/aantron/better-enums">better-enums</a>
-- <a href="https://pytorch.org/">PyTorch</a> (C++ bindings with C++11 ABI)
+- <a href="https://pytorch.org/">PyTorch</a> (C++ bindings with C++11 ABI) (if configured with PyTorch)
+
+In addition, the library also incorporates ```(src/extern)```
+
+- <a href="https://github.com/elnormous/HTTPRequest">HTTPRequest</a>
+- <a href="http://github.com/aantron/better-enums">better-enums</a>
 
 ## Installation
 

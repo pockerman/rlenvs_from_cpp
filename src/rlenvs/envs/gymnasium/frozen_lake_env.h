@@ -55,10 +55,10 @@
   *
   * */
 
-#include "gymfcpp/gymfcpp_types.h"
-#include "gymfcpp/env_mixin.h"
-#include "gymfcpp/discrete_space.h"
-#include "gymfcpp/time_step.h"
+#include "rlenvs/rlenvs_types.h"
+#include "rlenvs/envs/env_mixin.h"
+#include "rlenvs/discrete_space.h"
+#include "rlenvs/time_step.h"
 
 #include <boost/noncopyable.hpp>
 #include <string>
@@ -66,7 +66,8 @@
 #include <tuple>
 
 namespace rlenvs_cpp{
-namespace gymfcpp {
+namespace envs{
+namespace gymnasium {
 
 template<uint_t side_size>
 struct discrete_state_space_frozen_lake;
@@ -317,6 +318,7 @@ private:
 
 };
 
+}
 }
 }
 #endif // FROZEN_LAKE_H

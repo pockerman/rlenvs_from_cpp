@@ -1,5 +1,5 @@
-#include "gymfcpp/gymfcpp_config.h"
-#include "gymfcpp/torch_state_adaptor.h"
+#include "rlenvs/rlenvscpp_config.h"
+#include "rlenvs/torch_state_adaptor.h"
 
 #ifdef USE_PYTORCH
 

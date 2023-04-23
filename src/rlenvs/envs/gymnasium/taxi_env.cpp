@@ -1,10 +1,10 @@
-#include "gymfcpp/taxi_env.h"
-#include "gymfcpp/names_generator.h"
-#include "gymfcpp/gymfcpp_consts.h"
+#include "rlenvs/envs/gymnasium/taxi_env.h"
+#include "rlenvs/names_generator.h"
+#include "rlenvs/rlenvs_consts.h"
 
 namespace rlenvs_cpp{
-namespace gymfcpp
-{
+namespace envs{
+namespace gymnasium{
 
 std::string TaxiData::name = "Taxi";
 
@@ -123,5 +123,6 @@ Taxi::copy(std::map<std::string, std::string>&& names)const{
     return Taxi(this->version, this->gym_namespace, std::move(names));
 }
 
+}
 }
 }

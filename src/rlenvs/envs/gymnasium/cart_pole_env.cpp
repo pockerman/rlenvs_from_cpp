@@ -188,7 +188,7 @@ CartPole::make(){
         return;
     }
 
-    std::string cpp_str = "import gym \n";
+    std::string cpp_str = "import gymnasium as gym \n";
     cpp_str += "import numpy as np \n";
     cpp_str += py_env_name + " = gym.make('" + CartPoleData::name +"-" + version + "').unwrapped\n";
 

@@ -1,8 +1,8 @@
 #ifndef NUMPY_CPP_UTILS_H
 #define NUMPY_CPP_UTILS_H
 
-#include "gymfcpp/gymfcpp_types.h"
-#include "gymfcpp/gymfcpp_config.h"
+#include "rlenvs/rlenvs_types.h"
+#include "rlenvs/rlenvscpp_config.h"
 
 #ifdef GYMFCPP_DEBUG
 #include <cassert>

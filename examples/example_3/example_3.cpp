@@ -1,5 +1,5 @@
-#include "gymfcpp/gymfcpp_types.h"
-#include "gymfcpp/cart_pole_env.h""
+#include "rlenvs/rlenvs_types.h"
+#include "rlenvs/envs/gymnasium/vector/vector_cart_pole.h"
 
 #include <boost/python.hpp>
 #include <iostream>
@@ -14,17 +14,17 @@ int main(){
         auto main_namespace = main_module.attr("__dict__");
 
         // create a 4x4 FrozenLake environment
-        rlenvs_cpp::gymfcpp::CartPole env("v1", main_namespace, false);
+        rlenvs_cpp::envs::gymnasium::vector::VCartPole env("v1", main_namespace, 1, false);
 
         env.make();
 
-        auto step = env.reset();
-        std::cout<<step<<std::endl;
+        //auto step = env.reset();
+        //std::cout<<step<<std::endl;
 
-        step = env.step(1, true);
-        std::cout<<step<<std::endl;
+        //step = env.step(1, true);
+        //std::cout<<step<<std::endl;
 
-        std::cout<<"Step with prob="<<step.get_extra<rlenvs_cpp::real_t>("prob")<<std::endl;
+        //std::cout<<"Step with prob="<<step.get_extra<rlenvs_cpp::real_t>("prob")<<std::endl;
 
     }
     catch(boost::python::error_already_set const &)

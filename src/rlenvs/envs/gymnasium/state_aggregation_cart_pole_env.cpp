@@ -1,11 +1,11 @@
-#include "gymfcpp/state_aggregation_cart_pole_env.h"
-#include "gymfcpp/numpy_cpp_utils.h"
-#include "gymfcpp/time_step_type.h"
-#include "gymfcpp/time_step.h"
+#include "rlenvs/envs/gymnasium/state_aggregation_cart_pole_env.h"
+#include "rlenvs/numpy_cpp_utils.h"
+#include "rlenvs/time_step_type.h"
+#include "rlenvs/time_step.h"
 
 namespace rlenvs_cpp{
-namespace gymfcpp
-{
+namespace envs{
+namespace gymnasium{
 
 StateAggregationCartPole::StateAggregationCartPole(const std::string version, obj_t main_namespace, uint_t n_states,
                              uint_t state_idx, const StateAggregationCartPoleBoundaries& boundaries)
@@ -159,5 +159,6 @@ StateAggregationCartPole::build_pole_theta_velocity_space_(){
 }
 
 
+}
 }
 }

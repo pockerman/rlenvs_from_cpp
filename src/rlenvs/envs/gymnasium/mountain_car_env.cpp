@@ -1,7 +1,7 @@
-#include "gymfcpp/gymfcpp_config.h"
-#include "gymfcpp/mountain_car_env.h"
-#include "gymfcpp/time_step.h"
-#include "gymfcpp/names_generator.h"
+#include "rlenvs/rlenvscpp_config.h"
+#include "rlenvs/envs/gymnasium/mountain_car_env.h"
+#include "rlenvs/time_step.h"
+#include "rlenvs/names_generator.h"
 
 #ifdef GYMFCPP_DEBUG
 #include <cassert>
@@ -10,7 +10,8 @@
 #include <iostream>
 
 namespace rlenvs_cpp{
-namespace gymfcpp{
+namespace envs{
+namespace gymnasium{
 
 
 const std::string MountainCarData::name = "MountainCar";
@@ -114,5 +115,6 @@ MountainCar::step(action_type action){
 
 }
 
+}
 }
 }
