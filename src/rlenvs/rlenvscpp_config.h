@@ -5,7 +5,7 @@
 #define GYMFCPP_DEBUG
 
 /*Use PyTorch */
-#define USE_PYTORCH
+/* #undef USE_PYTORCH */
 
 #endif
 

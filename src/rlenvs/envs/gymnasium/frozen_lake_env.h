@@ -231,9 +231,12 @@ public:
     typedef typename FrozenLakeData<side_size>::time_step_type time_step_type;
 
     ///
-    /// \brief FrozenLake. Constructor
+    /// \brief FrozenLake. Constructor. It tries to
+    /// establish connection with the API that
+    /// constrols the Gymnasium Python implementation
     ///
-    FrozenLake(const std::string& version, obj_t main_namespace,
+    FrozenLake(const std::string& url,
+               const std::string& version,
                bool do_create=true, bool is_slippery=true);
 
     ///
@@ -262,7 +265,7 @@ public:
     /// \brief make. Builds the environment. Optionally we can choose if the
     /// environment will be slippery
     ///
-    void make();
+    void make(const std::string& version, bool is_slippery=true);
 
     ///
     /// \brief n_states. Returns the number of states

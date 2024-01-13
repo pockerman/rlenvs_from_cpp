@@ -37,7 +37,7 @@ SET(INSTALL_PREFIX "/home/alex/qi3/cubeai/external/rlenvs_cpp/install")
 SET(CMAKE_CUDA_COMPILER "/usr/local/cuda/bin/nvcc")
 
 # PyTorch
-SET(USE_PYTORCH ON)
+SET(USE_PYTORCH OFF)
 SET(PYTORCH_PATH "/home/alex/MySoftware/libtorch")
 
 SET(GYMFCPP_DEBUG OFF)
@@ -111,6 +111,7 @@ IF( USE_PYTORCH )
 	INCLUDE_DIRECTORIES(${TORCH_INCLUDE_DIRS})
 ENDIF()
 
+INCLUDE_DIRECTORIES("/usr/include/python3.10/")
 INCLUDE_DIRECTORIES(src/)
 
 MESSAGE(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
