@@ -1,59 +1,37 @@
-#include <boost/python.hpp>
+#include "rlenvs/rlenvs_types.h"
+#include "rlenvs/envs/gymnasium/frozen_lake_env.h"
 #include <iostream>
+#include <string>
 
 
 int main(){
 
-    try
-    {
-        std::cout<<"Starting the interpreter..."<<std::endl;
+    const std::string SERVER_URL = "http://0.0.0.0:8001/api";
+    rlenvs_cpp::envs::gymnasium::FrozenLake<4> env(SERVER_URL);
 
-        Py_Initialize();
+    // make the environment
+    env.make("v1", true);
 
-        std::cout<<"Importing module..."<<std::endl;
-        auto gym_module = boost::python::import("gym");
-        auto gym_namespace = gym_module.attr("__dict__");
+    std::cout<<"Is environment created? "<<env.is_created()<<std::endl;
+    std::cout<<"Is environment alive? "<<env.is_alive()<<std::endl;;
 
-        std::cout<<"Module name "<<boost::python::extract<const char*>(gym_namespace["__name__"])<<std::endl;
+    // reset the environment
+    auto time_step = env.reset();
 
-        std::cout<<"Creating the environment..."<<std::endl;
+    std::cout<<"Reward on reset: "<<time_step.reward()<<std::endl;
+    std::cout<<"Observation on reset: "<<time_step.observation()<<std::endl;
+    std::cout<<"Is terminal state: "<<time_step.done()<<std::endl;
 
-        // create an environment
-        auto ignored = boost::python::exec("import gym \n"
-                                           "world = gym.make('FrozenLake-v0', is_slippery=True) \n"
-                                           "world = world.unwrapped", gym_namespace);
+    // let's print the time_step
+    std::cout<<time_step<<std::endl;
 
-        // get the created world
-        auto world =  boost::python::extract<boost::python::api::object>(gym_namespace["world"]);
+    // take an action in the environment
+    auto new_time_step = env.step(rlenvs_cpp::envs::gymnasium::FrozenLakeActionsEnum::RIGHT);
 
-        auto world_dict = boost::python::extract<boost::python::dict>(world().attr("__dict__"));
+    std::cout<<new_time_step<<std::endl;
 
-        // uncomment this to see the attributes
-        /*auto keys = boost::python::list(world_dict().keys());
-
-        for(auto i=0; i<boost::python::len(keys); ++i){
-
-            std::cout<<boost::python::extract<std::string>(boost::python::object(keys[i]))()<<std::endl;;
-        }*/
-
-        auto observation_space = boost::python::extract<boost::python::api::object>(world_dict()["observation_space"]);
-        std::cout<<"Number of states "<<boost::python::extract<int>(observation_space().attr("__dict__")["n"])<<std::endl;
-
-        auto action_space = boost::python::extract<boost::python::api::object>(world_dict()["action_space"]);
-        std::cout<<"Number of actions "<<boost::python::extract<int>(action_space().attr("__dict__")["n"])<<std::endl;
-
-        // create an environment
-        boost::python::exec("observation = world.reset()", gym_namespace);
-
-        // the observation
-        auto observation =  boost::python::extract<int>(gym_namespace["observation"]);
-        std::cout<<"Observation after reset="<<observation<<std::endl;
-
-    }
-    catch(boost::python::error_already_set const &)
-    {
-        PyErr_Print();
-    }
+    // close the environment
+    env.close();
 
     std::cout<<"Finilize..."<<std::endl;
     return 0;

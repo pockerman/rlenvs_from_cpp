@@ -35,12 +35,12 @@ public:
     ///
     /// \brief TimeStep. Constructor
     ///
-    TimeStep(TimeStepTp type, real_t reward, state_t obs);
+    TimeStep(TimeStepTp type, real_t reward, state_t obs, real_t discount_factor);
 
     ///
     /// \brief TimeStep. Constructor
     ///
-    TimeStep(TimeStepTp type, real_t reward, state_t obs, std::unordered_map<std::string, std::any>&& extra);
+    TimeStep(TimeStepTp type, real_t reward, state_t obs, real_t discount_factor, std::unordered_map<std::string, std::any>&& extra);
 
     ///
     /// \brief TimeStep
@@ -98,6 +98,11 @@ public:
     real_t reward()const noexcept{return reward_;}
 
     ///
+    /// \brief discount. Returns the discount factor
+    ///
+    real_t discount()const noexcept{return discount_;}
+
+    ///
     /// \brief done
     /// \return
     ///
@@ -144,6 +149,11 @@ private:
     state_t obs_;
 
     ///
+    /// \brief discount_. The discount_factor
+    ///
+    real_t discount_;
+
+    ///
     /// \brief extra_
     ///
     std::unordered_map<std::string, std::any> extra_;
@@ -156,24 +166,28 @@ TimeStep<StateTp>::TimeStep()
       type_(TimeStepTp::INVALID_TYPE),
       reward_(0.0),
       obs_(),
+      discount_(1.0),
       extra_()
 {}
 
 template<typename StateTp>
-TimeStep<StateTp>::TimeStep(TimeStepTp type, real_t reward, state_t obs)
+TimeStep<StateTp>::TimeStep(TimeStepTp type, real_t reward, state_t obs, real_t discount_factor)
     :
       type_(type),
       reward_(reward),
       obs_(obs),
+      discount_(discount_factor),
       extra_()
 {}
 
 template<typename StateTp>
-TimeStep<StateTp>::TimeStep(TimeStepTp type, real_t reward, state_t obs, std::unordered_map<std::string, std::any>&& extra)
+TimeStep<StateTp>::TimeStep(TimeStepTp type, real_t reward, state_t obs, real_t discount_factor,
+                            std::unordered_map<std::string, std::any>&& extra)
     :
     type_(type),
     reward_(reward),
     obs_(obs),
+    discount_(discount_factor),
     extra_(extra)
 {}
 
@@ -183,6 +197,7 @@ TimeStep<StateTp>::TimeStep(const TimeStep& other)
       type_(other.type_),
       reward_(other.reward_),
       obs_(other.obs_),
+      discount_(other.discount_),
       extra_(other.extra_)
 {}
 
@@ -192,6 +207,7 @@ TimeStep<StateTp>::TimeStep(TimeStep&& other)noexcept
       type_(other.type_),
       reward_(other.reward_),
       obs_(other.obs_),
+      discount_(other.discount_),
       extra_(other.extra_)
 {
     other.clear();
@@ -204,6 +220,7 @@ TimeStep<StateTp>::operator=(TimeStep&& other)noexcept{
     type_ = other.type_;
     reward_ = other.reward_;
     obs_ = other.obs_;
+    discount_ = other.discount_;
     extra_ = other.extra_;
     other.clear();
     return *this;
@@ -216,6 +233,7 @@ TimeStep<StateTp>::clear()noexcept{
     type_ = TimeStepTp::INVALID_TYPE;
     reward_ = 0.0;
     obs_ = state_t();
+    discount_ = 1.0;
     extra_.clear();
 }
 
@@ -238,9 +256,10 @@ template<typename StateTp>
 inline
 std::ostream& operator<<(std::ostream& out, const TimeStep<StateTp>& step){
 
-    out<<"Step type.... "<<rlenvs_cpp::to_string(step.type())<<std::endl;
-    out<<"Reward..... .."<<step.reward()<<std::endl;
-    out<<"Observation.. "<<step.observation()<<std::endl;
+    out<<"Step type....."<<rlenvs_cpp::to_string(step.type())<<std::endl;
+    out<<"Reward........"<<step.reward()<<std::endl;
+    out<<"Observation..."<<step.observation()<<std::endl;
+    out<<"Discount..... "<<step.discount()<<std::endl;
     return out;
 }
 

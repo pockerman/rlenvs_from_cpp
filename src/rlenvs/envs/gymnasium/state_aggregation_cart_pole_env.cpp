@@ -26,7 +26,7 @@ StateAggregationCartPole::reset(){
 
     auto discrete_step = get_state(step.observation());
 
-    current_state_ = time_step_type(TimeStepTp::FIRST, step.reward(), discrete_step);
+    current_state_ = time_step_type(TimeStepTp::FIRST, step.reward(), discrete_step, 1.0);
     return current_state_;
 }
 
@@ -45,7 +45,7 @@ StateAggregationCartPole::step(const action_type& action){
 
     auto discrete_step = get_state(step.observation());
 
-    current_state_ = time_step_type(step.type(), step.reward(), discrete_step);
+    current_state_ = time_step_type(step.type(), step.reward(), discrete_step, 1.0);
     return current_state_;
 }
 

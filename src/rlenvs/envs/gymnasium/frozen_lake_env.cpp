@@ -1,17 +1,19 @@
 #include "rlenvs/envs/gymnasium/frozen_lake_env.h"
 #include "rlenvs/names_generator.h"
 #include "rlenvs/rlenvscpp_config.h"
-#include "rlenvs/detail/boost_python_utils.h"
+#include "rlenvs/time_step_type.h"
+#include "rlenvs/extern/HTTPRequest.hpp"
+#include "rlenvs/extern/nlohmann/json/json.hpp"
 
-#include <boost/python.hpp>
-
+#include <boost/tokenizer.hpp>
 #include <string>
 #include <any>
 #include <unordered_map>
 #include <iostream>
 #include <random>
+#include <unordered_map>
 
-#ifdef GYMFCPP_DEBUG
+#ifdef RLENVSCPP_DEBUG
 #include <cassert>
 #endif
 
@@ -19,103 +21,51 @@ namespace rlenvs_cpp{
 namespace envs{
 namespace gymnasium{
 
-discrete_state_space_frozen_lake<4>::item_type
-discrete_state_space_frozen_lake<4>::sample(){
 
-    std::uniform_int_distribution<> dist(0, 16 - 1);
-
-    std::random_device rd;
-    std::mt19937 gen(rd());
-
-    return dist(gen);
-
-}
-
-discrete_state_space_frozen_lake<8>::item_type
-discrete_state_space_frozen_lake<8>::sample(){
-
-    std::uniform_int_distribution<> dist(0, 64 - 1);
-
-    std::random_device rd;
-    std::mt19937 gen(rd());
-
-    return dist(gen);
-
-}
 
 template<uint_t side_size>
 const std::string FrozenLakeData<side_size>::name = "FrozenLake";
 
 
 template<uint_t side_size>
-typename FrozenLakeData<side_size>::state_type
-FrozenLakeData<side_size>::extract_state_from_reset(obj_t gym_namespace, std::string py_state_name,
-                                                    std::string result_name){
+typename FrozenLake<side_size>::time_step_type
+FrozenLake<side_size>::create_time_step_from_response_(const http::Response& response){
 
-    // the string to execute in Python interpreter
-    // set the state name equal to the result name
-    std::string s = py_state_name + " = " + result_name + "\n";
+    auto str_response = std::string(response.body.begin(), response.body.end());
+    std::cout<<str_response<<std::endl;
 
-    // reset the python environment
-    boost::python::exec(s.c_str(), gym_namespace);
+    using json = nlohmann::json;
 
-    // the observation
-    auto reset_result = rlenvs_cpp::detail::extract_boost_type<boost::python::tuple>(gym_namespace, py_state_name);
-    auto observation = boost::python::extract<uint_t>(reset_result[0]);
-    return observation;
+    json j = json::parse(str_response);
+
+    auto step_type = j["time_step"]["step_type"];
+    auto reward = j["time_step"]["reward"];
+    auto discount = j["time_step"]["discount"];
+    auto observation = j["time_step"]["observation"];
+    auto info = j["time_step"]["info"];
+    return FrozenLake<side_size>::time_step_type(time_step_type_from_int(step_type),
+                                                 reward, observation, discount,
+                                                 std::unordered_map<std::string, std::any>());
 }
 
 template<uint_t side_size>
-typename FrozenLakeData<side_size>::state_type
-FrozenLakeData<side_size>::extract_state_from_step(obj_t /*gym_namespace*/, std::string /*py_state_name*/,
-                                                   std::string /*result_name*/){
-
-#ifdef GYMFCPP_DEBUG
-    assert(false && "FrozenLakeData<side_size>::extract_state_from_step should not be called");
-#endif
-
-   return 0;
-}
-
-
+FrozenLake<side_size>::FrozenLake(const std::string& url)
+:
+ url_(url),
+ is_slippery_(true),
+ is_created_(false)
+ {}
 
 template<uint_t side_size>
-typename FrozenLakeData<side_size>::state_type
-FrozenLakeData<side_size>::state_transform_from_boost(state_boost_python_type /*boost_type*/){
-
-#ifdef GYMFCPP_DEBUG
-    assert(false && "FrozenLakeData<side_size>::state_transform_from_boost should not be called");
-#endif
-
-    return 0;
-}
-
-template<uint_t side_size>
-typename FrozenLakeData<side_size>::state_type
-FrozenLakeData<side_size>::extract_state(obj_t /*gym_namespace*/, std::string /*result_name*/){
-
-#ifdef GYMFCPP_DEBUG
-    assert(false && "FrozenLakeData<side_size>::extract_state should not be called");
-#endif
-
-    return 0;
-}
-
-template<uint_t side_size>
-FrozenLake<side_size>::FrozenLake(const std::string& version, obj_t main_namespace,
-                       bool do_create,  bool is_slippery)
+FrozenLake<side_size>::FrozenLake(const std::string& url,
+                                  const std::string& version,
+                                  bool slippery)
     :
-      EnvMixin<FrozenLakeData<side_size>>(version, main_namespace),
-      is_slippery_(is_slippery)
+      url_(url),
+      is_slippery_(slippery),
+      is_created_(false)
 {
-    this->py_env_name = get_py_env_name(FrozenLakeData<side_size>::name);
-    this->py_reset_result_name = get_py_reset_rslt_name(FrozenLakeData<side_size>::name);
-    this->py_step_result_name = get_py_step_rslt_name(FrozenLakeData<side_size>::name);
-    this->py_state_name = get_py_state_name(FrozenLakeData<side_size>::name);
-
-    if(do_create){
-        make();
-    }
+    make(version, slippery);
 }
 
 template<uint_t side_size>
@@ -123,57 +73,95 @@ FrozenLake<side_size>::~FrozenLake(){
     close();
 }
 
-
 template<uint_t side_size>
 void
-FrozenLake<side_size>::make(){
+FrozenLake<side_size>::close(){
 
-    if(is_created){
+     if(!is_created_){
         return;
     }
 
-    std::string cpp_str = construct_python_string_();
+    http::Request request{url_ + "/frozen-lake-env/close"};
+    const auto response = request.send("POST");
+    is_created_ = false;
 
-    auto ignored = boost::python::exec(cpp_str.c_str(), gym_namespace);
-    this->env = boost::python::extract<boost::python::api::object>(gym_namespace[this->py_env_name]);
-    this->is_created = true;
+}
+
+template<uint_t side_size>
+bool
+FrozenLake<side_size>::is_alive()const noexcept{
+
+    http::Request request{url_ + "/frozen-lake-env/is-alive"};
+    const auto response = request.send("GET");
+    const auto str_response = std::string(response.body.begin(), response.body.end());
+    auto pos = str_response.find("true");
+
+    if (pos == std::string::npos){
+        return false;
+    }
+
+    return true;
 }
 
 template<uint_t side_size>
 typename FrozenLake<side_size>::time_step_type
-FrozenLake<side_size>::step(action_type action, bool query_extra){
+FrozenLake<side_size>::reset(uint_t seed){
 
-#ifdef GYMFCPP_DEBUG
-    assert(this->is_created && "Environment has not been created");
+    if(!is_created_){
+#ifdef RLENVSCPP_DEBUG
+     assert(this->is_created_ && "Environment has not been created");
 #endif
-
-    if(this->current_state.last()){
-        return reset();
+     return time_step_type();
     }
 
-    std::string s = this->py_step_result_name + " = " + this->py_env_name +".step("+std::to_string(action)+")";
+    const auto request_url = url_ + "/frozen-lake-env/reset";
+    http::Request request{request_url};
 
-    // create an environment
-    boost::python::exec(s.c_str(), this->gym_namespace);
+    auto body = std::to_string(seed);
+    const auto response = request.send("POST", body);
 
-    // the observation
-    auto result =  boost::python::extract<boost::python::tuple>(this->gym_namespace[this->py_step_result_name]);
+    return FrozenLake<side_size>::create_time_step_from_response_(response);
 
-    auto observation = boost::python::extract<uint_t>(result()[0]);
-    auto reward = boost::python::extract<real_t>(result()[1]);
-    auto done = boost::python::extract<bool>(result()[2]);
+}
 
-    std::unordered_map<std::string, std::any> extra;
+template<uint_t side_size>
+void
+FrozenLake<side_size>::make(const std::string& version, bool slippery){
 
-    if(query_extra){
-
-        auto prob_dict = boost::python::extract<boost::python::dict>(result()[4]);
-        auto prob = boost::python::extract<real_t>(prob_dict()["prob"]);
-        extra["prob"] = std::any(prob());
+    if(is_created_){
+        return;
     }
 
-    this->current_state = TimeStep(done() ? TimeStepTp::LAST : TimeStepTp::MID, reward(), observation(), std::move(extra));
-    return this->current_state;
+    is_slippery_ = slippery;
+    const auto request_url = url_ + "/frozen-lake-env/make";
+    http::Request request{request_url};
+
+    //auto body = "'version':'v1','map_name':'4x4','is_slippery':true";
+    auto body = "{\"version\": \"v1\", \"map_name\": \"4x4\", \"is_slippery\":true}";
+    const auto response = request.send("POST", body);
+    is_created_ = true;
+}
+
+template<uint_t side_size>
+typename FrozenLake<side_size>::time_step_type
+FrozenLake<side_size>::step(FrozenLakeActionsEnum action){
+
+#ifdef RLENVSCPP_DEBUG
+     assert(this->is_created_ && "Environment has not been created");
+#endif
+//
+//     if(this->current_state.last()){
+//         return reset();
+//     }
+//
+
+    const auto request_url = url_ + "/frozen-lake-env/step";
+    http::Request request{request_url};
+
+    auto body = std::to_string(action);
+
+    const auto response = request.send("POST", body);
+    return FrozenLake<side_size>::create_time_step_from_response_(response);
 
 }
 
@@ -182,63 +170,32 @@ typename FrozenLake<side_size>::dynamics_t
 FrozenLake<side_size>::p(uint_t sidx, uint_t aidx)const{
 
 #ifdef GYMFCPP_DEBUG
-    assert(this->is_created && "Environment has not been created");
+    assert(this->is_created_ && "Environment has not been created");
 #endif
 
-    std::string s = "dynamics = " + FrozenLake::py_env_name + ".P["+std::to_string(sidx)+"]";
-    s += "["+std::to_string(aidx)+"]";
-    str_t exe_str = s.c_str();
-
-    // get the dynamics
-    boost::python::exec(exe_str, this->gym_namespace);
-    auto dynamics_list = boost::python::extract<boost::python::list>(this->gym_namespace["dynamics"]);
-
-    dynamics_t dyn;
-    dyn.reserve(boost::python::len(dynamics_list));
-
-    for(uint_t i=0; i < boost::python::len(dynamics_list); ++i){
-        auto dynamics_tuple = boost::python::extract<boost::python::tuple>(dynamics_list()[i]);
-        auto prob = boost::python::extract<real_t>(dynamics_tuple()[0]);
-        auto next_state = boost::python::extract<uint_t>(dynamics_tuple()[1]);
-        auto reward = boost::python::extract<real_t>(dynamics_tuple()[2]);
-        auto done = boost::python::extract<bool>(dynamics_tuple()[3]);
-        dyn.push_back(std::make_tuple(prob(), next_state(), reward(), done()));
-    }
-
-    return dyn;
+//     std::string s = "dynamics = " + FrozenLake::py_env_name + ".P["+std::to_string(sidx)+"]";
+//     s += "["+std::to_string(aidx)+"]";
+//     str_t exe_str = s.c_str();
+//
+//     // get the dynamics
+//     boost::python::exec(exe_str, this->gym_namespace);
+//     auto dynamics_list = boost::python::extract<boost::python::list>(this->gym_namespace["dynamics"]);
+//
+//     dynamics_t dyn;
+//     dyn.reserve(boost::python::len(dynamics_list));
+//
+//     for(uint_t i=0; i < boost::python::len(dynamics_list); ++i){
+//         auto dynamics_tuple = boost::python::extract<boost::python::tuple>(dynamics_list()[i]);
+//         auto prob = boost::python::extract<real_t>(dynamics_tuple()[0]);
+//         auto next_state = boost::python::extract<uint_t>(dynamics_tuple()[1]);
+//         auto reward = boost::python::extract<real_t>(dynamics_tuple()[2]);
+//         auto done = boost::python::extract<bool>(dynamics_tuple()[3]);
+//         dyn.push_back(std::make_tuple(prob(), next_state(), reward(), done()));
+//     }
+//
+//     return dyn;
+    return dynamics_t();
 }
-
-
-template<uint_t side_size>
-std::string
-FrozenLake<side_size>::construct_python_string_()const noexcept{
-
-    std::string cpp_str = "import gymnasium as gym \n";
-
-    if(is_slippery()){
-
-        if(map_type() == "4x4"){
-            cpp_str += py_env_name + " = gym.make('" + FrozenLakeData<side_size>::name +"-" + version + "', map_name='4x4', is_slippery=True).unwrapped\n";
-        }
-        else if(map_type() == "8x8"){
-            cpp_str += py_env_name + " = gym.make('" + FrozenLakeData<side_size>::name +"-" + version + "', map_name='8x8', is_slippery=True).unwrapped\n";
-        }
-    }
-    else{
-
-        if(map_type() == "4x4"){
-            cpp_str += py_env_name + " = gym.make('" + FrozenLakeData<side_size>::name +"-" + version + "', map_name='4x4', is_slippery=False).unwrapped\n";
-        }
-        else if(map_type() == "8x8"){
-            cpp_str += py_env_name + " = gym.make('" + FrozenLakeData<side_size>::name +"-" + version + "', map_name='8x8', is_slippery=False).unwrapped\n";
-        }
-    }
-
-
-    return cpp_str;
-
-}
-
 
 template class FrozenLake<4>;
 template class FrozenLake<8>;

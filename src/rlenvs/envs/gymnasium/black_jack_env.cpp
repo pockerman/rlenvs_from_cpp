@@ -118,7 +118,7 @@ BlackJack::reset(){
     auto obs = boost::python::extract<uint_t>(observation()[0]);
     auto reward = boost::python::extract<real_t>(observation()[1]);
 
-    current_state_ = TimeStep(TimeStepTp::FIRST, reward, obs());
+    current_state_ = TimeStep(TimeStepTp::FIRST, reward, obs(), 1.0);
     return current_state_;
 
 }
@@ -162,7 +162,8 @@ BlackJack::step(action_t action){
     auto usable = boost::python::extract<bool>(observation()[2]);
     extra["usable_ace"] = std::any(usable());
 
-    current_state_ = time_step_t(done() ? TimeStepTp::LAST : TimeStepTp::MID, reward(), obs(), std::move(extra));
+    current_state_ = time_step_t(done() ? TimeStepTp::LAST : TimeStepTp::MID,
+                                 reward(), obs(), 1.0, std::move(extra));
     return current_state_;
 
 }

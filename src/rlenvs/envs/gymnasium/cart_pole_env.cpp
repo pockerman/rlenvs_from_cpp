@@ -226,7 +226,8 @@ CartPole::step(const action_type action){
     auto done = boost::python::extract<bool>(result()[2]);
     std::unordered_map<std::string, std::any> extra;
 
-    current_state = time_step_type(done ? TimeStepTp::LAST : TimeStepTp::MID, reward(), obs, std::move(extra));
+    current_state = time_step_type(done ? TimeStepTp::LAST : TimeStepTp::MID,
+                                   reward(), obs, 1.0, std::move(extra));
     return current_state;
 }
 

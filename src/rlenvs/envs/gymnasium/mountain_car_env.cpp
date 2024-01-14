@@ -110,7 +110,7 @@ MountainCar::step(action_type action){
 
     std::unordered_map<std::string, std::any> extra;
 
-    this->current_state = time_step_type(done ? TimeStepTp::LAST : TimeStepTp::MID, reward, obs, std::move(extra));
+    this->current_state = time_step_type(done ? TimeStepTp::LAST : TimeStepTp::MID, reward, obs, 1.0, std::move(extra));
     return current_state;
 
 }

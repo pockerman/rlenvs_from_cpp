@@ -95,7 +95,7 @@ CliffWorld::step(action_type action, bool query_extra){
         extra["prob"] = std::any(prob());
     }
 
-    this->current_state = time_step_type(done() ? TimeStepTp::LAST : TimeStepTp::MID, reward(), observation(), std::move(extra));
+    this->current_state = time_step_type(done() ? TimeStepTp::LAST : TimeStepTp::MID, reward(), observation(), 1.0, std::move(extra));
     return current_state;
 
 }

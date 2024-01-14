@@ -55,10 +55,11 @@
   *
   * */
 
-#include "rlenvs/rlenvs_types.h"
-#include "rlenvs/envs/env_mixin.h"
+#include "rlenvs/rlenvs_types_v2.h"
 #include "rlenvs/discrete_space.h"
+#include "rlenvs/extern/enum.h"
 #include "rlenvs/time_step.h"
+#include "rlenvs/extern/HTTPRequest.hpp"
 
 #include <boost/noncopyable.hpp>
 #include <string>
@@ -72,9 +73,12 @@ namespace gymnasium {
 template<uint_t side_size>
 struct discrete_state_space_frozen_lake;
 
+BETTER_ENUM(FrozenLakeActionsEnum, int, LEFT=0, DOWN=1, RIGHT=2, UP=3, INVALID_TYPE=4);
+
 template<>
 struct discrete_state_space_frozen_lake<4>
 {
+
     ///
     /// \brief item_t
     ///
@@ -90,7 +94,13 @@ struct discrete_state_space_frozen_lake<4>
     /// \brief sample
     /// \return
     ///
-    static item_type sample();
+    static item_type sample(){return DiscreteSpace<16>::sample();}
+
+    ///
+    /// \brief
+    ///
+    static item_type sample(uint_t seed){return DiscreteSpace<16>::sample(seed);}
+
 };
 
 template<>
@@ -111,7 +121,13 @@ struct discrete_state_space_frozen_lake<8>
     /// \brief sample
     /// \return
     ///
-    static item_type sample();
+    static item_type sample(){return DiscreteSpace<64>::sample();}
+
+    ///
+    /// \brief
+    ///
+    static item_type sample(uint_t seed){return DiscreteSpace<64>::sample(seed);}
+
 };
 
 template<uint_t side_size>
@@ -152,37 +168,6 @@ struct FrozenLakeData
     ///
     typedef TimeStep<state_type> time_step_type;
 
-    ///
-    /// \brief state_transform_from_boost
-    /// \param boost_type
-    /// \return
-    ///
-    static state_type state_transform_from_boost(state_boost_python_type /*boost_type*/);
-
-    ///
-    /// \brief extract_state
-    /// \param gym_namespace
-    /// \return
-    ///
-    static state_type extract_state(obj_t /*gym_namespace*/, std::string /*result_name*/);
-
-    ///
-    /// \brief extract_state_from_reset
-    /// \param gym_namespace
-    /// \param py_env_n
-    /// \return
-    ///
-    static state_type extract_state_from_reset(obj_t gym_namespace,
-                                               std::string py_state_name, std::string result_name);
-
-    ///
-    /// \brief extract_state_from_step
-    /// \param gym_namespace
-    /// \param py_state_name
-    /// \param result_name
-    /// \return
-    ///
-    static state_type extract_state_from_step(obj_t gym_namespace, std::string py_state_name, std::string result_name);
 
 };
 
@@ -191,7 +176,7 @@ struct FrozenLakeData
 /// environment
 ///
 template<uint_t side_size>
-class FrozenLake: protected EnvMixin<FrozenLakeData<side_size>>
+class FrozenLake
 {
 public:
 
@@ -230,14 +215,17 @@ public:
     ///
     typedef typename FrozenLakeData<side_size>::time_step_type time_step_type;
 
+     ///
+    /// \brief Constructor.
     ///
-    /// \brief FrozenLake. Constructor. It tries to
-    /// establish connection with the API that
-    /// constrols the Gymnasium Python implementation
+    FrozenLake(const std::string& url);
+
+    ///
+    /// \brief Constructor.
     ///
     FrozenLake(const std::string& url,
                const std::string& version,
-               bool do_create=true, bool is_slippery=true);
+               bool slippery=true);
 
     ///
     /// \brief ~FrozenLake. Destructor.
@@ -245,27 +233,20 @@ public:
     ~FrozenLake();
 
     ///
-    /// \brief Expose the functionality this class is using
-    /// from the Mixin
-    ///
-    using EnvMixin<FrozenLakeData<side_size>>::close;
-    using EnvMixin<FrozenLakeData<side_size>>::full_name;
-    using EnvMixin<FrozenLakeData<side_size>>::reset;
-    using EnvMixin<FrozenLakeData<side_size>>::is_created;
-    using EnvMixin<FrozenLakeData<side_size>>::version;
-    using EnvMixin<FrozenLakeData<side_size>>::gym_namespace;
-    using EnvMixin<FrozenLakeData<side_size>>::render;
-    using EnvMixin<FrozenLakeData<side_size>>::idx;
-    using EnvMixin<FrozenLakeData<side_size>>::py_env_name;
-    using EnvMixin<FrozenLakeData<side_size>>::py_reset_result_name;
-    using EnvMixin<FrozenLakeData<side_size>>::py_step_result_name;
-    using EnvMixin<FrozenLakeData<side_size>>::py_state_name;
-
-    ///
     /// \brief make. Builds the environment. Optionally we can choose if the
     /// environment will be slippery
     ///
-    void make(const std::string& version, bool is_slippery=true);
+    void make(const std::string& version, bool slippery=true);
+
+    ///
+    /// \brief Reset the environment
+    ///
+    time_step_type reset(uint_t seed=42);
+
+    ///
+    /// \brief Close the environment
+    ///
+    void close();
 
     ///
     /// \brief n_states. Returns the number of states
@@ -282,7 +263,7 @@ public:
     /// \param action
     /// \return
     ///
-    time_step_type step(action_type action, bool query_extra=false);
+    time_step_type step(FrozenLakeActionsEnum action);
 
     ///
     /// \brief P
@@ -303,20 +284,38 @@ public:
     ///
     bool is_slippery()const noexcept{return is_slippery_;}
 
+    ///
+    /// \brief is_created Returns true is make has been called successfully
+    ///
+    bool is_created()const noexcept{return is_created_;}
+
+    ///
+    /// \brief Query the environment server is the environment has been created
+    ///
+    bool is_alive()const noexcept;
+
 
 private:
 
     ///
+    /// \brief The urls of the server
+    ///
+    const std::string url_;
+
+    ///
     /// \brief is_slipery_
     ///
-    const bool is_slippery_;
-
+    bool is_slippery_;
 
     ///
-    /// \brief construct_python_string_
-    /// \return
+    /// \brief Flag indicating if the environment has been created
     ///
-    std::string construct_python_string_()const noexcept;
+    bool is_created_;
+
+    ///
+    /// \brief Handle the reset response from the environment server
+    ///
+    static  time_step_type create_time_step_from_response_(const http::Response& response);
 
 
 };

@@ -21,6 +21,11 @@ BETTER_ENUM(TimeStepTp, char, FIRST=0, MID, LAST, INVALID_TYPE);
 inline
 std::string to_string(TimeStepTp type){return type._to_string();}
 
+///
+/// \brief Create a time step type from the given int
+///
+TimeStepTp time_step_type_from_int(int type);
+
 }
 
 #endif // TIME_STEP_TYPE_H

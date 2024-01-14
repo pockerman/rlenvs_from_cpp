@@ -159,7 +159,7 @@ EnvMixin<EnvImpl>::reset(){
 
     // get the observation from the reset
     auto obs = EnvImpl::extract_state_from_reset(gym_namespace, py_state_name, py_reset_result_name);
-    current_state = time_step_type(TimeStepTp::FIRST, 0.0, obs);
+    current_state = time_step_type(TimeStepTp::FIRST, 0.0, obs, 1.0);
     return current_state;
 }
 
