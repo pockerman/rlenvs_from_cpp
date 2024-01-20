@@ -72,7 +72,8 @@ async def reset(seed: int = Body(default=42)) -> JSONResponse:
                         content={"time_step": step.model_dump()})
 
     raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                        detail={"message": "Environment FrozenLake is not initialized. Have you called make()?"})
+                        detail={"message": "Environment FrozenLake is not initialized."
+                                           " Have you called make()?"})
 
 @frozenlake_router.post("/step")
 async def step(action: int = Body(...)) -> JSONResponse:
@@ -88,6 +89,24 @@ async def step(action: int = Body(...)) -> JSONResponse:
 
         return JSONResponse(status_code=status.HTTP_201_CREATED,
                             content={"time_step": step.model_dump()})
+
+    raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                        detail={"message": "Environment FrozenLake is not initialized. Have you called make()?"})
+
+@frozenlake_router.get("/dynamics")
+async def get_dynamics(stateId: int, actionId: int = None) -> JSONResponse:
+    global env
+
+    if env is not None:
+
+        if actionId is None or actionId < 0:
+            state_dyns = env.P[stateId]
+            return JSONResponse(status_code=status.HTTP_201_CREATED,
+                                content={"dynamics": state_dyns})
+        else:
+            dynamics = env.P[stateId][actionId]
+            return JSONResponse(status_code=status.HTTP_201_CREATED,
+                                content={"dynamics": dynamics})
 
     raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                         detail={"message": "Environment FrozenLake is not initialized. Have you called make()?"})

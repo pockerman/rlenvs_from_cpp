@@ -1,7 +1,7 @@
 # rlenvs_from_cpp
 
 ```rlenvs_from_cpp``` is an effort to provide implementations and wrappers of environments for reinforcement learning algorithms to be used by C++ drivers. 
-Currently, we provide a minimal number of wrappers for some common OpenAI-Gym environments. Namely
+Currently, we provide a minimal number of wrappers for some common Gymnasium (former OpenAI-Gym) environments. Namely
 
 - ```FrozenLake``` with ```4x4``` map
 - ```FrozenLake``` with ```8x8``` map
@@ -14,75 +14,114 @@ Currently, we provide a minimal number of wrappers for some common OpenAI-Gym en
 - ```SerialVectorEnvWrapper``` a vector wrapper for various environments
 
 In general, the environments exposed by the library  should abide with <a href="https://github.com/deepmind/dm_env/blob/master/docs/index.md">dm_env</a> specification.
+The following is an example how to use the ```FrozenLake``` environment.
 
-Using OpenAI-Gym requires <a href="https://www.boost.org/doc/libs/1_76_0/libs/python/doc/html/tutorial/index.html">Boost.Python</a> as well as
-<a href="https://github.com/openai/gym">OpenAI-Gym</a> package installed. See below for more dependencies.
-
- 
-## Basic example
-
-```
-#include "gymfcpp/gymfcpp_types.h"
-#include "gymfcpp/frozen_lake_env.h"
-#include <boost/python.hpp>
+```cpp
+#include "rlenvs/rlenvs_types_v2.h"
+#include "rlenvs/envs/gymnasium/frozen_lake_env.h"
 #include <iostream>
+#include <string>
+
 
 int main(){
 
-    try
-    {
-    	Py_Initialize();
-        auto main_module = boost::python::import("__main__");
-        auto main_namespace = main_module.attr("__dict__");
-        rlenvs_cpp::gymfcpp::FrozenLake<4> env("v1", main_namespace, false);
+    const std::string SERVER_URL = "http://0.0.0.0:8001/api";
+    rlenvs_cpp::envs::gymnasium::FrozenLake<4> env(SERVER_URL);
 
-        env.make();
+    // make the environment
+    env.make("v1", true);
 
-        auto step = env.reset();
-        std::cout<<step<<std::endl;
+    std::cout<<"Is environment created? "<<env.is_created()<<std::endl;
+    std::cout<<"Is environment alive? "<<env.is_alive()<<std::endl;;
 
-        step = env.step(1, true);
-        std::cout<<step<<std::endl;
+    // reset the environment
+    auto time_step = env.reset();
 
-        std::cout<<"Step with prob="<<step.get_extra<rlenvs_cpp::real_t>("prob")<<std::endl;
+    std::cout<<"Reward on reset: "<<time_step.reward()<<std::endl;
+    std::cout<<"Observation on reset: "<<time_step.observation()<<std::endl;
+    std::cout<<"Is terminal state: "<<time_step.done()<<std::endl;
 
+    //...print the time_step
+    std::cout<<time_step<<std::endl;
+
+    // take an action in the environment
+    auto new_time_step = env.step(rlenvs_cpp::envs::gymnasium::FrozenLakeActionsEnum::RIGHT);
+
+    std::cout<<new_time_step<<std::endl;
+
+    // get the dynamics of the environment for the given state and action
+    auto state = 0;
+    auto action = 1;
+    auto dynamics = env.p(state, action);
+
+    std::cout<<"Dynamics for state="<<state<<" and action="<<action<<std::endl;
+
+    for(auto item:dynamics){
+
+        std::cout<<std::get<0>(item)<<std::endl;
+        std::cout<<std::get<1>(item)<<std::endl;
+        std::cout<<std::get<2>(item)<<std::endl;
+        std::cout<<std::get<3>(item)<<std::endl;
     }
-    catch(boost::python::error_already_set const &)
-    {
-        PyErr_Print();
-    }
 
+    // close the environment
+    env.close();
+
+    std::cout<<"Finilize..."<<std::endl;
     return 0;
 }
+```
 
-================
 
-Step type.... FIRST
-Reward..... ..0
-Observation.. 0
+## How to use
 
-Step type.... MID
-Reward..... ..0
-Observation.. 0
+The general use case is to build the library and link it your driver code to access its functionality.
+Furthermore, the Gymnasium environments are accessed via a client/server pattern. Namely, they are exposed via an API developed using FastAPI.
+You need to fire up the server, see dependencies, before using the environments in your code. To do so
 
-Step with prob=0.333333
-
+```cpp
+cd rest_api && ./start_uvicorn.sh
 
 ```
 
+By default the ```uvicorn``` server listents on port 8001. Change this if needed. You can access the OpenAPI specification at
+
+```
+http://0.0.0.0:8001/docs
+```
+
+
 ## Dependencies
 
+The library has the following general dependencies
+
 - A compiler that supports C++20 e.g. g++-11
-- <a href="https://www.boost.org/">Boost C++</a> and in particlar Boost.Python
-- <a href="https://github.com/Farama-Foundation/Gymnasium">Gymnasium</a> (<a href="https://github.com/openai/gym">OpenAI-Gym</a> development has been switched to Gymnasium)
+- <a href="https://www.boost.org/">Boost C++</a> 
 - <a href="https://cmake.org/">CMake</a> >= 3.6
 - <a href="https://github.com/google/googletest">Gtest</a> (if configured with tests)
 - <a href="https://pytorch.org/">PyTorch</a> (C++ bindings with C++11 ABI) (if configured with PyTorch)
 
-In addition, the library also incorporates ```(src/extern)```
+Using the Gymnasium environments requires <a href="https://github.com/Farama-Foundation/Gymnasium/tree/main">Gymnasium</a> installed on your machine.
+In addition, you need to install
+
+- <a href="https://fastapi.tiangolo.com/">FastAPI</a>
+- <a href="https://www.uvicorn.org/">Uvicorn</a>
+- <a href="https://docs.pydantic.dev/latest/">Pydantic</a>
+
+
+In addition, the library also incorporates, see ```(src/extern)```, the following libraries
 
 - <a href="https://github.com/elnormous/HTTPRequest">HTTPRequest</a>
 - <a href="http://github.com/aantron/better-enums">better-enums</a>
+- <a href="https://github.com/nlohmann/json">nlohmann/json</a>
+
+There are extra dependencies if you want to generate the documentation. Namely,
+
+- Doxygen
+- Sphinx
+- sphinx_rtd_theme
+- breathe
+- m2r2
 
 ## Installation
 
@@ -93,15 +132,6 @@ mkdir build && cd build && cmake ..
 make install
 ```
 
-## Generate documentation
-
-There are extra dependencies if you want to generate the documentation. Namely,
-
-- Doxygen
-- Sphinx
-- sphinx_rtd_theme
-- breathe
-- m2r2
 
 ## Run the tests
 

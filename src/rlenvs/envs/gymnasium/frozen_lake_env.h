@@ -313,6 +313,11 @@ private:
     bool is_created_;
 
     ///
+    /// \brief current_state
+    ///
+    time_step_type current_state_;
+
+    ///
     /// \brief Handle the reset response from the environment server
     ///
     static  time_step_type create_time_step_from_response_(const http::Response& response);

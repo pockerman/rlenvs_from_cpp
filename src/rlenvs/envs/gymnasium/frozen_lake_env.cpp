@@ -21,8 +21,6 @@ namespace rlenvs_cpp{
 namespace envs{
 namespace gymnasium{
 
-
-
 template<uint_t side_size>
 const std::string FrozenLakeData<side_size>::name = "FrozenLake";
 
@@ -32,8 +30,6 @@ typename FrozenLake<side_size>::time_step_type
 FrozenLake<side_size>::create_time_step_from_response_(const http::Response& response){
 
     auto str_response = std::string(response.body.begin(), response.body.end());
-    std::cout<<str_response<<std::endl;
-
     using json = nlohmann::json;
 
     json j = json::parse(str_response);
@@ -48,12 +44,28 @@ FrozenLake<side_size>::create_time_step_from_response_(const http::Response& res
                                                  std::unordered_map<std::string, std::any>());
 }
 
+
+template<uint_t side_size>
+typename FrozenLake<side_size>::dynamics_t
+build_dynamics_from_response_(const http::Response& response){
+
+    auto str_response = std::string(response.body.begin(), response.body.end());
+
+    using json = nlohmann::json;
+    json j = json::parse(str_response);
+
+    auto dynamics = j["dynamics"];
+    return dynamics;
+}
+
+
 template<uint_t side_size>
 FrozenLake<side_size>::FrozenLake(const std::string& url)
 :
  url_(url),
  is_slippery_(true),
- is_created_(false)
+ is_created_(false),
+ current_state_()
  {}
 
 template<uint_t side_size>
@@ -63,7 +75,8 @@ FrozenLake<side_size>::FrozenLake(const std::string& url,
     :
       url_(url),
       is_slippery_(slippery),
-      is_created_(false)
+      is_created_(false),
+      current_state_()
 {
     make(version, slippery);
 }
@@ -120,7 +133,8 @@ FrozenLake<side_size>::reset(uint_t seed){
     auto body = std::to_string(seed);
     const auto response = request.send("POST", body);
 
-    return FrozenLake<side_size>::create_time_step_from_response_(response);
+    current_state_ = FrozenLake<side_size>::create_time_step_from_response_(response);
+    return current_state_;
 
 }
 
@@ -149,11 +163,10 @@ FrozenLake<side_size>::step(FrozenLakeActionsEnum action){
 #ifdef RLENVSCPP_DEBUG
      assert(this->is_created_ && "Environment has not been created");
 #endif
-//
-//     if(this->current_state.last()){
-//         return reset();
-//     }
-//
+
+     if(current_state_.last()){
+         return reset();
+     }
 
     const auto request_url = url_ + "/frozen-lake-env/step";
     http::Request request{request_url};
@@ -161,7 +174,8 @@ FrozenLake<side_size>::step(FrozenLakeActionsEnum action){
     auto body = std::to_string(action);
 
     const auto response = request.send("POST", body);
-    return FrozenLake<side_size>::create_time_step_from_response_(response);
+    current_state_ = FrozenLake<side_size>::create_time_step_from_response_(response);
+    return current_state_;
 
 }
 
@@ -169,32 +183,14 @@ template<uint_t side_size>
 typename FrozenLake<side_size>::dynamics_t
 FrozenLake<side_size>::p(uint_t sidx, uint_t aidx)const{
 
-#ifdef GYMFCPP_DEBUG
+#ifdef RLENVSCPP_DEBUG
     assert(this->is_created_ && "Environment has not been created");
 #endif
 
-//     std::string s = "dynamics = " + FrozenLake::py_env_name + ".P["+std::to_string(sidx)+"]";
-//     s += "["+std::to_string(aidx)+"]";
-//     str_t exe_str = s.c_str();
-//
-//     // get the dynamics
-//     boost::python::exec(exe_str, this->gym_namespace);
-//     auto dynamics_list = boost::python::extract<boost::python::list>(this->gym_namespace["dynamics"]);
-//
-//     dynamics_t dyn;
-//     dyn.reserve(boost::python::len(dynamics_list));
-//
-//     for(uint_t i=0; i < boost::python::len(dynamics_list); ++i){
-//         auto dynamics_tuple = boost::python::extract<boost::python::tuple>(dynamics_list()[i]);
-//         auto prob = boost::python::extract<real_t>(dynamics_tuple()[0]);
-//         auto next_state = boost::python::extract<uint_t>(dynamics_tuple()[1]);
-//         auto reward = boost::python::extract<real_t>(dynamics_tuple()[2]);
-//         auto done = boost::python::extract<bool>(dynamics_tuple()[3]);
-//         dyn.push_back(std::make_tuple(prob(), next_state(), reward(), done()));
-//     }
-//
-//     return dyn;
-    return dynamics_t();
+    const auto request_url = url_ + "/frozen-lake-env/dynamics?stateId="+std::to_string(sidx)+"&actionId="+std::to_string(aidx);
+    http::Request request{request_url};
+    const auto response = request.send("GET");
+    return build_dynamics_from_response_<side_size>(response);
 }
 
 template class FrozenLake<4>;
