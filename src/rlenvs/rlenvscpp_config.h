@@ -2,10 +2,10 @@
 #define GYMFCPP_CONFIG_H
 
 /*DEBUG*/
-#cmakedefine RLENVSCPP_DEBUG
+#define RLENVSCPP_DEBUG
 
 /*Use PyTorch */
-#cmakedefine USE_PYTORCH
+/* #undef USE_PYTORCH */
 
 #endif
 

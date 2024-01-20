@@ -30,3 +30,4 @@ LINK_DIRECTORIES(${PYTHON_LID_DIR}) #/usr/lib/python3.8/config-3.8-x86_64-linux-
 
 ADD_SUBDIRECTORY(example_1)
 ADD_SUBDIRECTORY(example_2)
+ADD_SUBDIRECTORY(example_3)
