@@ -7,14 +7,18 @@ from fastapi import HTTPException
 from fastapi import status
 from fastapi.middleware.cors import CORSMiddleware
 
+from api_info import api_info_router
 from frozenlake_env_api import frozenlake_router
 from taxi_env_api import taxi_router
+from api_config import get_api_config
 
 
 BASE_URL = "/api"
 
-app = FastAPI(title="rlenvs-rest-api",
-              debug="Debug")
+CONFIG = get_api_config()
+
+app = FastAPI(title=CONFIG.API_TITLE,
+              debug=CONFIG.DEBUG)
 
 # CORS handling: https://fastapi.tiangolo.com/tutorial/cors/
 app.add_middleware(
@@ -25,9 +29,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.include_router(api_info_router, prefix=BASE_URL)
 app.include_router(taxi_router, prefix=BASE_URL)
 app.include_router(frozenlake_router, prefix=BASE_URL)
-
 
 
 @app.on_event("startup")

@@ -1,32 +1,23 @@
+#include "rlenvs/api_server/apiserver.h"
 #include <iostream>
 #include <string>
 
 int main(){
 
-//     try
-//     {
-//         Py_Initialize();
-//         auto main_module = boost::python::import("__main__");
-//         auto main_namespace = main_module.attr("__dict__");
-//
-//         // create a 4x4 FrozenLake environment
-//         rlenvs_cpp::envs::gymnasium::FrozenLake<4> env("v1", main_namespace, false);
-//
-//         env.make();
-//
-//         auto step = env.reset();
-//         std::cout<<step<<std::endl;
-//
-//         step = env.step(1, true);
-//         std::cout<<step<<std::endl;
-//
-//         std::cout<<"Step with prob="<<step.get_extra<rlenvs_cpp::real_t>("prob")<<std::endl;
-//
-//     }
-//     catch(boost::python::error_already_set const &)
-//     {
-//         PyErr_Print();
-//     }
+    const std::string SERVER_URL = "http://0.0.0.0:8001/api";
+
+    rlenvs_cpp::ApiServerWrapper server_wrapper(SERVER_URL);
+
+    auto has_gym = server_wrapper.has_gymnasium();
+    std::cout<<"Has environment server Gymnasium? "<<has_gym<<std::endl;
+
+    if(has_gym){
+     auto envs = server_wrapper.gymnasium_envs();
+
+     for(auto env:envs){
+         std::cout<<"Environment: "<<env<<std::endl;
+     }
+    }
 
     return 0;
 }
