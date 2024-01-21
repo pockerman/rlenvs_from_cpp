@@ -60,11 +60,13 @@
 #include "rlenvs/extern/enum.h"
 #include "rlenvs/time_step.h"
 #include "rlenvs/extern/HTTPRequest.hpp"
+#include "rlenvs/envs/gymnasium/toy_text/toy_text_base.h"
 
-#include <boost/noncopyable.hpp>
 #include <string>
 #include <vector>
 #include <tuple>
+#include <any>
+#include <unordered_map>
 
 namespace rlenvs_cpp{
 namespace envs{
@@ -73,7 +75,7 @@ namespace gymnasium {
 template<uint_t side_size>
 struct discrete_state_space_frozen_lake;
 
-BETTER_ENUM(FrozenLakeActionsEnum, int, LEFT=0, DOWN=1, RIGHT=2, UP=3, INVALID_TYPE=4);
+BETTER_ENUM(FrozenLakeActionsEnum, int, LEFT=0, DOWN=1, RIGHT=2, UP=3, INVALID_ACTION=4);
 
 template<>
 struct discrete_state_space_frozen_lake<4>
@@ -154,11 +156,6 @@ struct FrozenLakeData
     typedef typename state_space_type::item_type state_type;
 
     ///
-    /// \brief state_boost_python_t
-    ///
-    typedef boost::python::list state_boost_python_type;
-
-    ///
     /// \brief name
     ///
     static  const std::string name;
@@ -176,7 +173,7 @@ struct FrozenLakeData
 /// environment
 ///
 template<uint_t side_size>
-class FrozenLake
+class FrozenLake: public ToyTextEnvBase<typename FrozenLakeData<side_size>::time_step_type>
 {
 public:
 
@@ -218,35 +215,20 @@ public:
      ///
     /// \brief Constructor.
     ///
-    FrozenLake(const std::string& url);
-
-    ///
-    /// \brief Constructor.
-    ///
-    FrozenLake(const std::string& url,
-               const std::string& version,
-               bool slippery=true);
+    FrozenLake(const std::string& api_base_url);
 
     ///
     /// \brief ~FrozenLake. Destructor.
     ///
-    ~FrozenLake();
+    ~FrozenLake()=default;
 
     ///
     /// \brief make. Builds the environment. Optionally we can choose if the
     /// environment will be slippery
     ///
-    void make(const std::string& version, bool slippery=true);
+    virtual void make(const std::string& version,
+                      const std::unordered_map<std::string, std::any>& options) override final;
 
-    ///
-    /// \brief Reset the environment
-    ///
-    time_step_type reset(uint_t seed=42);
-
-    ///
-    /// \brief Close the environment
-    ///
-    void close();
 
     ///
     /// \brief n_states. Returns the number of states
@@ -265,12 +247,6 @@ public:
     ///
     time_step_type step(FrozenLakeActionsEnum action);
 
-    ///
-    /// \brief P
-    /// \param sidx
-    /// \param aidx
-    ///
-    dynamics_t p(uint_t sidx, uint_t aidx)const;
 
     ///
     /// \brief map_type
@@ -284,16 +260,18 @@ public:
     ///
     bool is_slippery()const noexcept{return is_slippery_;}
 
+
+protected:
+
+     ///
+    /// \brief build the dynamics from response
     ///
-    /// \brief is_created Returns true is make has been called successfully
-    ///
-    bool is_created()const noexcept{return is_created_;}
+    virtual dynamics_t build_dynamics_from_response_(const http::Response& response)const override final;
 
     ///
-    /// \brief Query the environment server is the environment has been created
+    /// \brief Handle the reset response from the environment server
     ///
-    bool is_alive()const noexcept;
-
+    virtual time_step_type create_time_step_from_response_(const http::Response& response) const override final;
 
 private:
 
@@ -306,22 +284,6 @@ private:
     /// \brief is_slipery_
     ///
     bool is_slippery_;
-
-    ///
-    /// \brief Flag indicating if the environment has been created
-    ///
-    bool is_created_;
-
-    ///
-    /// \brief current_state
-    ///
-    time_step_type current_state_;
-
-    ///
-    /// \brief Handle the reset response from the environment server
-    ///
-    static  time_step_type create_time_step_from_response_(const http::Response& response);
-
 
 };
 

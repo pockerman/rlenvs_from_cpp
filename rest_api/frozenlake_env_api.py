@@ -29,7 +29,7 @@ async def close() -> JSONResponse:
     if env is not None:
         env.close()
         return JSONResponse(status_code=status.HTTP_202_ACCEPTED,
-                            content={"message":"Environment is closed"})
+                            content={"message": "Environment is closed"})
 
     return JSONResponse(status_code=status.HTTP_400_BAD_REQUEST,
                         content={"message": "Environment has not been created"})
@@ -68,7 +68,7 @@ async def reset(seed: int = Body(default=42)) -> JSONResponse:
         step = TimeStep(observation=observation, reward=0.0,
                         step_type=TimeStepType.FIRST, info=info,
                         discount=1.0)
-        return JSONResponse(status_code=status.HTTP_201_CREATED,
+        return JSONResponse(status_code=status.HTTP_202_ACCEPTED,
                         content={"time_step": step.model_dump()})
 
     raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
@@ -87,7 +87,7 @@ async def step(action: int = Body(...)) -> JSONResponse:
                         info=info,
                         discount=1.0)
 
-        return JSONResponse(status_code=status.HTTP_201_CREATED,
+        return JSONResponse(status_code=status.HTTP_202_ACCEPTED,
                             content={"time_step": step.model_dump()})
 
     raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
@@ -105,7 +105,7 @@ async def get_dynamics(stateId: int, actionId: int = None) -> JSONResponse:
                                 content={"dynamics": state_dyns})
         else:
             dynamics = env.P[stateId][actionId]
-            return JSONResponse(status_code=status.HTTP_201_CREATED,
+            return JSONResponse(status_code=status.HTTP_200_OK,
                                 content={"dynamics": dynamics})
 
     raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
