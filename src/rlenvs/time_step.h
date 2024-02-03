@@ -1,7 +1,7 @@
 #ifndef TIME_STEP_H
 #define TIME_STEP_H
 
-#include "rlenvs/rlenvs_types.h"
+#include "rlenvs/rlenvs_types_v2.h"
 #include "rlenvs/time_step_type.h"
 
 #include <string>
