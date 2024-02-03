@@ -25,8 +25,7 @@ async def get_is_alive():
 
 @taxi_router.post("/make")
 async def make(version: str = Body(default="v3")):
-
-    global  env
+    global env
     if env is not None:
         env.close()
 
@@ -38,6 +37,7 @@ async def make(version: str = Body(default="v3")):
 
     return JSONResponse(status_code=status.HTTP_201_CREATED,
                         content={"result": True})
+
 
 @taxi_router.post("/close")
 async def close() -> JSONResponse:
@@ -51,6 +51,7 @@ async def close() -> JSONResponse:
     return JSONResponse(status_code=status.HTTP_400_BAD_REQUEST,
                         content={"message": f"Environment {ENV_NAME} has not been created"})
 
+
 @taxi_router.post("/reset")
 async def reset(seed: int = Body(default=42)) -> JSONResponse:
     """Reset the environment
@@ -61,7 +62,6 @@ async def reset(seed: int = Body(default=42)) -> JSONResponse:
     global env
 
     if env is not None:
-
         print(env.reset(seed=seed))
         observation, info = env.reset(seed=seed)
 
@@ -72,11 +72,12 @@ async def reset(seed: int = Body(default=42)) -> JSONResponse:
                         info={'action_mask': [int(i) for i in action_mask], 'prob': float(info['prob'])},
                         discount=1.0)
         return JSONResponse(status_code=status.HTTP_202_ACCEPTED,
-                           content={"time_step": step.model_dump()})
+                            content={"time_step": step.model_dump()})
 
     raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                         detail={"message": f"Environment {ENV_NAME} is not initialized."
                                            " Have you called make()?"})
+
 
 @taxi_router.post("/step")
 async def step(action: int = Body(...)) -> JSONResponse:
@@ -98,6 +99,7 @@ async def step(action: int = Body(...)) -> JSONResponse:
     raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                         detail={"message": f"Environment {ENV_NAME} is not initialized. "
                                            f"Have you called make()?"})
+
 
 @taxi_router.get("/dynamics")
 async def get_dynamics(stateId: int, actionId: int = None) -> JSONResponse:
