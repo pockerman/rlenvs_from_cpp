@@ -52,6 +52,9 @@ namespace rlenvs_cpp{
 namespace envs {
 namespace gymnasium {
 
+
+BETTER_ENUM(CliffWorldActionsEnum, int, UP=0, RIGHT=1, DOWN=2, LEFT=3, INVALID_ACTION=4);
+
 ///
 /// \brief The CliffWorldData struct
 ///
@@ -91,37 +94,6 @@ struct CliffWorldData
     /// \brief time_step_t. The type of the time step
     ///
     typedef TimeStep<state_type> time_step_type;
-
-    ///
-    /// \brief state_transform_from_boost
-    /// \param boost_type
-    /// \return
-    ///
-    //static state_type state_transform_from_boost(state_boost_python_type /*boost_type*/);
-
-    ///
-    /// \brief extract_state
-    /// \param gym_namespace
-    /// \return
-    ///
-    static state_type extract_state(obj_t /*gym_namespace*/, std::string /*result_name*/);
-
-    ///
-    /// \brief extract_state_from_reset
-    /// \param gym_namespace
-    /// \param py_env_n
-    /// \return
-    ///
-    static state_type extract_state_from_reset(obj_t gym_namespace, std::string py_state_name, std::string result_name);
-
-    ///
-    /// \brief extract_state_from_step
-    /// \param gym_namespace
-    /// \param py_state_name
-    /// \param result_name
-    /// \return
-    ///
-    //static state_type extract_state_from_step(obj_t gym_namespace, std::string py_state_name, std::string result_name);
 
 };
 
@@ -203,24 +175,7 @@ public:
     /// \param action
     /// \return
     ///
-    time_step_type step(action_type action, bool query_extra=false);
-
-    ///
-    /// \brief P
-    /// \param sidx
-    /// \param aidx
-    ///
-    dynamics_type p(uint_t sidx, uint_t aidx)const;
-
-    ///
-    /// \brief render. Render the environment
-    ///
-    //void render(std::string mode="human");
-
-    ///
-    /// \brief close. Close down the python environment
-    ///
-    //void close();
+    time_step_type step(CliffWorldActionsEnum action);
 
 protected:
 
@@ -233,14 +188,6 @@ protected:
     /// \brief Handle the reset response from the environment server
     ///
     virtual time_step_type create_time_step_from_response_(const http::Response& response) const override final;
-
-private:
-
-    ///
-    /// \brief The urls of the server
-    ///
-    const std::string url_;
-
 };
 
 }

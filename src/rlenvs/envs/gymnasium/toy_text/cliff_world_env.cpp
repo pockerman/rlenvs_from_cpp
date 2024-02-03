@@ -46,7 +46,6 @@ CliffWorld::create_time_step_from_response_(const http::Response& response)const
 }
 
 
-
 CliffWorld::CliffWorld(const std::string& api_base_url)
     :
 ToyTextEnvBase<CliffWorldData::time_step_type>(api_base_url + "/cliffwalking-env")
@@ -59,24 +58,52 @@ void
 CliffWorld::make(const std::string& version,
                 const std::unordered_map<std::string, std::any>& options){
 
+    if(this->is_created()){
+        return;
+    }
+
+    const auto request_url = std::string(this->get_url()) + "/make";
+    http::Request request{request_url};
+
+    using json = nlohmann::json;
+    json j;
+    j["version"] = version;
+
+    auto body = j.dump();
+    const auto response = request.send("POST", body);
+
+    if(response.status.code != 201){
+        throw std::runtime_error("Environment server failed to create Environment");
+    }
+
+    this->make_created();
+
 }
 
 CliffWorld::time_step_type
-CliffWorld::step(action_type action, bool query_extra){
+CliffWorld::step(CliffWorldActionsEnum action){
+
 
 #ifdef RLENVSCPP_DEBUG
-    assert(this->is_created_ && "Environment has not been created");
+     assert(this->is_created_ && "Environment has not been created");
 #endif
 
+     if(this->get_current_time_step_().last()){
+         return this->reset(42);
+     }
 
-}
+    const auto request_url = std::string(this->get_url()) + "/step";
+    http::Request request{request_url};
 
-CliffWorld::dynamics_type
-CliffWorld::p(uint_t sidx, uint_t aidx)const{
+    auto body = std::to_string(action);
+    const auto response = request.send("POST", body);
 
-#ifdef RLENVSCPP_DEBUG
-    assert(this->is_created_ && "Environment has not been created");
-#endif
+    if(response.status.code != 202){
+        throw std::runtime_error("Environment server failed to step environment");
+    }
+
+    this->get_current_time_step_() = this->create_time_step_from_response_(response);
+    return this->get_current_time_step_();
 
 }
 
