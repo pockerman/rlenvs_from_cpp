@@ -263,7 +263,7 @@ public:
 
 protected:
 
-     ///
+    ///
     /// \brief build the dynamics from response
     ///
     virtual dynamics_t build_dynamics_from_response_(const http::Response& response)const override final;
@@ -274,11 +274,6 @@ protected:
     virtual time_step_type create_time_step_from_response_(const http::Response& response) const override final;
 
 private:
-
-    ///
-    /// \brief The urls of the server
-    ///
-    const std::string url_;
 
     ///
     /// \brief is_slipery_

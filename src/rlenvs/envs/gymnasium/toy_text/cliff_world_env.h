@@ -35,14 +35,18 @@
  *
  */
 
-#include "rlenvs/rlenvs_types.h"
-#include "rlenvs/envs/env_mixin.h"
+#include "rlenvs/rlenvs_types_v2.h"
 #include "rlenvs/discrete_space.h"
 #include "rlenvs/time_step.h"
+#include "rlenvs/extern/HTTPRequest.hpp"
+#include "rlenvs/envs/gymnasium/toy_text/toy_text_base.h"
 
 
 #include "boost/noncopyable.hpp"
 #include <string>
+#include <tuple>
+#include <any>
+#include <unordered_map>
 
 namespace rlenvs_cpp{
 namespace envs {
@@ -125,7 +129,7 @@ struct CliffWorldData
 ///
 /// \brief The CliffWorld class
 ///
-class CliffWorld: protected EnvMixin<CliffWorldData>
+class CliffWorld: public ToyTextEnvBase<CliffWorldData::time_step_type>
 {
 
 public:
@@ -169,35 +173,19 @@ public:
     /// \brief FrozenLake
     /// \param version
     ///
-    CliffWorld(std::string version, obj_t gym_namespace, bool do_create=true);
+    CliffWorld(const std::string& api_base_url);
 
     ///
     /// \brief ~CliffWorld. Destructor
     ///
-    ~CliffWorld();
+    ~CliffWorld()=default;
 
     ///
-    /// \brief Expose the functionality this class is using
-    /// from the Mixin
+    /// \brief make. Builds the environment. Optionally we can choose if the
+    /// environment will be slippery
     ///
-    using EnvMixin<CliffWorldData>::close;
-    using EnvMixin<CliffWorldData>::full_name;
-    using EnvMixin<CliffWorldData>::reset;
-    using EnvMixin<CliffWorldData>::is_created;
-    using EnvMixin<CliffWorldData>::version;
-    using EnvMixin<CliffWorldData>::gym_namespace;
-    using EnvMixin<CliffWorldData>::render;
-    using EnvMixin<CliffWorldData>::idx;
-    using EnvMixin<CliffWorldData>::py_env_name;
-    using EnvMixin<CliffWorldData>::py_reset_result_name;
-    using EnvMixin<CliffWorldData>::py_step_result_name;
-    using EnvMixin<CliffWorldData>::py_state_name;
-    std::string py_dynamics_name;
-
-    ///
-    /// \brief make
-    ///
-    void make();
+    virtual void make(const std::string& version,
+                      const std::unordered_map<std::string, std::any>& options) override final;
 
     ///
     /// \brief n_states
@@ -234,7 +222,24 @@ public:
     ///
     //void close();
 
+protected:
+
+    ///
+    /// \brief build the dynamics from response
+    ///
+    virtual dynamics_t build_dynamics_from_response_(const http::Response& response)const override final;
+
+    ///
+    /// \brief Handle the reset response from the environment server
+    ///
+    virtual time_step_type create_time_step_from_response_(const http::Response& response) const override final;
+
 private:
+
+    ///
+    /// \brief The urls of the server
+    ///
+    const std::string url_;
 
 };
 
