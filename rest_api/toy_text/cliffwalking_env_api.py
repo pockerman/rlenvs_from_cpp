@@ -4,14 +4,14 @@ from fastapi.responses import JSONResponse
 from fastapi import HTTPException
 from time_step_response import TimeStep, TimeStepType
 
-cliffwalking_router = APIRouter(prefix="/cliffwalking-env", tags=["cliffwalking-env"])
+cliff_walking_router = APIRouter(prefix="/cliff-walking-env", tags=["cliff-walking-env"])
 
 # the environment to create
 env = None
 ENV_NAME = "CliffWalking"
 
 
-@cliffwalking_router.get("/is-alive")
+@cliff_walking_router.get("/is-alive")
 async def get_is_alive():
     global env
 
@@ -23,7 +23,7 @@ async def get_is_alive():
                             content={"result": True})
 
 
-@cliffwalking_router.post("/make")
+@cliff_walking_router.post("/make")
 async def make(version: str = Body(default="v0")):
     global env
     if env is not None:
@@ -39,7 +39,7 @@ async def make(version: str = Body(default="v0")):
                         content={"result": True})
 
 
-@cliffwalking_router.post("/close")
+@cliff_walking_router.post("/close")
 async def close() -> JSONResponse:
     global env
 
@@ -52,7 +52,7 @@ async def close() -> JSONResponse:
                         content={"message": f"Environment {ENV_NAME} has not been created"})
 
 
-@cliffwalking_router.post("/reset")
+@cliff_walking_router.post("/reset")
 async def reset(seed: int = Body(default=42)) -> JSONResponse:
     """Reset the environment
 
@@ -78,7 +78,7 @@ async def reset(seed: int = Body(default=42)) -> JSONResponse:
                                            " Have you called make()?"})
 
 
-@cliffwalking_router.post("/step")
+@cliff_walking_router.post("/step")
 async def step(action: int = Body(...)) -> JSONResponse:
     global env
 
@@ -100,7 +100,7 @@ async def step(action: int = Body(...)) -> JSONResponse:
                                            f"Have you called make()?"})
 
 
-@cliffwalking_router.get("/dynamics")
+@cliff_walking_router.get("/dynamics")
 async def get_dynamics(stateId: int, actionId: int = None) -> JSONResponse:
     global env
 

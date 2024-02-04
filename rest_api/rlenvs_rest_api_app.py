@@ -1,16 +1,12 @@
-import os
-
 from loguru import logger
-from dotenv import load_dotenv
 from fastapi import FastAPI
-from fastapi import HTTPException
-from fastapi import status
 from fastapi.middleware.cors import CORSMiddleware
 
 from api_info import api_info_router
-from frozenlake_env_api import frozenlake_router
-from taxi_env_api import taxi_router
-from cliffwalking_env_api import cliffwalking_router
+from toy_text.frozenlake_env_api import frozenlake_router
+from toy_text.taxi_env_api import taxi_router
+from toy_text.cliffwalking_env_api import cliff_walking_router
+from toy_text.black_jack_env_api import black_jack_router
 from api_config import get_api_config
 
 
@@ -33,7 +29,8 @@ app.add_middleware(
 app.include_router(api_info_router, prefix=BASE_URL)
 app.include_router(taxi_router, prefix=BASE_URL)
 app.include_router(frozenlake_router, prefix=BASE_URL)
-app.include_router(cliffwalking_router, prefix=BASE_URL)
+app.include_router(cliff_walking_router, prefix=BASE_URL)
+app.include_router(black_jack_router, prefix=BASE_URL)
 
 
 @app.on_event("startup")
