@@ -41,8 +41,6 @@
 #include "rlenvs/extern/HTTPRequest.hpp"
 #include "rlenvs/envs/gymnasium/toy_text/toy_text_base.h"
 
-
-#include "boost/noncopyable.hpp"
 #include <string>
 #include <tuple>
 #include <any>
@@ -79,11 +77,6 @@ struct CliffWorldData
     /// \brief state_type
     ///
     typedef typename state_space_type::item_t state_type;
-
-    ///
-    /// \brief state_boost_python_t
-    ///
-    typedef boost::python::list state_boost_python_type;
 
     ///
     /// \brief name
@@ -142,8 +135,7 @@ public:
     typedef CliffWorldData::time_step_type time_step_type;
 
     ///
-    /// \brief FrozenLake
-    /// \param version
+    /// \brief CliffWorld
     ///
     CliffWorld(const std::string& api_base_url);
 

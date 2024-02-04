@@ -48,10 +48,8 @@ CliffWorld::create_time_step_from_response_(const http::Response& response)const
 
 CliffWorld::CliffWorld(const std::string& api_base_url)
     :
-ToyTextEnvBase<CliffWorldData::time_step_type>(api_base_url + "/cliffwalking-env")
+ToyTextEnvBase<CliffWorldData::time_step_type>(api_base_url + "/cliff-walking-env")
 {}
-
-
 
 
 void
@@ -76,7 +74,9 @@ CliffWorld::make(const std::string& version,
         throw std::runtime_error("Environment server failed to create Environment");
     }
 
+    this->set_version(version);
     this->make_created();
+
 
 }
 

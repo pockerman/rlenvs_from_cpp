@@ -1,7 +1,7 @@
 #ifndef DISCRETE_SPACE_H
 #define DISCRETE_SPACE_H
 
-#include "rlenvs/rlenvs_types.h"
+#include "rlenvs/rlenvs_types_v2.h"
 
 #include <random>
 

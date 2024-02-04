@@ -45,15 +45,17 @@ public:
     ///
     bool is_created()const noexcept{return is_created_;}
 
-    ///
-    /// \brief mark the environment as created
-    ///
-    void make_created()noexcept{is_created_= true;}
+
 
     ///
     /// \brief Returns the url the environment is using
     ///
     std::string_view get_url()const noexcept{return url_;}
+
+    ///
+    /// \brief version
+    ///
+    std::string_view version()const noexcept{return version_;}
 
     ///
     /// \brief P
@@ -91,6 +93,16 @@ protected:
     time_step_type& get_current_time_step_()noexcept{return current_state_;}
     const time_step_type& get_current_time_step_()const noexcept{return current_state_;}
 
+    ///
+    /// \brief Set the version of the environment
+    ///
+    void set_version(const std::string& v)noexcept{version_ = v;}
+
+    ///
+    /// \brief mark the environment as created
+    ///
+    void make_created()noexcept{is_created_= true;}
+
 
     ///
     /// \brief build the dynamics from response
@@ -107,6 +119,11 @@ protected:
     /// \brief The urls of the server
     ///
     const std::string url_;
+
+    ///
+    /// \brief The version of the environment
+    ///
+    std::string version_;
 
     ///
     /// \brief Flag indicating if the environment has been created

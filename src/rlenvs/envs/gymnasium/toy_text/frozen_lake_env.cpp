@@ -87,6 +87,7 @@ FrozenLake<side_size>::make(const std::string& version,
         throw std::runtime_error("Environment server failed to create Environment");
     }
 
+    this->set_version(version);
     this->make_created();
 }
 

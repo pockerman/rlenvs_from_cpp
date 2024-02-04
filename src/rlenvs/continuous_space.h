@@ -2,7 +2,7 @@
 #define CONTINUOUS_SPACE_H
 
 #include "rlenvs/rlenvscpp_config.h"
-#include "rlenvs/rlenvs_types.h"
+#include "rlenvs/rlenvs_types_v2.h"
 
 #include <vector>
 

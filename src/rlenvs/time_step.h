@@ -40,7 +40,8 @@ public:
     ///
     /// \brief TimeStep. Constructor
     ///
-    TimeStep(TimeStepTp type, real_t reward, state_t obs, real_t discount_factor, std::unordered_map<std::string, std::any>&& extra);
+    TimeStep(TimeStepTp type, real_t reward, state_t obs,
+             real_t discount_factor, std::unordered_map<std::string, std::any>&& extra);
 
     ///
     /// \brief TimeStep
