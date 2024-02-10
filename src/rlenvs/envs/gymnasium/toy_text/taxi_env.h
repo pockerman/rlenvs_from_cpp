@@ -63,7 +63,7 @@ struct TaxiData
 ///
 /// \brief The Taxi class
 ///
-class Taxi: public  ToyTextEnvBase<TaxiData::time_step_type>
+class Taxi final: public  ToyTextEnvBase<TaxiData::time_step_type>
 {
 public:
 

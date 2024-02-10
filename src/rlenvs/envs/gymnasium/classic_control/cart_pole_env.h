@@ -38,18 +38,18 @@
   **/
 
 #include "rlenvs/rlenvscpp_config.h"
-#include "rlenvs/rlenvs_types.h"
-#include "rlenvs/envs/env_mixin.h"
+#include "rlenvs/rlenvs_types_v2.h"
 #include "rlenvs/discrete_space.h"
 #include "rlenvs/continuous_space.h"
 #include "rlenvs/time_step.h"
+#include "rlenvs/envs/gymnasium/gymnasium_env_base.h"
 
-#include <boost/noncopyable.hpp>
 
 #include <string>
 #include <vector>
 #include <array>
 #include <tuple>
+#include <any>
 
 namespace rlenvs_cpp{
 
@@ -58,6 +58,8 @@ template<typename StateTp> class TimeStep;
 
 namespace envs{
 namespace gymnasium{
+
+BETTER_ENUM(CartPoleActionsEnum, int, LEFT=0, RIGHT=1, INVALID_ACTION=2);
 
 ///
 /// \brief The CartPoleData struct. Wraps various data
@@ -86,10 +88,7 @@ struct CartPoleData
     ///
     typedef state_space_type::item_t state_type;
 
-    ///
-    /// \brief state_boost_python_t
-    ///
-    typedef boost::python::list state_boost_python_type;
+
 
     ///
     /// \brief name
@@ -101,37 +100,7 @@ struct CartPoleData
     ///
     typedef TimeStep<state_type> time_step_type;
 
-    ///
-    /// \brief state_transform_from_boost
-    /// \param boost_type
-    /// \return
-    ///
-    static state_type state_transform_from_boost(state_boost_python_type boost_type);
 
-    ///
-    /// \brief extract_state
-    /// \param gym_namespace
-    /// \return
-    ///
-    static state_type extract_state(obj_t gym_namespace, std::string result_name);
-
-    ///
-    /// \brief extract_state_from_reset
-    /// \param gym_namespace
-    /// \param py_env_n
-    /// \return
-    ///
-    static state_type extract_state_from_reset(obj_t gym_namespace, std::string py_state_name, std::string result_name);
-
-    ///
-    /// \brief extract_state_from_step
-    /// \param gym_namespace
-    /// \param py_state_name
-    /// \param result_name
-    /// \return
-    ///
-    static state_type extract_state_from_step(obj_t gym_namespace, std::string py_state_name, std::string result_name);
-    
     ///
     ///
     ///
@@ -142,7 +111,7 @@ struct CartPoleData
 ///
 /// \brief The CartPole class Interface for CartPole environment
 ///
-class CartPole: protected EnvMixin<CartPoleData>
+class CartPole final: public GymnasiumEnvBase<CartPoleData::time_step_type>
 {
 
 public:
@@ -177,51 +146,24 @@ public:
     ///
     typedef CartPoleData::time_step_type time_step_type;
 
-    ///
-    /// \brief The class Screen. Wrapper to the screen captured when calling render
-    ///
-    class Screen;
+
+
 
     ///
     /// \brief CartPole. Constructor
     ///
-    CartPole(const std::string& version, obj_t main_namespace, bool do_create=true);
-
-    ///
-    /// \brief CartPole
-    /// \param id
-    /// \param version
-    /// \param gym_namespace
-    /// \param do_create
-    ///
-    CartPole(uint_t id, const std::string& version, obj_t main_namespace, bool do_create=true);
+    CartPole(const std::string& api_base_url );
 
     ///
     /// \brief ~CartPole. Destructor
     ///
-    ~CartPole();
-
-    ///
-    /// \brief Expose the functionality this class is using
-    /// from the Mixin
-    ///
-    using EnvMixin<CartPoleData>::close;
-    using EnvMixin<CartPoleData>::full_name;
-    using EnvMixin<CartPoleData>::reset;
-    using EnvMixin<CartPoleData>::is_created;
-    using EnvMixin<CartPoleData>::version;
-    using EnvMixin<CartPoleData>::gym_namespace;
-    using EnvMixin<CartPoleData>::render;
-    using EnvMixin<CartPoleData>::idx;
-    using EnvMixin<CartPoleData>::py_env_name;
-    using EnvMixin<CartPoleData>::py_reset_result_name;
-    using EnvMixin<CartPoleData>::py_step_result_name;
-    using EnvMixin<CartPoleData>::py_state_name;
+    ~CartPole()=default;
 
     ///
     /// \brief make. Build the environment
     ///
-    void make();
+    void make(const std::string& version,
+              const std::unordered_map<std::string, std::any>& options) override final;
 
     ///
     /// \brief n_actions. Returns the number of actions
@@ -231,69 +173,20 @@ public:
     ///
     /// \brief step
     ///
-    time_step_type step(const action_type action);
-
-    ///
-    /// \brief the screen
-    ///
-    Screen get_screen()const;
-
-private:
-
-    using EnvMixin<CartPoleData>::current_state;
-    using EnvMixin<CartPoleData>::env;
-
-};
+    time_step_type step(const CartPoleActionsEnum action);
 
 
-class CartPole::Screen
-{
-public:
 
-    typedef std::vector<std::vector<std::vector<real_t>>> screen_vector_t;
+protected:
 
     ///
+    /// \brief Handle the reset response from the environment server
     ///
-    ///
-    Screen()=default;
-
-    ///
-    /// \brief Screen
-    ///
-    Screen(obj_t screen, std::array<uint_t, 3>&& shp);
-
-    ///
-    /// \brief shape. The shape of screen.
-    ///
-    std::array<uint_t, 3> shape()const noexcept{return shape_;};
-
-    ///
-    /// \brief get_as_vector. Returns the screen as floats
-    ///
-    const std::vector<std::vector<std::vector<real_t>>>& get_as_vector()const;
-    
-#ifdef USE_PYTORCH
-    torch_tensor_t get_as_torch_tensor()const;
-#endif
-    
-    ///
-    /// \brief is_valid. Returns true if the computed screen is valid
-    ///
-    bool is_valid()const noexcept{return is_valid_screen_;}
-    
-    ///
-    /// \brief invalidate. Invalidate the screen.
-    ///
-    void invalidate() noexcept;
-
-private:
-
-    obj_t screen_;
-    std::array<uint_t, 3> shape_;
-    bool is_valid_screen_{false};
-    mutable std::vector<std::vector<std::vector<real_t>>> screen_vec_;
+    virtual time_step_type create_time_step_from_response_(const http::Response& response) const override final;
 
 };
+
+
 
 }
 }

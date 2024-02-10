@@ -37,8 +37,8 @@
   *      195.0 over 100 consecutive trials.
   **/
 
-#include "rlenvs/rlenvs_types.h"
-#include "rlenvs/envs/gymnasium/cart_pole_env.h"
+#include "rlenvs/rlenvs_types_v2.h"
+#include "rlenvs/envs/gymnasium/classic_control/cart_pole_env.h"
 #include "rlenvs/envs/state_aggregation_env_base.h"
 
 #include <string>
@@ -55,7 +55,7 @@ template<typename StateTp> class TimeStep;
 namespace envs{
 namespace gymnasium{
 
-
+/*
 ///
 /// \brief The TiledCartPoleBoundaries struct. Boundaries for
 /// the state variables in the CartPole environment
@@ -182,7 +182,7 @@ private:
     void build_pole_theta_velocity_space_();
     void create_states_();
 };
-
+*/
 
 }
 }

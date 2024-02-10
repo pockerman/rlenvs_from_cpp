@@ -49,7 +49,7 @@ void
 BlackJack::make(const std::string& version,
                       const std::unordered_map<std::string, std::any>& options){
 
-     if(this->is_created()){
+    if(this->is_created()){
         return;
     }
 
@@ -87,7 +87,7 @@ BlackJack::make(const std::string& version,
 BlackJack::time_step_type
 BlackJack::step(BlackJackActionsEnum action){
 
-    #ifdef RLENVSCPP_DEBUG
+#ifdef RLENVSCPP_DEBUG
      assert(this->is_created_ && "Environment has not been created");
 #endif
 

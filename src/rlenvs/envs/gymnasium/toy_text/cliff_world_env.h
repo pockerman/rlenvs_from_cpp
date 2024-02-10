@@ -94,7 +94,7 @@ struct CliffWorldData
 ///
 /// \brief The CliffWorld class
 ///
-class CliffWorld: public ToyTextEnvBase<CliffWorldData::time_step_type>
+class CliffWorld final: public ToyTextEnvBase<CliffWorldData::time_step_type>
 {
 
 public:

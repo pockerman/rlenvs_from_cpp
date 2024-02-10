@@ -33,7 +33,7 @@ SET(GYMFCPP_VERSION "${GYMFCPP_VERSION_MAJOR}.${GYMFCPP_VERSION_MINOR}.${GYMFCPP
 MESSAGE(STATUS "rl_envs_from_cpp Version ${GYMFCPP_VERSION}")
 
 # where to install the library
-SET(INSTALL_PREFIX "/home/alex/qi3/cubeai/external/rlenvs_cpp/install")
+SET(INSTALL_PREFIX "install")
 
 # The CUDA compiler. This is required if the
 # PyTorch lib supports CUDA
@@ -130,6 +130,7 @@ FILE(GLOB SRCS src/rlenvs/*.cpp
                src/rlenvs/detail/*.cpp
                src/rlenvs/envs/gymnasium/*.cpp
                src/rlenvs/envs/gymnasium/toy_text/*.cpp
+               src/rlenvs/envs/gymnasium/classic_control/*.cpp
                src/rlenvs/envs/gymnasium/vector/*.cpp)
 
 ADD_LIBRARY(rlenvscpplib SHARED ${SRCS})

@@ -19,6 +19,7 @@
 #include <string>
 #include <vector>
 #include <tuple>
+#include <any>
 
 namespace rlenvs_cpp{
 namespace envs{
@@ -69,7 +70,7 @@ struct BlackJackData
 /// \brief The BlackJack class. Wrapper to the Blackjack
 /// OpenAI-Gym environment.
 ///
-class BlackJack:  public ToyTextEnvBase<BlackJackData::time_step_type>
+class BlackJack final:  public ToyTextEnvBase<BlackJackData::time_step_type>
 {
 
 public:
@@ -192,12 +193,9 @@ private:
     /// initialized as natural
     ///
     bool is_natural_{false};
-
-
     bool is_sab_{false};
 
     void make_natural()noexcept{is_natural_ = true;}
-
     void make_sab()noexcept{is_sab_ = true;}
 
 };

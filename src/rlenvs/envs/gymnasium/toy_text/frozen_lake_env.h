@@ -173,7 +173,7 @@ struct FrozenLakeData
 /// environment
 ///
 template<uint_t side_size>
-class FrozenLake: public ToyTextEnvBase<typename FrozenLakeData<side_size>::time_step_type>
+class FrozenLake final: public ToyTextEnvBase<typename FrozenLakeData<side_size>::time_step_type>
 {
 public:
 
