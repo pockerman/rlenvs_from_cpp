@@ -214,33 +214,11 @@ You can execute all the tests by running the helper script ```execute_tests.sh``
 
 ## Issues
 
-### ```pyconfig.h``` not found
-
-First identify the Python library in your system. You can do so by
-
-```
-find /usr/include -name pyconfig.h
-
-```
-Update the ```CPLUS_INCLUDE_PATH``` variable to include the headers for your Python library. For example, if you use Python 3.8 then
-
-```
-export CPLUS_INCLUDE_PATH="$CPLUS_INCLUDE_PATH:/usr/include/python3.8/"
-```
-
-### Could not find package ```boost_python```
-
-It is likely that you are missing the boost_python library with your local Boost installation. This may be the case
-is you installed boos via a package manager. On a Ubuntu machine the following should resolve the issue
-
-```
-sudo apt-get update -y
-sudo apt-get install -y libboost-python-dev
-```
 
 ### Could not find ```boost_system```
 
-This is similar to the issue above. You can resolve it by doing
+It is likely that you are missing the boost_system library with your local Boost installation. This may be the case
+is you installed boost via a package manager. On a Ubuntu machine the following should resolve the issue
 
 ```
 sudo apt-get update -y
