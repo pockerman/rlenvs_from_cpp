@@ -1,26 +1,28 @@
-#include "rlenvs/envs/gymnasium/classic_control/cart_pole_env.h"
-#include "rlenvs/rlenvs_types_v2.h"
-#include "rlenvs/time_step.h"
 #include "rlenvs/rlenvscpp_config.h"
+#include "rlenvs/envs/gymnasium/classic_control/mountain_car_env.h"
+#include "rlenvs/time_step.h"
 #include "rlenvs/extern/nlohmann/json/json.hpp"
+#include "rlenvs/extern/HTTPRequest.hpp"
 
-#ifdef RLENVSCPP_DEBUG
+#ifdef GYMFCPP_DEBUG
 #include <cassert>
 #endif
 
-#include <iostream>
-
+#include <string>
+#include <vector>
+#include <tuple>
+#include <any>
 
 namespace rlenvs_cpp{
-namespace envs {
+namespace envs{
 namespace gymnasium{
 
-// static data
-std::string CartPoleData::name = "CartPole";
+
+const std::string MountainCarData::name = "MountainCar";
 
 
-CartPole::time_step_type
-CartPole::create_time_step_from_response_(const http::Response& response)const{
+MountainCar::time_step_type
+MountainCar::create_time_step_from_response_(const http::Response& response)const{
 
     auto str_response = std::string(response.body.begin(), response.body.end());
     using json = nlohmann::json;
@@ -32,18 +34,20 @@ CartPole::create_time_step_from_response_(const http::Response& response)const{
     auto discount = j["time_step"]["discount"];
     auto observation = j["time_step"]["observation"];
     auto info = j["time_step"]["info"];
-    return CartPole::time_step_type(time_step_type_from_int(step_type),
+    return MountainCar::time_step_type(time_step_type_from_int(step_type),
                                                  reward, observation, discount,
                                                  std::unordered_map<std::string, std::any>());
 }
 
-CartPole::CartPole(const std::string& api_base_url)
-:
-GymnasiumEnvBase<CartPoleData::time_step_type>(api_base_url)
+
+MountainCar::MountainCar(const std::string& api_base_url)
+    :
+      GymnasiumEnvBase<MountainCarData::time_step_type>(api_base_url)
 {}
 
+
 void
-CartPole::make(const std::string& version,
+MountainCar::make(const std::string& version,
               const std::unordered_map<std::string, std::any>& options){
 
     if(this->is_created()){
@@ -66,11 +70,11 @@ CartPole::make(const std::string& version,
 
     this->set_version(version);
     this->make_created();
+
 }
 
-
-CartPole::time_step_type
-CartPole::step(const CartPoleActionsEnum action){
+MountainCar::time_step_type
+MountainCar::step(MountainCarActionsEnum action){
 
 #ifdef RLENVSCPP_DEBUG
      assert(this->is_created_ && "Environment has not been created");
@@ -92,6 +96,7 @@ CartPole::step(const CartPoleActionsEnum action){
 
     this->get_current_time_step_() = this->create_time_step_from_response_(response);
     return this->get_current_time_step_();
+
 }
 
 }

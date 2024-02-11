@@ -47,7 +47,6 @@
 
 #include <string>
 #include <vector>
-#include <array>
 #include <tuple>
 #include <any>
 
@@ -145,9 +144,6 @@ public:
     /// \brief time_step_t. The type of the time step
     ///
     typedef CartPoleData::time_step_type time_step_type;
-
-
-
 
     ///
     /// \brief CartPole. Constructor

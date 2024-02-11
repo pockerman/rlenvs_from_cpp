@@ -1,6 +1,4 @@
 #include "rlenvs/envs/gymnasium/vector/vector_cart_pole.h"
-
-#include <boost/python.hpp>
 #include <string>
 
 
@@ -9,6 +7,8 @@ namespace envs{
 namespace gymnasium{
 namespace vector{
 
+
+/*
 VCartPole::VCartPole(const std::string& version, obj_t main_namespace,
                     uint_t n_copies,
                     bool do_create)
@@ -43,7 +43,7 @@ VCartPole::make(){
 
 
 }
-
+*/
 
 }
 }

@@ -1,9 +1,9 @@
 #ifndef VECTOR_TIME_STEP_H
 #define VECTOR_TIME_STEP_H
 
-#include "gymfcpp/gymfcpp_types.h"
-#include "gymfcpp/time_step.h"
-#include "gymfcpp/time_step_type.h"
+#include "rlenvs/rlenvs_types_v2.h"
+#include "rlenvs/time_step.h"
+#include "rlenvs/time_step_type.h"
 
 #include <vector>
 

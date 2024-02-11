@@ -1,7 +1,7 @@
 #ifndef VECTOR_CART_POLE_H
 #define VECTOR_CART_POLE_H
 
-#include "rlenvs/rlenvs_types.h"
+#include "rlenvs/rlenvs_types_v2.h"
 
 #include <string>
 namespace rlenvs_cpp{
@@ -14,6 +14,7 @@ class VCartPole
 public:
 
 
+/*
     ///
     /// \brief VCartPole Constructor
     ///
@@ -51,6 +52,7 @@ private:
     obj_t env;
 
     uint_t n_copies_;
+    */
 };
 
 }

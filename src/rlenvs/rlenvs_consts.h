@@ -1,30 +1,11 @@
 #ifndef GYMFCPP_CONSTS_H
 #define GYMFCPP_CONSTS_H
 
-#include "rlenvs/rlenvs_types.h"
+#include "rlenvs/rlenvs_types_v2.h"
 #include <string>
 
 namespace rlenvs_cpp {
 
-///
-/// \brief PY_ENV_NAME
-///
-inline const std::string PY_ENV_NAME = "py_env_name";
-
-///
-/// \brief PY_RESET_ENV_RESULT_NAME
-///
-inline const std::string PY_RESET_ENV_RESULT_NAME = "py_reset_result_name";
-
-///
-/// \brief PY_STEP_ENV_RESULT_NAME
-///
-inline const std::string PY_STEP_ENV_RESULT_NAME = "py_step_result_name";
-
-///
-/// \brief PY_STATE_NAME
-///
-inline const std::string PY_STATE_NAME = "py_state_name";
 
 ///
 /// \brief INVALID_ID

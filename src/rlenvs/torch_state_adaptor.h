@@ -5,7 +5,7 @@
 
 #ifdef USE_PYTORCH
 
-#include "rlenvs/rlenvs_types.h"
+#include "rlenvs/rlenvs_types_v2.h"
 #include <vector>
 
 namespace rlenvs_cpp{
