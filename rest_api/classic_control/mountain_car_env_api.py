@@ -3,25 +3,30 @@ from typing import Union
 from fastapi import APIRouter, Depends, Body, status
 from fastapi.responses import JSONResponse
 from fastapi import HTTPException
+from pydantic import BaseModel
 from time_step_response import TimeStep, TimeStepType
 
-cart_pole_router = APIRouter(prefix="/cart-pole-env", tags=["cart-pole-env"])
+mountain_car_router = APIRouter(prefix="/mountain-car-env", tags=["mountain-car-env"])
 
 # the environment to create
 env = None
 ENV_NAME = "CartPole"
 
 # actions that the environment accepts
-ACTIONS_SPACE = {0: "Push cart to the left", 1: "Push cart to the right"}
+ACTIONS_SPACE = {0: "Accelerate to the left", 1: "Don't accelerate", 2: "Accelerate to the right"}
 
 
-@cart_pole_router.get("/action-space")
+class MountainCarParams(BaseModel):
+    pass
+
+
+@mountain_car_router.get("/action-space")
 async def get_action_space() -> JSONResponse:
     return JSONResponse(status_code=status.HTTP_200_OK,
                         content={"action_space": ACTIONS_SPACE})
 
 
-@cart_pole_router.get("/is-alive")
+@mountain_car_router.get("/is-alive")
 async def get_is_alive() -> JSONResponse:
     global env
 
@@ -33,15 +38,15 @@ async def get_is_alive() -> JSONResponse:
                             content={"result": True})
 
 
-@cart_pole_router.post("/make")
-async def make(version: str = Body(default="v1"), natural: bool = Body(default=False),
-               sab: bool = Body(default=False)) -> JSONResponse:
+@mountain_car_router.post("/make")
+async def make(version: str = Body(default="v1"),
+               params: MountainCarParams = Body(default=None)) -> JSONResponse:
     global env
     if env is not None:
         env.close()
 
     try:
-        env = gym.make(f"{ENV_NAME}-{version}", natural, sab)
+        env = gym.make(f"{ENV_NAME}-{version}")
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                             detail=str(e))
@@ -50,7 +55,7 @@ async def make(version: str = Body(default="v1"), natural: bool = Body(default=F
                         content={"result": True})
 
 
-@cart_pole_router.post("/close")
+@mountain_car_router.post("/close")
 async def close() -> JSONResponse:
     global env
 
@@ -63,7 +68,7 @@ async def close() -> JSONResponse:
                         content={"message": f"Environment {ENV_NAME} has not been created"})
 
 
-@cart_pole_router.post("/reset")
+@mountain_car_router.post("/reset")
 async def reset(seed: int = Body(default=42)) -> JSONResponse:
     """Reset the environment
 
@@ -88,7 +93,7 @@ async def reset(seed: int = Body(default=42)) -> JSONResponse:
                                            " Have you called make()?"})
 
 
-@cart_pole_router.post("/step")
+@mountain_car_router.post("/step")
 async def step(action: int = Body(...)) -> JSONResponse:
     global env
 
