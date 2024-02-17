@@ -174,7 +174,6 @@ The library has the following general dependencies
 - <a href="https://www.boost.org/">Boost C++</a> 
 - <a href="https://cmake.org/">CMake</a> >= 3.6
 - <a href="https://github.com/google/googletest">Gtest</a> (if configured with tests)
-- <a href="https://pytorch.org/">PyTorch</a> (C++ bindings with C++11 ABI) (if configured with PyTorch)
 
 Using the Gymnasium environments requires <a href="https://github.com/Farama-Foundation/Gymnasium/tree/main">Gymnasium</a> installed on your machine.
 In addition, you need to install
