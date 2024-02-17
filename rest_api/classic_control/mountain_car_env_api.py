@@ -10,7 +10,7 @@ mountain_car_router = APIRouter(prefix="/mountain-car-env", tags=["mountain-car-
 
 # the environment to create
 env = None
-ENV_NAME = "CartPole"
+ENV_NAME = "MountainCar"
 
 # actions that the environment accepts
 ACTIONS_SPACE = {0: "Accelerate to the left", 1: "Don't accelerate", 2: "Accelerate to the right"}
@@ -39,7 +39,7 @@ async def get_is_alive() -> JSONResponse:
 
 
 @mountain_car_router.post("/make")
-async def make(version: str = Body(default="v1"),
+async def make(version: str = Body(default="v0"),
                params: MountainCarParams = Body(default=None)) -> JSONResponse:
     global env
     if env is not None:
@@ -79,7 +79,7 @@ async def reset(seed: int = Body(default=42)) -> JSONResponse:
 
     if env is not None:
         observation, info = env.reset(seed=seed)
-
+        observation = [float(val) for val in observation]
         step = TimeStep(observation=observation,
                         reward=0.0,
                         step_type=TimeStepType.FIRST,
@@ -103,7 +103,7 @@ async def step(action: int = Body(...)) -> JSONResponse:
 
     if env is not None:
         observation, reward, terminated, truncated, info = env.step(action)
-
+        observation = [float(val) for val in observation]
         step = TimeStep(observation=observation,
                         reward=reward,
                         step_type=TimeStepType.MID if not terminated else TimeStepType.LAST,

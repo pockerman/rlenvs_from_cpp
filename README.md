@@ -150,7 +150,7 @@ int main(){
 
 ## How to use
 
-The general use case is to build the library and link it your driver code to access its functionality.
+The general use case is to build the library and link it with your driver code to access its functionality.
 Furthermore, the Gymnasium environments are accessed via a client/server pattern. Namely, they are exposed via an API developed using FastAPI.
 You need to fire up the server, see dependencies, before using the environments in your code. To do so
 
@@ -163,7 +163,11 @@ By default the ```uvicorn``` server listents on port 8001. Change this if needed
 
 ```
 http://0.0.0.0:8001/docs
+
 ```
+
+Note that currently the implementation is not thread/process safe i.e. if multiple threads/processes access the environment
+a global instance of the environment is manipulated. Thus no session based environment exists.
 
 
 ## Dependencies
