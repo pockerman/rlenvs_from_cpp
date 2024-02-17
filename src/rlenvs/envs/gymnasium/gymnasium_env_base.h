@@ -72,6 +72,11 @@ public:
     virtual time_step_type reset(uint_t seed);
 
     ///
+    /// \brief Reset the environment always using the same seed
+    ///
+    time_step_type reset(){return reset(42);}
+
+    ///
     /// \brief close the environment
     ///
     virtual void close();
