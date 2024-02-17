@@ -99,6 +99,24 @@ MountainCar::step(MountainCarActionsEnum action){
 
 }
 
+MountainCarActionsEnum
+MountainCar::sample_action()const{
+
+    auto action = sample_action_id();
+
+    if (action == 0){
+        return MountainCarActionsEnum::ACCELERATE_LEFT;
+    }
+    else if(action == 1){
+        return MountainCarActionsEnum::DO_NOT_ACCELERATE;
+    }
+    else if(action == 2){
+        return MountainCarActionsEnum::ACCELERATE_RIGHT;
+    }
+
+   throw std::runtime_error("Invalid action");
+}
+
 }
 }
 }

@@ -129,7 +129,12 @@ public:
     /// \brief sample Samples an action from the action space
     /// \return
     ///
-    action_type sample()const noexcept{return MountainCarData::action_space_type::sample();}
+    action_type sample_action_id()const noexcept{return MountainCarData::action_space_type::sample();}
+
+    ///
+    ///
+    ///
+    MountainCarActionsEnum sample_action()const;
 
 protected:
 
