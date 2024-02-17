@@ -42,7 +42,7 @@ MountainCar::create_time_step_from_response_(const http::Response& response)cons
 
 MountainCar::MountainCar(const std::string& api_base_url)
     :
-      GymnasiumEnvBase<MountainCarData::time_step_type>(api_base_url)
+      GymnasiumEnvBase<MountainCarData::time_step_type>(api_base_url + "/mountain-car-env")
 {}
 
 
