@@ -49,6 +49,13 @@ public:
     ///
     TimeStep(const TimeStep& other);
 
+    /**
+     * @brief Assignment operator
+     *
+     *
+     * */
+    TimeStep& operator=(const TimeStep& other);
+
     ///
     /// \brief TimeStep
     /// \param other
@@ -201,6 +208,18 @@ TimeStep<StateTp>::TimeStep(const TimeStep& other)
       discount_(other.discount_),
       extra_(other.extra_)
 {}
+
+template<typename StateTp>
+TimeStep<StateTp>&
+TimeStep<StateTp>::operator=(const TimeStep<StateTp>& other){
+
+    type_ = other.type_;
+    reward_ = other.reward_;
+    obs_ = other.obs_;
+    discount_ = other.discount_;
+    extra_ = other.extra_;
+    return *this;
+}
 
 template<typename StateTp>
 TimeStep<StateTp>::TimeStep(TimeStep&& other)noexcept

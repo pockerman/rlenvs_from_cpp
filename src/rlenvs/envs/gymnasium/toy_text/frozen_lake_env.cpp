@@ -15,6 +15,25 @@ namespace gymnasium{
 template<uint_t side_size>
 const std::string FrozenLakeData<side_size>::name = "FrozenLake";
 
+template<uint_t side_size>
+FrozenLakeActionsEnum
+FrozenLake<side_size>::action_from_int(uint_t aidx){
+
+    if(aidx==0)
+        return FrozenLakeActionsEnum::LEFT;
+
+    if(aidx==1)
+        return FrozenLakeActionsEnum::DOWN;
+
+    if(aidx==2)
+        return FrozenLakeActionsEnum::RIGHT;
+
+    if(aidx==3)
+        return FrozenLakeActionsEnum::UP;
+
+    return FrozenLakeActionsEnum::INVALID_ACTION;
+}
+
 
 template<uint_t side_size>
 FrozenLake<side_size>::FrozenLake(const std::string& api_base_url)
@@ -116,6 +135,20 @@ FrozenLake<side_size>::step(FrozenLakeActionsEnum action){
 
     this->get_current_time_step_() = this->create_time_step_from_response_(response);
     return this->get_current_time_step_();
+
+}
+
+template<uint_t side_size>
+typename FrozenLake<side_size>::time_step_type
+FrozenLake<side_size>::step(uint_t action){
+
+#ifdef RLENVSCPP_DEBUG
+     assert(this->is_created_ && "Environment has not been created");
+#endif
+
+     auto action_enum = FrozenLake<side_size>::action_from_int(action);
+
+     return step(action_enum);
 
 }
 

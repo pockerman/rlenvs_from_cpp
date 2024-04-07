@@ -1,36 +1,73 @@
-// #include "rlenvs/rlenvs_types.h"
-// #include "rlenvs/envs/gymnasium/vector/vector_cart_pole.h"
-//
-// #include <boost/python.hpp>
+
+#include "rlenvs/rlenvs_types_v2.h"
+#include "rlenvs/envs/gymnasium/toy_text/frozen_lake_env.h"
+#include "rlenvs/envs/envs_utils.h"
+#include "rlenvs/rlenvscpp_config.h"
+
+#ifdef RLENVSCPP_DEBUG
+#include <cassert>
+#endif
+
 #include <iostream>
 #include <string>
+#include <random>
+
+
+namespace example{
+
+using rlenvs_cpp::uint_t;
+const std::string SERVER_URL = "http://0.0.0.0:8001/api";
+const uint_t MAX_TRAJECTORY_SIZE = 10;
+
+typedef rlenvs_cpp::envs::gymnasium::FrozenLake<4> env_type;
+
+
+auto random_action_selector = [](auto state){
+
+    // randomly select an action
+     std::mt19937 gen(42); // mersenne_twister_engine seeded with rd()
+     std::uniform_int_distribution<> distrib(0, 3);
+     auto action = distrib(gen);
+     return action;
+
+};
+
+}
 
 int main(){
 
-//     try
-//     {
-//         Py_Initialize();
-//         auto main_module = boost::python::import("__main__");
-//         auto main_namespace = main_module.attr("__dict__");
-//
-//         // create a 4x4 FrozenLake environment
-//         rlenvs_cpp::envs::gymnasium::vector::VCartPole env("v1", main_namespace, 1, false);
-//
-//         env.make();
-//
-//         //auto step = env.reset();
-//         //std::cout<<step<<std::endl;
-//
-//         //step = env.step(1, true);
-//         //std::cout<<step<<std::endl;
-//
-//         //std::cout<<"Step with prob="<<step.get_extra<rlenvs_cpp::real_t>("prob")<<std::endl;
-//
-//     }
-//     catch(boost::python::error_already_set const &)
-//     {
-//         PyErr_Print();
-//     }
+    using namespace example;
+
+    env_type env(SERVER_URL);
+
+    std::cout<<"Environame URL: "<<env.get_url()<<std::endl;
+
+    // make the environment
+    std::unordered_map<std::string, std::any> options;
+    options.insert({"is_slippery", true});
+    env.make("v1", options);
+    env.reset(42);
+
+    std::cout<<"Is environment created? "<<env.is_created()<<std::endl;
+    std::cout<<"Is environment alive? "<<env.is_alive()<<std::endl;
+    std::cout<<"Number of valid actions? "<<env.n_actions()<<std::endl;
+    std::cout<<"Number of states? "<<env.n_states()<<std::endl;
+
+    auto trajectory = rlenvs_cpp::envs::create_trajectory(env,
+                                                          random_action_selector,
+                                                          MAX_TRAJECTORY_SIZE);
+
+
+
+#ifdef RLENVSCPP_DEBUG
+     assert(!trajectory.empty() && "Trajectory is empty");
+     assert(trajectory.size() <= MAX_TRAJECTORY_SIZE && "Invalid trajectory size");
+#endif
+
+
+    std::cout<<"Trajectory size: "<<trajectory.size()<<std::endl;
+    // finally close the environment
+    env.close();
 
     return 0;
 }

@@ -75,7 +75,9 @@ namespace gymnasium {
 template<uint_t side_size>
 struct discrete_state_space_frozen_lake;
 
-BETTER_ENUM(FrozenLakeActionsEnum, int, LEFT=0, DOWN=1, RIGHT=2, UP=3, INVALID_ACTION=4);
+BETTER_ENUM(FrozenLakeActionsEnum, int,
+            LEFT=0, DOWN=1, RIGHT=2, UP=3, INVALID_ACTION=4);
+
 
 template<>
 struct discrete_state_space_frozen_lake<4>
@@ -212,7 +214,13 @@ public:
     ///
     typedef typename FrozenLakeData<side_size>::time_step_type time_step_type;
 
-     ///
+    /**
+     * @brief Convert the action index to a valid FrozenLakeActionsEnum
+     *
+     * */
+    static FrozenLakeActionsEnum action_from_int(uint_t aidx);
+
+    ///
     /// \brief Constructor.
     ///
     FrozenLake(const std::string& api_base_url);
@@ -246,6 +254,13 @@ public:
     /// \return
     ///
     time_step_type step(FrozenLakeActionsEnum action);
+
+
+    /**
+     * @brief Step in the environment following the given action
+     *
+     * */
+    time_step_type step(uint_t action);
 
 
     ///
