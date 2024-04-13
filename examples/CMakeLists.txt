@@ -25,8 +25,7 @@ ENDIF()
 # use the Boost link directories
 LINK_DIRECTORIES(${Boost_LIBRARY_DIR})
 LINK_DIRECTORIES(${CMAKE_INSTALL_PREFIX})
-LINK_DIRECTORIES(${PYTHON_LID_DIR}) #/usr/lib/python3.8/config-3.8-x86_64-linux-gnu/)
-#LINK_DIRECTORIES(${GTEST_LIB_DIR}) #/home/alex/MySoftware/gtest/install/lib)
+
 
 ADD_SUBDIRECTORY(example_1)
 ADD_SUBDIRECTORY(example_2)

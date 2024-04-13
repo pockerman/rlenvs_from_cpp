@@ -148,6 +148,10 @@ int main(){
 ```
 
 
+Some algorithms, such as Monte Carlo, require that we should generate and trajectory, <a href="examples/example_3/example_3.cpp">example 3</a>
+shows how to do this.
+
+
 ## How to use
 
 The general use case is to build the library and link it with your driver code to access its functionality.
