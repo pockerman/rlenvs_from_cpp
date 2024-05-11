@@ -22,7 +22,7 @@ const uint_t MAX_TRAJECTORY_SIZE = 10;
 typedef rlenvs_cpp::envs::gymnasium::FrozenLake<4> env_type;
 
 
-auto random_action_selector = [](auto state){
+auto random_action_selector = [](auto /*state*/){
 
     // randomly select an action
      std::mt19937 gen(42); // mersenne_twister_engine seeded with rd()
