@@ -67,7 +67,6 @@ create_trajectory(EnvType& env, ActionSelector& action_selector, uint_t max_step
 
 }
 
-
 } // envs
 }// rlenvs_cpp
 

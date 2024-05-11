@@ -134,6 +134,13 @@ public:
     ///
     typedef CliffWorldData::time_step_type time_step_type;
 
+
+    /**
+     * @brief Convert the action index to a valid FrozenLakeActionsEnum
+     *
+     * */
+    static CliffWorldActionsEnum action_from_int(uint_t aidx);
+
     ///
     /// \brief CliffWorld
     ///
@@ -168,6 +175,13 @@ public:
     /// \return
     ///
     time_step_type step(CliffWorldActionsEnum action);
+
+
+    /**
+     * @brief Step in the environment following the given action
+     *
+     * */
+    time_step_type step(uint_t action);
 
 protected:
 

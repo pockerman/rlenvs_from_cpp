@@ -26,7 +26,7 @@ IF(COMMAND cmake_policy)
 ENDIF(COMMAND cmake_policy)
 
 
-SET(CMAKE_BUILD_TYPE "Debug")
+SET(CMAKE_BUILD_TYPE "Release")
 SET(CMAKE_CXX_COMPILER /usr/bin/g++-11)
 SET(CMAKE_C_COMPILER /usr/bin/gcc-11)
 SET(CMAKE_CXX_STANDARD 20)

@@ -2,7 +2,7 @@
 #define GYMFCPP_CONFIG_H
 
 /*DEBUG*/
-#define RLENVSCPP_DEBUG
+/* #undef RLENVSCPP_DEBUG */
 
 /*Use PyTorch */
 /* #undef USE_PYTORCH */

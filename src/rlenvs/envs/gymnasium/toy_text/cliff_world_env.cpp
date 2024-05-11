@@ -15,6 +15,25 @@ namespace gymnasium{
 const std::string CliffWorldData::name = "CliffWalking";
 
 
+CliffWorldActionsEnum
+CliffWorld::action_from_int(uint_t aidx){
+
+    if(aidx==0)
+        return CliffWorldActionsEnum::UP;
+
+    if(aidx==1)
+        return CliffWorldActionsEnum::RIGHT;
+
+    if(aidx==2)
+        return CliffWorldActionsEnum::DOWN;
+
+    if(aidx==3)
+        return CliffWorldActionsEnum::LEFT;
+
+    return CliffWorldActionsEnum::INVALID_ACTION;
+}
+
+
 
 CliffWorld::dynamics_t
 CliffWorld::build_dynamics_from_response_(const http::Response& response)const{
@@ -83,7 +102,6 @@ CliffWorld::make(const std::string& version,
 CliffWorld::time_step_type
 CliffWorld::step(CliffWorldActionsEnum action){
 
-
 #ifdef RLENVSCPP_DEBUG
      assert(this->is_created_ && "Environment has not been created");
 #endif
@@ -105,6 +123,17 @@ CliffWorld::step(CliffWorldActionsEnum action){
     this->get_current_time_step_() = this->create_time_step_from_response_(response);
     return this->get_current_time_step_();
 
+}
+
+CliffWorld::time_step_type
+CliffWorld::step(uint_t action){
+
+#ifdef RLENVSCPP_DEBUG
+     assert(this->is_created_ && "Environment has not been created");
+#endif
+
+     auto action_enum = CliffWorld::action_from_int(action);
+     return step(action_enum);
 }
 
 }
