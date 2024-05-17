@@ -148,8 +148,8 @@ int main(){
 ```
 
 
-Some algorithms, such as Monte Carlo, require that we should generate and trajectory, <a href="examples/example_3/example_3.cpp">example 3</a>
-shows how to do this.
+Some algorithms, such as Monte Carlo, require that we should generate a trajectory, <a href="examples/example_3/example_3.cpp">example 3</a>
+shows how to do this. Various RL algorithms using the environments can be found at <a href="https://github.com/pockerman/cuberl/tree/master">cuberl</a>
 
 
 ## How to use
