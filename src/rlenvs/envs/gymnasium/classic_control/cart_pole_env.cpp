@@ -19,6 +19,21 @@ namespace gymnasium{
 std::string CartPoleData::name = "CartPole";
 
 
+
+CartPoleActionsEnum
+CartPole::action_from_int(uint_t aidx){
+
+    if(aidx==0)
+        return CartPoleActionsEnum::LEFT;
+
+    if(aidx==1)
+        return CartPoleActionsEnum::RIGHT;
+
+    return CartPoleActionsEnum::INVALID_ACTION;
+}
+
+
+
 CartPole::time_step_type
 CartPole::create_time_step_from_response_(const http::Response& response)const{
 
@@ -92,6 +107,20 @@ CartPole::step(const CartPoleActionsEnum action){
 
     this->get_current_time_step_() = this->create_time_step_from_response_(response);
     return this->get_current_time_step_();
+}
+
+
+
+CartPole::time_step_type
+CartPole::step(uint_t action){
+
+#ifdef RLENVSCPP_DEBUG
+     assert(this->is_created_ && "Environment has not been created");
+#endif
+
+     auto action_enum = CartPole::action_from_int(action);
+     return step(action_enum);
+
 }
 
 }

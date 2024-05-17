@@ -87,8 +87,6 @@ struct CartPoleData
     ///
     typedef state_space_type::item_t state_type;
 
-
-
     ///
     /// \brief name
     ///
@@ -98,7 +96,6 @@ struct CartPoleData
     /// \brief time_step_t. The type of the time step
     ///
     typedef TimeStep<state_type> time_step_type;
-
 
     ///
     ///
@@ -145,6 +142,13 @@ public:
     ///
     typedef CartPoleData::time_step_type time_step_type;
 
+
+    /**
+     * @brief Convert the action index to a valid FrozenLakeActionsEnum
+     *
+     * */
+    static CartPoleActionsEnum action_from_int(uint_t aidx);
+
     ///
     /// \brief CartPole. Constructor
     ///
@@ -167,9 +171,16 @@ public:
     uint_t n_actions()const noexcept{return action_space_type::size;}
 
     ///
-    /// \brief step
+    /// \brief step. Step in the environment following the given action
     ///
     time_step_type step(const CartPoleActionsEnum action);
+
+
+    /**
+     * @brief step. Step in the environment following the given action
+     *
+     * */
+    time_step_type step(uint_t action);
 
 
 
