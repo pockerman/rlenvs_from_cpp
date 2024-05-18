@@ -46,7 +46,7 @@ int main(){
     std::unordered_map<std::string, std::any> options;
     options.insert({"is_slippery", true});
     env.make("v1", options);
-    env.reset(42);
+    env.reset(42, std::unordered_map<std::string, std::any>());
 
     std::cout<<"Is environment created? "<<env.is_created()<<std::endl;
     std::cout<<"Is environment alive? "<<env.is_alive()<<std::endl;
@@ -57,8 +57,6 @@ int main(){
                                                           random_action_selector,
                                                           MAX_TRAJECTORY_SIZE);
 
-
-
 #ifdef RLENVSCPP_DEBUG
      assert(!trajectory.empty() && "Trajectory is empty");
      assert(trajectory.size() <= MAX_TRAJECTORY_SIZE && "Invalid trajectory size");
@@ -66,8 +64,8 @@ int main(){
 
 
     std::cout<<"Trajectory size: "<<trajectory.size()<<std::endl;
+
     // finally close the environment
     env.close();
-
     return 0;
 }

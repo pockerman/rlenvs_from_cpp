@@ -13,6 +13,7 @@
 #include <vector>
 #include <tuple>
 #include <any>
+#include <unordered_map>
 
 namespace rlenvs_cpp{
 namespace envs{
@@ -135,6 +136,13 @@ public:
     ///
     ///
     MountainCarActionsEnum sample_action()const;
+
+     /**
+     * @brief Synchronize the environment
+     *
+     */
+    void sync(const std::unordered_map<std::string, std::any>& options=std::unordered_map<std::string, std::any>()){}
+
 
 protected:
 

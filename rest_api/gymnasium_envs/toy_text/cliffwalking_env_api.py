@@ -1,10 +1,11 @@
 import gymnasium as gym
-from fastapi import APIRouter, Depends, Body, status
+from typing import Any
+from fastapi import APIRouter, Body, status
 from fastapi.responses import JSONResponse
 from fastapi import HTTPException
 from time_step_response import TimeStep, TimeStepType
 
-cliff_walking_router = APIRouter(prefix="/cliff-walking-env", tags=["cliff-walking-env"])
+cliff_walking_router = APIRouter(prefix="/gymnasium/cliff-walking-env", tags=["cliff-walking-env"])
 
 # the environment to create
 env = None
@@ -53,7 +54,7 @@ async def close() -> JSONResponse:
 
 
 @cliff_walking_router.post("/reset")
-async def reset(seed: int = Body(default=42)) -> JSONResponse:
+async def reset(seed: int = Body(default=42), options: dict[str, Any] = Body(default={})) -> JSONResponse:
     """Reset the environment
 
     :return:
@@ -123,3 +124,9 @@ async def get_dynamics(stateId: int, actionId: int = None) -> JSONResponse:
     raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                         detail={"message": f"Environment {ENV_NAME} is not initialized. "
                                            f"Have you called make()?"})
+
+
+@cliff_walking_router.post("/sync")
+async def sync(options: dict[str, Any] = Body(default={})) -> JSONResponse:
+    return JSONResponse(status_code=status.HTTP_202_ACCEPTED,
+                        content={"message": "OK"})

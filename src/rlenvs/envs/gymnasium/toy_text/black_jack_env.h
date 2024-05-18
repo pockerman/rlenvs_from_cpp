@@ -20,6 +20,7 @@
 #include <vector>
 #include <tuple>
 #include <any>
+#include <unordered_map>
 
 namespace rlenvs_cpp{
 namespace envs{
@@ -169,7 +170,6 @@ public:
     ///
     ///
     bool is_sab()const noexcept{return is_sab_;}
-
 
 
 protected:

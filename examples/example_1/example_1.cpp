@@ -27,7 +27,7 @@ void test_frozen_lake(){
     std::cout<<"Number of states? "<<env.n_states()<<std::endl;
 
     // reset the environment
-    auto time_step = env.reset(42);
+    auto time_step = env.reset(42, std::unordered_map<std::string, std::any>());
 
     std::cout<<"Reward on reset: "<<time_step.reward()<<std::endl;
     std::cout<<"Observation on reset: "<<time_step.observation()<<std::endl;
@@ -56,6 +56,9 @@ void test_frozen_lake(){
         std::cout<<std::get<3>(item)<<std::endl;
     }
 
+    // synchronize the environment
+    env.sync(std::unordered_map<std::string, std::any>());
+
     // close the environment
     env.close();
 
@@ -77,7 +80,7 @@ void test_taxi(){
     std::cout<<"Number of states? "<<env.n_states()<<std::endl;
 
     // reset the environment
-    auto time_step = env.reset(42);
+    auto time_step = env.reset(42, std::unordered_map<std::string, std::any>());
 
     std::cout<<"Reward on reset: "<<time_step.reward()<<std::endl;
     std::cout<<"Observation on reset: "<<time_step.observation()<<std::endl;

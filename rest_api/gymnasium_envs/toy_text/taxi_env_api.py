@@ -1,10 +1,11 @@
 import gymnasium as gym
-from fastapi import APIRouter, Depends, Body, status
+from typing import Any
+from fastapi import APIRouter, Body, status
 from fastapi.responses import JSONResponse
 from fastapi import HTTPException
 from time_step_response import TimeStep, TimeStepType
 
-taxi_router = APIRouter(prefix="/taxi-env", tags=["taxi-env"])
+taxi_router = APIRouter(prefix="/gymnasium/taxi-env", tags=["taxi-env"])
 
 # the environment to create
 env = None
@@ -53,7 +54,7 @@ async def close() -> JSONResponse:
 
 
 @taxi_router.post("/reset")
-async def reset(seed: int = Body(default=42)) -> JSONResponse:
+async def reset(seed: int = Body(default=42), options: dict[str, Any] = Body(default={})) -> JSONResponse:
     """Reset the environment
 
     :return:
@@ -62,7 +63,6 @@ async def reset(seed: int = Body(default=42)) -> JSONResponse:
     global env
 
     if env is not None:
-        print(env.reset(seed=seed))
         observation, info = env.reset(seed=seed)
 
         action_mask = info['action_mask']
@@ -119,3 +119,9 @@ async def get_dynamics(stateId: int, actionId: int = None) -> JSONResponse:
     raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                         detail={"message": f"Environment {ENV_NAME} is not initialized. "
                                            f"Have you called make()?"})
+
+
+@taxi_router.post("/sync")
+async def sync(options: dict[str, Any] = Body(default={})) -> JSONResponse:
+    return JSONResponse(status_code=status.HTTP_202_ACCEPTED,
+                        content={"message": "OK"})
