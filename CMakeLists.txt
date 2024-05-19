@@ -103,7 +103,8 @@ FILE(GLOB SRCS src/rlenvs/*.cpp
                src/rlenvs/envs/gymnasium/*.cpp
                src/rlenvs/envs/gymnasium/toy_text/*.cpp
                src/rlenvs/envs/gymnasium/classic_control/*.cpp
-               src/rlenvs/envs/gymnasium/vector/*.cpp)
+               src/rlenvs/envs/gymnasium/vector/*.cpp
+               src/rlenvs/envs/gdrl/*.cpp)
 
 ADD_LIBRARY(rlenvscpplib SHARED ${SRCS})
 
