@@ -75,6 +75,10 @@ void test_frozen_lake(){
         std::cout<<std::get<3>(item)<<std::endl;
     }
 
+
+    // synchronize the environment
+    env.sync(std::unordered_map<std::string, std::any>());
+
     // close the environment
     env.close();
 

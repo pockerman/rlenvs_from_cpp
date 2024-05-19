@@ -1,11 +1,11 @@
 import gymnasium as gym
-from fastapi import APIRouter, Depends, Body, status
+from typing import Any
+from fastapi import APIRouter, Body, status
 from fastapi.responses import JSONResponse
 from fastapi import HTTPException
 from time_step_response import TimeStep, TimeStepType
 
-frozenlake_router = APIRouter(prefix="/frozen-lake-env", tags=["frozen-lake-env"])
-
+frozenlake_router = APIRouter(prefix="/gymnasium/frozen-lake-env", tags=["frozen-lake-env"])
 
 # the environment to create
 env = None
@@ -22,6 +22,7 @@ async def is_alive() -> JSONResponse:
         return JSONResponse(status_code=status.HTTP_200_OK,
                             content={"result": True})
 
+
 @frozenlake_router.post("/close")
 async def close() -> JSONResponse:
     global env
@@ -34,12 +35,12 @@ async def close() -> JSONResponse:
     return JSONResponse(status_code=status.HTTP_400_BAD_REQUEST,
                         content={"message": "Environment has not been created"})
 
+
 @frozenlake_router.post("/make")
 async def make(version: str = Body(default='v1'),
                map_name: str = Body(default="4x4"),
                is_slippery: bool = Body(default=True)) -> JSONResponse:
-
-    global  env
+    global env
     if env is not None:
         env.close()
 
@@ -53,8 +54,9 @@ async def make(version: str = Body(default='v1'),
     return JSONResponse(status_code=status.HTTP_201_CREATED,
                         content={"result": True})
 
+
 @frozenlake_router.post("/reset")
-async def reset(seed: int = Body(default=42)) -> JSONResponse:
+async def reset(seed: int = Body(default=42), options: dict[str, Any] = Body(default={})) -> JSONResponse:
     """Reset the environment
 
     :return:
@@ -69,11 +71,12 @@ async def reset(seed: int = Body(default=42)) -> JSONResponse:
                         step_type=TimeStepType.FIRST, info=info,
                         discount=1.0)
         return JSONResponse(status_code=status.HTTP_202_ACCEPTED,
-                        content={"time_step": step.model_dump()})
+                            content={"time_step": step.model_dump()})
 
     raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                         detail={"message": "Environment FrozenLake is not initialized."
                                            " Have you called make()?"})
+
 
 @frozenlake_router.post("/step")
 async def step(action: int = Body(...)) -> JSONResponse:
@@ -93,6 +96,7 @@ async def step(action: int = Body(...)) -> JSONResponse:
     raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                         detail={"message": "Environment FrozenLake is not initialized. Have you called make()?"})
 
+
 @frozenlake_router.get("/dynamics")
 async def get_dynamics(stateId: int, actionId: int = None) -> JSONResponse:
     global env
@@ -111,3 +115,8 @@ async def get_dynamics(stateId: int, actionId: int = None) -> JSONResponse:
     raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                         detail={"message": "Environment FrozenLake is not initialized. Have you called make()?"})
 
+
+@frozenlake_router.post("/sync")
+async def sync(options: dict[str, Any] = Body(default={})) -> JSONResponse:
+    return JSONResponse(status_code=status.HTTP_202_ACCEPTED,
+                        content={"message": "OK"})

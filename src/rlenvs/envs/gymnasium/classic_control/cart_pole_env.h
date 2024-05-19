@@ -182,6 +182,12 @@ public:
      * */
     time_step_type step(uint_t action);
 
+    /**
+     * @brief Synchronize the environment
+     *
+     */
+    void sync(const std::unordered_map<std::string, std::any>& options=std::unordered_map<std::string, std::any>()){}
+
 
 
 protected:

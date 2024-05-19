@@ -8,12 +8,14 @@
 #include "rlenvs/rlenvs_types_v2.h"
 #include "rlenvs/extern/HTTPRequest.hpp"
 #include "rlenvs/rlenvscpp_config.h"
+
+#include <boost/noncopyable.hpp>
 #include <string>
 #include <vector>
 #include <tuple>
 #include <unordered_map>
 #include <any>
-#include <boost/noncopyable.hpp>
+
 
 #ifdef RLENVSCPP_DEBUG
 #include <cassert>
@@ -69,12 +71,13 @@ public:
     ///
     /// \brief Reset the environment
     ///
-    virtual time_step_type reset(uint_t seed);
+    virtual time_step_type reset(uint_t seed,
+                                 const std::unordered_map<std::string, std::any>& options);
 
     ///
     /// \brief Reset the environment always using the same seed
     ///
-    time_step_type reset(){return reset(42);}
+    time_step_type reset(){return reset(42, std::unordered_map<std::string, std::any>());}
 
     ///
     /// \brief close the environment
@@ -179,7 +182,8 @@ GymnasiumEnvBase<TimeStepType>::close(){
 
 template<typename TimeStepType>
 typename GymnasiumEnvBase<TimeStepType>::time_step_type
-GymnasiumEnvBase<TimeStepType>::reset(uint_t seed){
+GymnasiumEnvBase<TimeStepType>::reset(uint_t seed,
+                                      const std::unordered_map<std::string, std::any>& /*options*/){
 
     if(!is_created_){
 #ifdef RLENVSCPP_DEBUG

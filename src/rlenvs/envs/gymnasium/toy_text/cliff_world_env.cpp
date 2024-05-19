@@ -107,7 +107,7 @@ CliffWorld::step(CliffWorldActionsEnum action){
 #endif
 
      if(this->get_current_time_step_().last()){
-         return this->reset(42);
+         return this->reset(42, std::unordered_map<std::string, std::any>());
      }
 
     const auto request_url = std::string(this->get_url()) + "/step";
