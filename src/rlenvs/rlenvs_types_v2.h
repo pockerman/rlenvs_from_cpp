@@ -29,10 +29,6 @@ typedef std::size_t uint_t;
 ///
 //constexpr uint_t INVALID_UINT = static_cast<uint_t>(-1);
 
-///
-/// \brief Invalid string
-///
-const std::string INVALID_STR = std::string("INVALID");
 
 #ifdef USE_PYTORCH
 typedef torch::Tensor torch_tensor_t;

@@ -67,19 +67,15 @@ class WalkEnv(gym.Env):
         self.lastaction = action
         return int(s), r, d, {"prob": p}
 
-    def reset(
-            self,
-            *,
-            seed: Optional[int] = None,
-            return_info: bool = False,
-            options: Optional[dict] = None,
-    ):
+    def reset(self, *, seed: Optional[int] = None,
+              return_info: bool = False,
+              options: Optional[dict] = None) -> int:
         super().reset(seed=seed)
         self.s = categorical_sample(self.isd, self.np_random)
         self.lastaction = None
         return int(self.s)
 
-    def render(self, mode='human', close=False):
+    def render(self, mode='human', close=False) -> None:
         outfile = StringIO() if mode == 'ansi' else sys.stdout
         desc = np.asarray(['[' + ascii_uppercase[:self.shape[1] - 2] + ']'], dtype='c').tolist()
         desc = [[c.decode('utf-8') for c in line] for line in desc]

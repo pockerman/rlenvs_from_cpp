@@ -56,7 +56,7 @@ public:
      * @brief Synchronize the environment
      *
      */
-    void sync(const std::unordered_map<std::string, std::any>& options=std::unordered_map<std::string, std::any>()){}
+    void sync(const std::unordered_map<std::string, std::any>& /*options*/=std::unordered_map<std::string, std::any>()){}
 
 
 protected:

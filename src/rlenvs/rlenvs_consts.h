@@ -12,6 +12,11 @@ namespace rlenvs_cpp {
 ///
 inline const uint_t INVALID_ID = static_cast<uint_t>(-1);
 
+///
+/// \brief Invalid string
+///
+inline const std::string INVALID_STR = std::string("INVALID");
+
 }
 
 #endif // GYMFCPP_CONSTS_H

@@ -26,7 +26,7 @@ IF(COMMAND cmake_policy)
 ENDIF(COMMAND cmake_policy)
 
 
-SET(CMAKE_BUILD_TYPE "Release")
+SET(CMAKE_BUILD_TYPE "Debug")
 SET(CMAKE_CXX_COMPILER /usr/bin/g++-11)
 SET(CMAKE_C_COMPILER /usr/bin/gcc-11)
 SET(CMAKE_CXX_STANDARD 20)
@@ -48,7 +48,7 @@ ENDIF()
 
 SET(ENABLE_TESTS_FLAG OFF)
 SET(ENABLE_EXAMPLES_FLAG ON)
-SET(ENABLE_DOC_FLAG ON)
+SET(ENABLE_DOC_FLAG OFF)
 
 # only neccessary if tests are enabled
 SET(GTEST_INCLUDE_DIR /home/alex/MySoftware/gtest/install/include)
@@ -104,7 +104,8 @@ FILE(GLOB SRCS src/rlenvs/*.cpp
                src/rlenvs/envs/gymnasium/toy_text/*.cpp
                src/rlenvs/envs/gymnasium/classic_control/*.cpp
                src/rlenvs/envs/gymnasium/vector/*.cpp
-               src/rlenvs/envs/gdrl/*.cpp)
+               src/rlenvs/envs/gdrl/*.cpp
+               src/rlenvs/envs/gym_pybullet_drones/*.cpp)
 
 ADD_LIBRARY(rlenvscpplib SHARED ${SRCS})
 
