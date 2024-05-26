@@ -80,8 +80,8 @@ void test_frozen_lake(){
         std::cout<<std::get<3>(item)<<std::endl;
     }
 
-
-    // synchronize the environment
+    // synchronize the environment. environment knows how
+    // to cast std::any
     env.sync(std::unordered_map<std::string, std::any>());
 
     // close the environment
@@ -164,7 +164,8 @@ shows how to do this. Various RL algorithms using the environments can be found 
 ## How to use
 
 The general use case is to build the library and link it with your driver code to access its functionality.
-Furthermore, the Gymnasium environments are accessed via a client/server pattern. Namely, they are exposed via an API developed using FastAPI.
+Furthermore, the ```Gymnasium```, ```gym_pybullet_drones``` environments are accessed via a client/server pattern.
+Namely, they are exposed via an API developed using FastAPI.
 You need to fire up the server, see dependencies, before using the environments in your code. To do so
 
 ```cpp

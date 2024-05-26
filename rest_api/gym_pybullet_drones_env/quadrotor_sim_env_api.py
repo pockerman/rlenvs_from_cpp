@@ -16,24 +16,15 @@ in the X-Y plane, around point (0, -.3).
 
 """
 from typing import List, Any
-from fastapi import APIRouter, Depends, Body, status
-from fastapi.responses import JSONResponse
-from fastapi import HTTPException
-import os
-import time
-import argparse
-from datetime import datetime
-import pdb
-import math
-import random
-import numpy as np
-import pybullet as p
 
-from gym_pybullet_drones.utils.enums import DroneModel, Physics
-from gym_pybullet_drones.envs.CtrlAviary import CtrlAviary
+import numpy as np
+from fastapi import APIRouter, Body, status
+from fastapi import HTTPException
+from fastapi.responses import JSONResponse
 from gym_pybullet_drones.control.DSLPIDControl import DSLPIDControl
+from gym_pybullet_drones.envs.CtrlAviary import CtrlAviary
 from gym_pybullet_drones.utils.Logger import Logger
-from gym_pybullet_drones.utils.utils import sync, str2bool
+from gym_pybullet_drones.utils.enums import DroneModel, Physics
 
 from time_step_response import TimeStep, TimeStepType
 

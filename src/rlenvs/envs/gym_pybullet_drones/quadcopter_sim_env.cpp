@@ -21,7 +21,7 @@ namespace gym_pybullet_drones{
 
 void
 QuadcopterSimEnv::make(const std::string& version,
-                      const std::unordered_map<std::string, std::any>& options){
+                      const std::unordered_map<std::string, std::any>& /*options*/){
 
     if(this->is_created()){
         return;
