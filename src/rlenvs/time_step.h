@@ -25,7 +25,8 @@ public:
     ///
     /// \brief state_ Type of the state
     ///
-    typedef StateTp state_t;
+    typedef StateTp state_type;
+
 
     ///
     /// \brief TimeStep
@@ -35,12 +36,12 @@ public:
     ///
     /// \brief TimeStep. Constructor
     ///
-    TimeStep(TimeStepTp type, real_t reward, state_t obs, real_t discount_factor);
+    TimeStep(TimeStepTp type, real_t reward, state_type obs, real_t discount_factor);
 
     ///
     /// \brief TimeStep. Constructor
     ///
-    TimeStep(TimeStepTp type, real_t reward, state_t obs,
+    TimeStep(TimeStepTp type, real_t reward, state_type obs,
              real_t discount_factor, std::unordered_map<std::string, std::any>&& extra);
 
     ///
@@ -97,7 +98,7 @@ public:
     /// \brief observation
     /// \return
     ///
-    state_t observation()const{return obs_;}
+    state_type observation()const{return obs_;}
 
     ///
     /// \brief reward
@@ -154,7 +155,7 @@ private:
     ///
     /// \brief obs_
     ///
-    state_t obs_;
+    state_type obs_;
 
     ///
     /// \brief discount_. The discount_factor
@@ -179,7 +180,7 @@ TimeStep<StateTp>::TimeStep()
 {}
 
 template<typename StateTp>
-TimeStep<StateTp>::TimeStep(TimeStepTp type, real_t reward, state_t obs, real_t discount_factor)
+TimeStep<StateTp>::TimeStep(TimeStepTp type, real_t reward, state_type obs, real_t discount_factor)
     :
       type_(type),
       reward_(reward),
@@ -189,7 +190,7 @@ TimeStep<StateTp>::TimeStep(TimeStepTp type, real_t reward, state_t obs, real_t 
 {}
 
 template<typename StateTp>
-TimeStep<StateTp>::TimeStep(TimeStepTp type, real_t reward, state_t obs, real_t discount_factor,
+TimeStep<StateTp>::TimeStep(TimeStepTp type, real_t reward, state_type obs, real_t discount_factor,
                             std::unordered_map<std::string, std::any>&& extra)
     :
     type_(type),
@@ -252,7 +253,7 @@ TimeStep<StateTp>::clear()noexcept{
 
     type_ = TimeStepTp::INVALID_TYPE;
     reward_ = 0.0;
-    obs_ = state_t();
+    obs_ = state_type();
     discount_ = 1.0;
     extra_.clear();
 }
@@ -283,6 +284,31 @@ std::ostream& operator<<(std::ostream& out, const TimeStep<StateTp>& step){
     return out;
 }
 
+
+inline
+std::ostream& operator<<(std::ostream& out,
+                         const TimeStep<std::vector<real_t>>& step){
+
+    out<<"Step type....."<<rlenvs_cpp::to_string(step.type())<<std::endl;
+    out<<"Reward........"<<step.reward()<<std::endl;
+
+    auto obs = step.observation();
+
+    if(obs.empty()){
+        out<<"Observation... []"<<std::endl;
+    }
+    else{
+        auto obs_str = std::to_string(obs[0]);
+        for(uint_t i=1; i<obs.size(); ++i){
+           obs_str += ",";
+           obs_str += obs[i];
+        }
+        out<<"Observation..."<<obs_str<<std::endl;
+    }
+
+    out<<"Discount..... "<<step.discount()<<std::endl;
+    return out;
+}
 
 }
 

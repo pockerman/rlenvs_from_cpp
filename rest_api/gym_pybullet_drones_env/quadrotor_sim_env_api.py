@@ -16,24 +16,15 @@ in the X-Y plane, around point (0, -.3).
 
 """
 from typing import List, Any
-from fastapi import APIRouter, Depends, Body, status
-from fastapi.responses import JSONResponse
-from fastapi import HTTPException
-import os
-import time
-import argparse
-from datetime import datetime
-import pdb
-import math
-import random
-import numpy as np
-import pybullet as p
 
-from gym_pybullet_drones.utils.enums import DroneModel, Physics
-from gym_pybullet_drones.envs.CtrlAviary import CtrlAviary
+import numpy as np
+from fastapi import APIRouter, Body, status
+from fastapi import HTTPException
+from fastapi.responses import JSONResponse
 from gym_pybullet_drones.control.DSLPIDControl import DSLPIDControl
+from gym_pybullet_drones.envs.CtrlAviary import CtrlAviary
 from gym_pybullet_drones.utils.Logger import Logger
-from gym_pybullet_drones.utils.utils import sync, str2bool
+from gym_pybullet_drones.utils.enums import DroneModel, Physics
 
 from time_step_response import TimeStep, TimeStepType
 
@@ -80,7 +71,7 @@ async def get_is_alive() -> JSONResponse:
 async def make(version: str = Body(default="v0"),
                drone_model_type: str = Body(default="cf2x"),
                physics_type: str = Body(default="pyb"),
-               num_drones: int = Body(default=1, le=10, ge=1),
+               num_drones: int = Body(default=1, le=1, ge=1),
                neighbourhood_radius: int = Body(default=10),
                simulation_freq_hz: int = Body(default=240),
                control_freq_hz: int = Body(default=48),
@@ -117,6 +108,7 @@ async def make(version: str = Body(default="v0"),
 
     try:
 
+        # set the globale variables
         NUM_DRONES = num_drones
         quadcopter_model = DroneModel(drone_model_type)
         physics = Physics(physics_type)
@@ -158,7 +150,7 @@ async def make(version: str = Body(default="v0"),
         if quadcopter_model in [DroneModel.CF2X, DroneModel.CF2P]:
             ctrl = [DSLPIDControl(drone_model=quadcopter_model) for i in range(num_drones)]
 
-        action = np.zeros((num_drones, 4))
+        action = np.zeros(shape=(num_drones, 4))
 
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -193,7 +185,9 @@ async def close() -> JSONResponse:
 
 @quadrotor_sim_router.post("/reset")
 async def reset(seed: int = Body(default=42), options: dict[str, Any] = Body(default={})) -> JSONResponse:
-    """Reset the environment
+    """Reset the environment.
+    The options argument just used to satisfy the
+    interface
 
     :return:
     """
@@ -211,13 +205,14 @@ async def reset(seed: int = Body(default=42), options: dict[str, Any] = Body(def
             drone_data = [float(val) for val in drone_data]
             observation_arr.append(drone_data)
 
-        step = TimeStep(observation=observation_arr,
-                        reward=0.0,
-                        step_type=TimeStepType.FIRST,
-                        info=info,
-                        discount=1.0)
+        # TODO: for drones more than one we need to fix this
+        time_step = TimeStep(observation=observation_arr[0],
+                             reward=0.0,
+                             step_type=TimeStepType.FIRST,
+                             info=info,
+                             discount=1.0)
         return JSONResponse(status_code=status.HTTP_202_ACCEPTED,
-                            content={"time_step": step.model_dump()})
+                            content={"time_step": time_step.model_dump()})
 
     raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                         detail={"message": f"Environment {ENV_NAME} is not initialized."
@@ -225,7 +220,7 @@ async def reset(seed: int = Body(default=42), options: dict[str, Any] = Body(def
 
 
 @quadrotor_sim_router.post("/step")
-async def step(action: int = Body(...)) -> JSONResponse:
+async def step(action: List[float] = Body(...)) -> JSONResponse:
     global env
 
     if env is None:
@@ -245,39 +240,40 @@ async def step(action: int = Body(...)) -> JSONResponse:
     # Step the simulation
     observation, reward, terminated, truncated, info = env.step(action)
 
-    step = TimeStep(observation=observation,
-                    reward=reward,
-                    step_type=TimeStepType.MID if not terminated else TimeStepType.LAST,
-                    info=info,
-                    discount=1.0)
+    time_step = TimeStep(observation=observation,
+                         reward=reward,
+                         step_type=TimeStepType.MID if not terminated else TimeStepType.LAST,
+                         info=info,
+                         discount=1.0)
 
     # Compute control for the current way point
-    for j in range(NUM_DRONES):
-        action[j, :], _, _ = ctrl[j].computeControlFromState(control_timestep=env.CTRL_TIMESTEP,
-                                                             state=observation[j],
-                                                             target_pos=np.hstack([TARGET_POS[wp_counters[j], 0:2],
-                                                                                   INIT_XYZS[j, 2]]),
-
-                                                             target_rpy=INIT_RPYS[j, :]
-                                                             )
-
-    # Go to the next way point and loop
-    for j in range(NUM_DRONES):
-        wp_counters[j] = wp_counters[j] + 1 if wp_counters[j] < (NUM_WP - 1) else 0
-
-    # Log the simulation
-    for j in range(NUM_DRONES):
-        logger.log(drone=j,
-                   timestamp=SIM_COUNTER / env.CTRL_FREQ,
-                   state=observation[j],
-                   control=np.hstack([TARGET_POS[wp_counters[j], 0:2],
-                                      INIT_XYZS[j, 2],
-                                      INIT_RPYS[j, :], np.zeros(6)]))
-
-    SIM_COUNTER += 1
+    # TODO: Do we need this?
+    # for j in range(NUM_DRONES):
+    #     action[j, :], _, _ = ctrl[j].computeControlFromState(control_timestep=env.CTRL_TIMESTEP,
+    #                                                          state=observation[j],
+    #                                                          target_pos=np.hstack([TARGET_POS[wp_counters[j], 0:2],
+    #                                                                                INIT_XYZS[j, 2]]),
+    #
+    #                                                          target_rpy=INIT_RPYS[j, :]
+    #                                                          )
+    #
+    # # Go to the next way point and loop
+    # for j in range(NUM_DRONES):
+    #     wp_counters[j] = wp_counters[j] + 1 if wp_counters[j] < (NUM_WP - 1) else 0
+    #
+    # # Log the simulation
+    # for j in range(NUM_DRONES):
+    #     logger.log(drone=j,
+    #                timestamp=SIM_COUNTER / env.CTRL_FREQ,
+    #                state=observation[j],
+    #                control=np.hstack([TARGET_POS[wp_counters[j], 0:2],
+    #                                   INIT_XYZS[j, 2],
+    #                                   INIT_RPYS[j, :], np.zeros(6)]))
+    #
+    # SIM_COUNTER += 1
 
     return JSONResponse(status_code=status.HTTP_202_ACCEPTED,
-                        content={"time_step": step.model_dump()})
+                        content={"time_step": time_step.model_dump()})
 
 
 @quadrotor_sim_router.post("/sync")

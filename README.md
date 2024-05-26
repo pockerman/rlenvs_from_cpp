@@ -13,6 +13,11 @@ Currently, we provide a minimal number of wrappers for some common Gymnasium (fo
 - ```StateAggregationCartPole``` (implements state aggregation for ```CartPole```)
 - ```SerialVectorEnvWrapper``` a vector wrapper for various environments
 
+In addition there are wrappers for
+
+- ```GymWalk``` environment from <a href="https://github.com/mimoralea/gym-walk2">gym_walk</a>
+- ```gym-pybullet-drones``` from <a href="https://github.com/utiasDSL/gym-pybullet-drones/tree/main">gym-pybullet-drones</a>
+
 In general, the environments exposed by the library  should abide with <a href="https://github.com/deepmind/dm_env/blob/master/docs/index.md">dm_env</a> specification.
 The following snippet shows how to use the ```FrozenLake```  and ```Taxi``` environments from <a href="https://github.com/Farama-Foundation/Gymnasium/tree/main">Gymnasium</a>.
 
@@ -75,8 +80,8 @@ void test_frozen_lake(){
         std::cout<<std::get<3>(item)<<std::endl;
     }
 
-
-    // synchronize the environment
+    // synchronize the environment. environment knows how
+    // to cast std::any
     env.sync(std::unordered_map<std::string, std::any>());
 
     // close the environment
@@ -159,7 +164,8 @@ shows how to do this. Various RL algorithms using the environments can be found 
 ## How to use
 
 The general use case is to build the library and link it with your driver code to access its functionality.
-Furthermore, the Gymnasium environments are accessed via a client/server pattern. Namely, they are exposed via an API developed using FastAPI.
+Furthermore, the ```Gymnasium```, ```gym_pybullet_drones``` environments are accessed via a client/server pattern.
+Namely, they are exposed via an API developed using FastAPI.
 You need to fire up the server, see dependencies, before using the environments in your code. To do so
 
 ```cpp
