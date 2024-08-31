@@ -8,16 +8,14 @@
   * https://github.com/DeepReinforcementLearning/DeepReinforcementLearningInAction
   * */
 
-#include "gymfcpp/gymfcpp_types.h"
-#include "gymfcpp/time_step.h"
-#include "gymfcpp/discrete_space.h"
-#include "gymfcpp/env_mixin.h"
-#include "gymfcpp/extern/enum.h"
-#include "gymfcpp/gymfcpp_config.h"
-#include "gymfcpp/time_step_type.h"
-#include "gymfcpp/numpy_cpp_utils.h"
 
-#ifdef GYMFCPP_DEBUG
+#include "rlenvs/rlenvscpp_config.h"
+#include "rlenvs/rlenvs_types_v2.h"
+#include "rlenvs/time_step.h"
+#include "rlenvs/envs/synchronized_env_mixin.h"
+#include "rlenvs/extern/enum.h"
+
+#ifdef RLENVSCPP_DEBUG
 #include <cassert>
 #endif
 
@@ -30,47 +28,18 @@
 /// Different namespace so that we differentiate
 /// from OpenAI-Gym environment
 ///
-namespace rlenvs_cpp
-{
+namespace rlenvs_cpp{
 
 // still we may want to use some utilities
 //using namespace gymfcpp;
 
-namespace{
-
-uint_t
-max(const std::pair<uint_t,  uint_t>& position){
-    return position.first > position.second ? position.first : position.second;
-}
-
-uint_t
-min(const std::pair<uint_t,  uint_t>& position){
-    return position.first < position.second ? position.first : position.second;
-}
-
-uint_t
-get_non_zero_idx(std::pair<uint_t, uint_t>& p){
-
-}
-
-inline
-bool operator == (const std::pair<uint_t,  uint_t>& p1, const std::pair<uint_t,  uint_t>& p2){
-    return p1.first == p2.first && p1.second == p2.second;
-}
-
-inline
-std::pair<uint_t, uint_t>
-operator + (const std::pair<uint_t,  uint_t>& p1, const std::pair<uint_t,  uint_t>& p2){
-    return std::make_pair(p1.first + p2.first, p1.second + p2.second);
-}
-
-}
-
+namespace envs{
+namespace grid_world{
 
 ///
 /// \brief The RenderModeType enum
 ///
-BETTER_ENUM(GridworldInitType, char, STATIC=0, RANDOM, PLAYER, INVALID_TYPE);
+BETTER_ENUM(GridworldInitType, char, STATIC=0, RANDOM=1, PLAYER=2, INVALID_TYPE=4);
 
 
 ///
@@ -93,36 +62,48 @@ std::string to_string(GridworldInitType type){return type._to_string();}
 /// Random initialization means that all the objects are placed randomly
 ///
 template<uint_t side_size_>
-class Gridworld final
+class Gridworld final: private boost::noncopyable, protected synchronized_env_mixin
 {
 public:
 
-    static_assert (side_size_ >= 4, "The side size should be greater than 4");
+    static_assert (side_size_ >= 4, "The side size should be greater than or equal to 4");
 
     ///
     /// \brief name
     ///
     static  const std::string name;
 
-    ///
-    /// \brief action_space_t. The type of the action space
-    ///
+    /**
+     * @brief The type of the action space
+     */
     typedef DiscreteSpace<4> action_space_type;
 
-    ///
-    /// \brief action_t
-    ///
-    typedef action_space_type::item_t action_type;
-
-    ///
-    /// \brief action_space_t. The type of the action space
-    ///
+    /**
+     * @brief The state space type. The state space
+     *
+     *
+     */
     typedef DiscreteSpace<side_size_ * side_size_> state_space_type;
 
-    ///
-    /// \brief state_type
-    ///
-    //typedef typename state_space_type::item_t state_type;
+    /**
+     * @brief The action type
+     *
+     */
+    typedef action_space_type::item_t action_type;
+
+     /**
+     * @brief The state_type
+     *
+     */
+    typedef typename state_space_type::item_t state_type;
+
+
+    /**
+     * @brief The type of the time step
+     *
+     */
+    typedef TimeStep<state_type> time_step_type;
+
 
      typedef std::vector<std::vector<std::vector<real_t>>> raw_state_type;
      typedef std::vector<real_t> state_type;
@@ -153,6 +134,13 @@ public:
     ///
     Gridworld(std::string version, GridworldInitType init_mode, uint_t seed,
               real_t noise_factor, bool create=true);
+
+
+    /*
+     * Expose functionality
+     *
+     */
+    using synchronized_env_mixin::sync;
 
     ///
     /// \brief version
@@ -769,7 +757,8 @@ Gridworld<side_size>::Board::move_piece(BoardComponentType piece, Position pos){
 
 }
 
-
-}
+}// grid_world
+}// envs
+}// rlenvs_cpp
 
 #endif // GRID_WORLD_ENV_H
