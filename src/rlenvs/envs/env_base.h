@@ -5,6 +5,7 @@
 #define ENV_BASE_H
 
 #include "rlenvs/rlenvs_consts.h"
+#include "rlenvs/envs/synchronized_env_mixin.h"
 #include <boost/noncopyable.hpp>
 
 #include <unordered_map>

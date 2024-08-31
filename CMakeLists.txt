@@ -46,7 +46,7 @@ ENDIF()
 
 # where to install the library
 
-SET(ENABLE_TESTS_FLAG OFF)
+SET(ENABLE_TESTS_FLAG ON)
 SET(ENABLE_EXAMPLES_FLAG ON)
 SET(ENABLE_DOC_FLAG OFF)
 
@@ -105,7 +105,8 @@ FILE(GLOB SRCS src/rlenvs/*.cpp
                src/rlenvs/envs/gymnasium/classic_control/*.cpp
                src/rlenvs/envs/gymnasium/vector/*.cpp
                src/rlenvs/envs/gdrl/*.cpp
-               src/rlenvs/envs/gym_pybullet_drones/*.cpp)
+               src/rlenvs/envs/gym_pybullet_drones/*.cpp
+   )
 
 ADD_LIBRARY(rlenvscpplib SHARED ${SRCS})
 

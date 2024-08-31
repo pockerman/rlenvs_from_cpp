@@ -42,6 +42,14 @@ public:
                       const std::unordered_map<std::string, std::any>& options) override final;
 
 
+    /**
+      * \brief step
+      * \param action
+      * \return
+      */
+    virtual time_step_type step(const action_type& action) override final;
+
+
      /**
      * @brief close the environment
      */
