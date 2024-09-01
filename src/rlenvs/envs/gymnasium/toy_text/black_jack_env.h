@@ -161,6 +161,12 @@ public:
     ///
     time_step_type step(BlackJackActionsEnum action);
 
+    /**
+     * @brief Step in the environment following the given action
+     *
+     * */
+    time_step_type step(uint_t action);
+
     ///
     ///
     ///

@@ -113,6 +113,20 @@ BlackJack::step(BlackJackActionsEnum action){
 }
 
 
+BlackJack::time_step_type
+BlackJack::step(uint_t action){
+
+   switch(action){
+
+       case 0:
+           return step(BlackJackActionsEnum::STICK);
+       case 1:
+           return step(BlackJackActionsEnum::HIT);
+       default:
+           throw std::logic_error("Invalid action selected");
+
+   }
+}
 }
 }
 }
