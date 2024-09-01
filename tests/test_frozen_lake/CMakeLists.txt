@@ -1,7 +1,7 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.6)
 
-SET(SOURCE test_frozen_lake.cpp)
-SET(EXECUTABLE  test_frozen_lake)
+SET(EXECUTABLE test_frozen_lake)
+SET(SOURCE ${EXECUTABLE}.cpp)
 
 ADD_EXECUTABLE(${EXECUTABLE} ${SOURCE})
 
