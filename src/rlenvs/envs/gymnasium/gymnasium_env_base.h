@@ -11,6 +11,7 @@
 
 #include <boost/noncopyable.hpp>
 #include <string>
+#include <string_view>
 #include <vector>
 #include <tuple>
 #include <unordered_map>
@@ -32,12 +33,7 @@ public:
     typedef TimeStepType time_step_type;
 
     ///
-    /// \brief dynamics_t
-    ///
-    typedef std::vector<std::tuple<real_t, uint_t, real_t, bool>> dynamics_t;
-
-    ///
-    /// \brief ~FrozenLake. Destructor.
+    /// \brief ~GymnasiumEnvBase. Destructor.
     ///
     virtual ~GymnasiumEnvBase();
 
