@@ -1,263 +1,92 @@
-#include "gymfcpp/cliff_world_env.h"
-#include "gymfcpp/time_step.h"
-#include "gymfcpp/time_step_type.h"
-#include "gymfcpp/render_mode_enum.h"
-#include "gymfcpp/gymfcpp_types.h"
+#include "rlenvs/envs/gymnasium/toy_text/cliff_world_env.h"
+#include "rlenvs/rlenvs_types_v2.h"
 
 #include <gtest/gtest.h>
-#include <boost/python.hpp>
-//#include <boost/python/numpy.hpp>
+#include <string>
+#include <unordered_map>
+#include <any>
+
 
 namespace{
 
+const std::string SERVER_URL = "http://0.0.0.0:8001/api";
 using rlenvs_cpp::uint_t;
 using rlenvs_cpp::real_t;
-using rlenvs_cpp::gymfcpp::CliffWorld;
+using rlenvs_cpp::envs::gymnasium::CliffWorld;
 
 }
 
 TEST(TestCliffWorld, TestConstructor) {
 
-    try{
-
-        Py_Initialize();
-
-        auto gym_module = boost::python::import("__main__");
-        auto gym_namespace = gym_module.attr("__dict__");
-        CliffWorld env("v0", gym_namespace);
-    }
-    catch(const boost::python::error_already_set&)
-    {
-        PyErr_Print();
-        FAIL();
-    }
+    CliffWorld env(SERVER_URL);
+    ASSERT_EQ(env.n_actions(), static_cast<uint_t>(4));
 
 }
 
 TEST(TestCliffWorld, Test_Make)
 {
 
-    try{
+    CliffWorld env(SERVER_URL);
 
-        Py_Initialize();
-
-        auto gym_module = boost::python::import("__main__");
-        auto gym_namespace = gym_module.attr("__dict__");
-
-        CliffWorld env("v0", gym_namespace, false);
-        env.make();
-
-        ASSERT_EQ(env.n_states(), static_cast<uint_t>(48));
-        ASSERT_EQ(env.n_actions(), static_cast<uint_t>(4));
-
-    }
-    catch(const boost::python::error_already_set&)
-    {
-        PyErr_Print();
-        FAIL();
-    }
+    std::unordered_map<std::string, std::any> options;
+    env.make("v0", options);
+    ASSERT_EQ(env.n_actions(), static_cast<uint_t>(4));
+    ASSERT_EQ(env.n_states(), static_cast<uint_t>(48));
 }
 
 
 TEST(TestCliffWorld, Test_Reset)
 {
+    CliffWorld env(SERVER_URL);
 
-    try{
+    std::unordered_map<std::string, std::any> options;
+    env.make("v0", options);
 
-        Py_Initialize();
-
-        auto gym_module = boost::python::import("__main__");
-        auto gym_namespace = gym_module.attr("__dict__");
-
-        CliffWorld env("v0", gym_namespace, false);
-        env.make();
-
-        auto state = env.reset();
-        ASSERT_TRUE(state.first());
-        ASSERT_EQ(state.observation(), static_cast<uint_t>(36));
-
-    }
-    catch(const boost::python::error_already_set&)
-    {
-        PyErr_Print();
-        FAIL()<<"Error could not reset the environment";
-    }
+    auto state = env.reset();
+    ASSERT_TRUE(state.first());
 }
 
 TEST(TestCliffWorld, Test_Step)
 {
+    CliffWorld env(SERVER_URL);
 
-    try{
+    std::unordered_map<std::string, std::any> options;
+    env.make("v0", options);
 
-        Py_Initialize();
+    auto step_result = env.step(0);
+    ASSERT_TRUE(step_result.mid());
 
-        auto gym_module = boost::python::import("__main__");
-        auto gym_namespace = gym_module.attr("__dict__");
-
-        CliffWorld env("v0", gym_namespace, false);
-        env.make();
-
-        auto step_result = env.step(0);
-        ASSERT_TRUE(step_result.mid());
-
-    }
-    catch(const boost::python::error_already_set&)
-    {
-        PyErr_Print();
-        FAIL()<<"Error could not step in the environment";
-    }
 }
 
 TEST(TestCliffWorld, Test_Step_With_Query)
 {
+    CliffWorld env(SERVER_URL);
 
-    try{
+    std::unordered_map<std::string, std::any> options;
+    env.make("v0", options);
 
-        Py_Initialize();
+    auto step_result = env.step(0);
+    ASSERT_TRUE(step_result.mid());
 
-        auto gym_module = boost::python::import("__main__");
-        auto gym_namespace = gym_module.attr("__dict__");
+    ASSERT_DOUBLE_EQ(step_result.get_extra<real_t>("prob"), 0.3333333333333333);
 
-        CliffWorld env("v0", gym_namespace, false);
-        env.make();
-
-        auto step_result = env.step(0, true);
-        ASSERT_TRUE(step_result.mid());
-        ASSERT_DOUBLE_EQ(step_result.get_extra<real_t>("prob"), 1);
-
-    }
-    catch(const boost::python::error_already_set&)
-    {
-        PyErr_Print();
-        FAIL()<<"Error could not step in the environment";
-    }
 }
 
 
 TEST(TestCliffWorld, Test_Get_Dynamics)
 {
 
-    try{
+    CliffWorld env(SERVER_URL);
 
-        Py_Initialize();
+    std::unordered_map<std::string, std::any> options;
+    env.make("v1", options);
 
-        auto gym_module = boost::python::import("__main__");
-        auto gym_namespace = gym_module.attr("__dict__");
+    auto step_result = env.step(0);
 
-        CliffWorld env("v0", gym_namespace, false);
-        env.make();
+    ASSERT_TRUE(step_result.mid());
+    ASSERT_DOUBLE_EQ(step_result.get_extra<real_t>("prob"), 0.3333333333333333);
 
-        auto dynamics = env.p(1, 3);
+    auto dynamics = env.p(1, 3);
+    ASSERT_EQ(dynamics.size(), static_cast<uint_t>(1));
 
-        ASSERT_EQ(dynamics.size(), static_cast<uint_t>(1) );
-
-    }
-    catch(const boost::python::error_already_set&)
-    {
-        PyErr_Print();
-        FAIL()<<"Error could not step in the environment";
-    }
-}
-
-TEST(TestCliffWorld, Test_Not_Done)
-{
-
-    try{
-
-        Py_Initialize();
-
-        auto gym_module = boost::python::import("__main__");
-        auto gym_namespace = gym_module.attr("__dict__");
-
-        CliffWorld env("v0", gym_namespace, false);
-        env.make();
-        env.reset();
-
-        auto step_result = env.step(3);
-
-        ASSERT_FALSE(step_result.done());
-
-    }
-    catch(const boost::python::error_already_set&)
-    {
-        PyErr_Print();
-        FAIL()<<"Error could not step in the environment";
-    }
-}
-
-TEST(TestCliffWorld, Test_Done_1)
-{
-
-    try{
-
-        Py_Initialize();
-
-        auto gym_module = boost::python::import("__main__");
-        auto gym_namespace = gym_module.attr("__dict__");
-
-        CliffWorld env("v0", gym_namespace, false);
-        env.make();
-        env.reset();
-
-        auto step_result = env.step(1);
-
-        ASSERT_FALSE(step_result.done());
-
-    }
-    catch(const boost::python::error_already_set&)
-    {
-        PyErr_Print();
-        FAIL()<<"Error could not step in the environment";
-    }
-}
-
-TEST(TestCliffWorld, Test_Done_2)
-{
-
-    try{
-
-        Py_Initialize();
-
-        auto gym_module = boost::python::import("__main__");
-        auto gym_namespace = gym_module.attr("__dict__");
-
-        CliffWorld env("v0", gym_namespace, false);
-        env.make();
-        env.reset();
-
-        auto step_result = env.step(0);
-
-        ASSERT_FALSE(step_result.done());
-
-    }
-    catch(const boost::python::error_already_set&)
-    {
-        PyErr_Print();
-        FAIL()<<"Error could not step in the environment";
-    }
-}
-
-
-TEST(TestCliffWorld, Test_render)
-{
-
-    try{
-
-        Py_Initialize();
-
-        auto gym_module = boost::python::import("__main__");
-        auto gym_namespace = gym_module.attr("__dict__");
-
-        CliffWorld env("v0", gym_namespace, false);
-        env.make();
-        env.reset();
-
-        env.render(rlenvs_cpp::RenderModeType::human);
-
-    }
-    catch(const boost::python::error_already_set&)
-    {
-        PyErr_Print();
-        FAIL()<<"Error could not step in the environment";
-    }
 }

@@ -1,3 +1,5 @@
+// SPDX-FileCopyrightText: 2024 <copyright holder> <email>
+// SPDX-License-Identifier: Apache-2.0
 #ifndef GRID_WORLD_ENV_H
 #define GRID_WORLD_ENV_H
 
@@ -8,9 +10,10 @@
   * https://github.com/DeepReinforcementLearning/DeepReinforcementLearningInAction
   * */
 
-
 #include "rlenvs/rlenvscpp_config.h"
 #include "rlenvs/rlenvs_types_v2.h"
+#include "rlenvs/rlenvs_consts.h"
+#include "rlenvs/discrete_space.h"
 #include "rlenvs/time_step.h"
 #include "rlenvs/envs/synchronized_env_mixin.h"
 #include "rlenvs/extern/enum.h"
@@ -19,10 +22,14 @@
 #include <cassert>
 #endif
 
+#include <boost/noncopyable.hpp>
 #include <vector>
 #include <string>
 #include <utility>
+#include <unordered_map>
 #include <map>
+#include <any>
+#include <iostream>
 
 ///
 /// Different namespace so that we differentiate
@@ -39,7 +46,7 @@ namespace grid_world{
 ///
 /// \brief The RenderModeType enum
 ///
-BETTER_ENUM(GridworldInitType, char, STATIC=0, RANDOM=1, PLAYER=2, INVALID_TYPE=4);
+BETTER_ENUM(GridWorldInitType, char, STATIC=0, RANDOM=1, PLAYER=2, INVALID_TYPE=4);
 
 
 ///
@@ -47,8 +54,11 @@ BETTER_ENUM(GridworldInitType, char, STATIC=0, RANDOM=1, PLAYER=2, INVALID_TYPE=
 /// \param type The RenderModeType to convert
 /// \return std::string
 inline
-std::string to_string(GridworldInitType type){return type._to_string();}
+std::string to_string(GridWorldInitType type){return type._to_string();}
 
+
+GridWorldInitType
+from_string(const std::string& gw_init_type);
 
 
 ///
@@ -76,7 +86,7 @@ public:
     /**
      * @brief The type of the action space
      */
-    typedef DiscreteSpace<4> action_space_type;
+    typedef DiscreteSpace<side_size_> action_space_type;
 
     /**
      * @brief The state space type. The state space
@@ -89,7 +99,7 @@ public:
      * @brief The action type
      *
      */
-    typedef action_space_type::item_t action_type;
+    typedef typename action_space_type::item_t action_type;
 
      /**
      * @brief The state_type
@@ -106,12 +116,8 @@ public:
 
 
      typedef std::vector<std::vector<std::vector<real_t>>> raw_state_type;
-     typedef std::vector<real_t> state_type;
+     //typedef std::vector<real_t> state_type;
 
-    ///
-    /// \brief time_step_t. The type of the time step
-    ///
-    typedef TimeStep<state_type> time_step_type;
 
     ///
     /// \brief n_components
@@ -126,15 +132,7 @@ public:
     ///
     /// \brief Constructor
     ///
-    Gridworld(std::string version, GridworldInitType init_mode, bool create=true);
-
-    ///
-    /// \brief Constructor. Initializes the world by allowing noise to be
-    /// added in the observation vector
-    ///
-    Gridworld(std::string version, GridworldInitType init_mode, uint_t seed,
-              real_t noise_factor, bool create=true);
-
+    Gridworld();
 
     /*
      * Expose functionality
@@ -152,7 +150,7 @@ public:
     /// \brief init_type
     /// \return
     ///
-    GridworldInitType init_type()const noexcept{return init_mode_;}
+    GridWorldInitType init_type()const noexcept{return init_mode_;}
 
     ///
     /// \brief is_created
@@ -164,7 +162,8 @@ public:
     /// \brief make. Builds the environment. Optionally we can choose if the
     /// environment will be slippery
     ///
-    void make();
+    void make(const std::string& version,
+              const std::unordered_map<std::string, std::any>& options);
 
     ///
     /// \brief n_states. Returns the number of states
@@ -182,11 +181,6 @@ public:
     /// \return
     ///
     time_step_type step(action_type action);
-
-    ///
-    /// \brief render. Does nothing simply here to respect the contract.
-    ///
-    void render(){return;}
 
     ///
     /// \brief close
@@ -238,7 +232,7 @@ private:
     ///
     /// \brief init_mode_
     ///
-    GridworldInitType init_mode_;
+    GridWorldInitType init_mode_;
 
     ///
     /// \brief randomize_state_
@@ -417,60 +411,72 @@ const std::string Gridworld<side_size>::name = "Gridworld";
 
 
 template<uint_t side_size>
-Gridworld<side_size>::Gridworld(std::string version, GridworldInitType init_mode, bool create)
+Gridworld<side_size>::Gridworld()
     :
-      version_(version),
-      init_mode_(init_mode),
+      version_(INVALID_STR),
+      init_mode_(GridWorldInitType::INVALID_TYPE),
       randomize_state_(false),
       seed_(0),
       noise_factor_(0.0),
       is_created_(false)
-{
-    if(create){
-        make();
-    }
-}
-
-template<uint_t side_size>
-Gridworld<side_size>::Gridworld(std::string version, GridworldInitType init_mode, uint_t seed,
-                                real_t noise_factor, bool create)
-    :
-      version_(version),
-      init_mode_(init_mode),
-      randomize_state_(true),
-      seed_(seed),
-      noise_factor_(noise_factor),
-      is_created_(false)
 {}
+
 
 template<uint_t side_size>
 void
-Gridworld<side_size>::make(){
+Gridworld<side_size>::make(const std::string& version,
+                           const std::unordered_map<std::string, std::any>& options){
 
     if(is_created()){
         return;
+    }
+
+
+    // find the mode
+    auto mode = options.find("mode");
+
+    if(mode != options.end()){
+       init_mode_ = from_string(std::any_cast<std::string>(mode->second));
+    }
+    else{
+       init_mode_ = GridWorldInitType::STATIC;
+    }
+
+    auto seed = options.find("seed");
+    if(seed != options.end()){
+        seed_ = std::any_cast<uint_t>(seed->second);
+    }
+
+    auto noise_factor = options.find("noise_factor");
+    if(noise_factor != options.end()){
+        noise_factor_ = std::any_cast<real_t>(noise_factor->second);
+    }
+
+    auto randomize_state = options.find("randomize_state");
+    if(randomize_state != options.end()){
+        randomize_state_ = std::any_cast<bool>(randomize_state->second);
     }
 
     // initialize the board
     init_board_();
     switch (init_mode_) {
 
-        case GridworldInitType::STATIC:
+        case GridWorldInitType::STATIC:
         {
             build_static_mode_();
             break;
         }
-        case GridworldInitType::RANDOM:
+        case GridWorldInitType::RANDOM:
         {
             build_random_mode_();
             break;
         }
-        case GridworldInitType::PLAYER:
+        case GridWorldInitType::PLAYER:
         {
             build_player_mode_();
             break;
         }
-#ifdef GYMFCPP_DEBUG
+#ifdef RLENVSCPP_DEBUG
         default:
         {
             assert(false && "Invalid initialization mode");
@@ -479,7 +485,10 @@ Gridworld<side_size>::make(){
 
     }
 
+    // set the version and set the board
+    // to created
     is_created_ = true;
+    version_ = version;
 }
 
 template<uint_t side_size>

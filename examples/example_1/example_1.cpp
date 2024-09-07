@@ -1,6 +1,8 @@
 #include "rlenvs/rlenvs_types_v2.h"
 #include "rlenvs/envs/gymnasium/toy_text/frozen_lake_env.h"
 #include "rlenvs/envs/gymnasium/toy_text/taxi_env.h"
+#include "rlenvs/envs/gymnasium/toy_text/black_jack_env.h"
+
 #include <iostream>
 #include <string>
 #include <unordered_map>
@@ -114,6 +116,31 @@ void test_taxi(){
 
 }
 
+
+void test_black_jack(){
+
+    rlenvs_cpp::envs::gymnasium::BlackJack env(SERVER_URL);
+    std::unordered_map<std::string, std::any> options;
+    options["natural"] = true;
+
+    std::cout<<"Environment created..."<<std::endl;
+    env.make("v1", options);
+
+    std::cout<<"Environment reset..."<<std::endl;
+    auto state = env.reset();
+
+    std::cout<<"Environment step..."<<std::endl;
+    env.step(rlenvs_cpp::envs::gymnasium::BlackJackActionsEnum::STICK);
+
+
+    // synchronize the environment
+    env.sync(std::unordered_map<std::string, std::any>());
+
+    // close the environment
+    env.close();
+
+}
+
 }
 
 
@@ -121,10 +148,13 @@ int main(){
 
 
     std::cout<<"Testing FrozenLake..."<<std::endl;
-    example_1::test_frozen_lake();
+    //example_1::test_frozen_lake();
     std::cout<<"===================="<<std::endl;
     std::cout<<"Testing Taxi..."<<std::endl;
-    example_1::test_taxi();
+    //example_1::test_taxi();
+    std::cout<<"===================="<<std::endl;
+    std::cout<<"Testing BlackJack..."<<std::endl;
+    example_1::test_black_jack();
     std::cout<<"===================="<<std::endl;
     return 0;
 }

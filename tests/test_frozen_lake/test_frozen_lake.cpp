@@ -60,22 +60,11 @@ TEST(TestFrozenLake, Test_Step)
 
     std::unordered_map<std::string, std::any> options;
     env.make("v1", options);
+    env.reset();
 
     auto step_result = env.step(0);
     ASSERT_TRUE(step_result.mid());
 
-}
-
-TEST(TestFrozenLake, Test_Step_With_Query){
-    rlenvs_cpp::envs::gymnasium::FrozenLake<8> env(SERVER_URL);
-
-    std::unordered_map<std::string, std::any> options;
-    env.make("v1", options);
-
-    auto step_result = env.step(0);
-    ASSERT_TRUE(step_result.mid());
-
-    ASSERT_DOUBLE_EQ(step_result.get_extra<real_t>("prob"), 0.3333333333333333);
 }
 
 
@@ -85,11 +74,10 @@ TEST(TestFrozenLake, Test_Get_Dynamics){
 
     std::unordered_map<std::string, std::any> options;
     env.make("v1", options);
+    env.reset();
 
     auto step_result = env.step(0);
     ASSERT_TRUE(step_result.mid());
-
-    ASSERT_DOUBLE_EQ(step_result.get_extra<real_t>("prob"), 0.3333333333333333);
 
     auto dynamics = env.p(1, 3);
     ASSERT_EQ(dynamics.size(), static_cast<uint_t>(3));

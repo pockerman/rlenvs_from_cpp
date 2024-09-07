@@ -6,6 +6,8 @@
 #include <cassert>
 #endif
 
+#include <iostream>
+#include <typeinfo>
 
 namespace rlenvs_cpp{
 namespace envs{
@@ -13,6 +15,23 @@ namespace gymnasium
 {
 
 const std::string BlackJackData::name = "BlackJack";
+
+
+BlackJackActionsEnum
+BlackJack::action_from_int(uint_t aidx){
+
+    switch(aidx){
+
+       case 0:
+           return BlackJackActionsEnum::STICK;
+       case 1:
+           return BlackJackActionsEnum::HIT;
+       default:
+           return BlackJackActionsEnum::INVALID_ACTION;
+   }
+
+
+}
 
 
 BlackJack::dynamics_t
@@ -28,19 +47,20 @@ BlackJack::create_time_step_from_response_(const http::Response& response)const{
 
     json j = json::parse(str_response);
 
-    auto step_type = j["time_step"]["step_type"];
+    auto step_type = time_step_type_from_int(j["time_step"]["step_type"]);
     auto reward = j["time_step"]["reward"];
     auto discount = j["time_step"]["discount"];
     auto observation = j["time_step"]["observation"];
     auto info = j["time_step"]["info"];
-    return BlackJack::time_step_type(time_step_type_from_int(step_type),
-                                                 reward, observation, discount,
-                                                 std::unordered_map<std::string, std::any>());
+
+    std::vector<std::tuple<uint_t, uint_t, uint_t> > state(1, observation);
+    return BlackJack::time_step_type(step_type, reward, state, discount,
+                                     std::unordered_map<std::string, std::any>());
 }
 
 BlackJack::BlackJack(const std::string& api_base_url)
     :
-   ToyTextEnvBase<BlackJackData::time_step_type>(api_base_url + "/black-jack-env")
+   ToyTextEnvBase<BlackJackData::time_step_type>(api_base_url + "/gymnasium/black-jack-env")
 {}
 
 
@@ -91,14 +111,22 @@ BlackJack::step(BlackJackActionsEnum action){
      assert(this->is_created_ && "Environment has not been created");
 #endif
 
-     if(this->get_current_time_step_().last()){
+     /*if(this->get_current_time_step_().last()){
          return this->reset(42, std::unordered_map<std::string, std::any>());
-     }
+     }*/
 
-    const auto request_url = std::string(this->get_url()) + "/step";
-    http::Request request{request_url};
+    //std::cout<<"Request URL: "<<this->get_url()<<std::endl;
+    const std::string request_url = "http://0.0.0.0:8001/api//gymnasium/black-jack-env/step"; //+ //std::string(this->get_url()) + "/step";
 
-    auto body = std::to_string(action);
+    std::cout<<"Request URL: "<<request_url<<std::endl;
+
+    /*http::Request request{request_url};
+
+    using json = nlohmann::json;
+    json j;
+    j["action"] = 0; //static_cast<int>(action); //._to_integral();
+
+    auto body = j.dump();
     const auto response = request.send("POST", body);
 
     if(response.status.code != 202){
@@ -106,7 +134,7 @@ BlackJack::step(BlackJackActionsEnum action){
     }
 
     this->get_current_time_step_() = this->create_time_step_from_response_(response);
-    return this->get_current_time_step_();
+    return this->get_current_time_step_();*/
 
 
 
@@ -116,16 +144,8 @@ BlackJack::step(BlackJackActionsEnum action){
 BlackJack::time_step_type
 BlackJack::step(uint_t action){
 
-   switch(action){
-
-       case 0:
-           return step(BlackJackActionsEnum::STICK);
-       case 1:
-           return step(BlackJackActionsEnum::HIT);
-       default:
-           throw std::logic_error("Invalid action selected");
-
-   }
+   auto blackjack_action = BlackJack::action_from_int(action);
+   return step(blackjack_action);
 }
 }
 }

@@ -68,7 +68,6 @@ async def reset(seed: int = Body(default=42), options: dict[str, Any] = Body(def
 
     if env is not None:
         observation, info = env.reset(seed=seed)
-
         step = TimeStep(observation=observation,
                         reward=0.0,
                         step_type=TimeStepType.FIRST,
@@ -93,6 +92,7 @@ async def step(action: int = Body(...)) -> JSONResponse:
     if env is not None:
         observation, reward, terminated, truncated, info = env.step(action)
 
+        print(f"Observation {observation}")
         step = TimeStep(observation=observation,
                         reward=reward,
                         step_type=TimeStepType.MID if terminated == False else TimeStepType.LAST,

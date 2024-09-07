@@ -8,6 +8,7 @@
 #include "rlenvs/rlenvs_types_v2.h"
 #include "rlenvs/extern/HTTPRequest.hpp"
 #include "rlenvs/rlenvscpp_config.h"
+#include "rlenvs/extern/nlohmann/json/json.hpp"
 
 #include <boost/noncopyable.hpp>
 #include <string>
@@ -191,7 +192,12 @@ GymnasiumEnvBase<TimeStepType>::reset(uint_t seed,
     const auto request_url = url_ + "/reset";
     http::Request request{request_url};
 
-    auto body = std::to_string(seed);
+
+    using json = nlohmann::json;
+    json j;
+    j["seed"] = seed;
+
+    auto body = j.dump();
     const auto response = request.send("POST", body);
 
      if(response.status.code != 202){

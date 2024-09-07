@@ -67,7 +67,7 @@ CliffWorld::create_time_step_from_response_(const http::Response& response)const
 
 CliffWorld::CliffWorld(const std::string& api_base_url)
     :
-ToyTextEnvBase<CliffWorldData::time_step_type>(api_base_url + "/cliff-walking-env")
+ToyTextEnvBase<CliffWorldData::time_step_type>(api_base_url + "/gymnasium/cliff-walking-env")
 {}
 
 

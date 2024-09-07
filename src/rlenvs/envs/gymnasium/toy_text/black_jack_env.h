@@ -121,10 +121,12 @@ public:
     ///
     typedef uint_t state_t;
 
-    ///
-    /// \brief time_step_t
-    ///
-    typedef TimeStep<state_t> time_step_t;
+
+    /**
+     * @brief Convert the action index to a valid FrozenLakeActionsEnum
+     *
+     * */
+    static BlackJackActionsEnum action_from_int(uint_t aidx);
 
     ///
     /// \brief BlackJack. Constructor.
