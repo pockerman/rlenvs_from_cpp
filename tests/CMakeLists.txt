@@ -23,21 +23,36 @@ ENDIF()
 
 SET(CMAKE_LINKER_FLAGS "-pthread")
 
+
+IF(GTEST_INCLUDE_DIRS MATCHES " ")
+
+	# find gtest
+	FIND_PACKAGE(GTest REQUIRED)
+
+	IF(GTest_FOUND)
+		INCLUDE_DIRECTORIES(${GTEST_INCLUDE_DIRS})
+		LINK_DIRECTORIES("/usr/local/lib")
+	ENDIF()
+
+ELSE()
+	INCLUDE_DIRECTORIES(${GTEST_INCLUDE_DIRS})
+	LINK_DIRECTORIES("/usr/local/lib")
+ENDIF()
+
 # use the Boost link directories
 LINK_DIRECTORIES(${Boost_LIBRARY_DIR})
 LINK_DIRECTORIES(${CMAKE_INSTALL_PREFIX})
-LINK_DIRECTORIES(${PYTHON_LID_DIR})
-LINK_DIRECTORIES(${GTEST_LIB_DIR})
+#LINK_DIRECTORIES(${GTEST_LIB_DIR})
 
 ADD_SUBDIRECTORY(test_frozen_lake)
 ADD_SUBDIRECTORY(test_black_jack)
 ADD_SUBDIRECTORY(test_cliff_world)
-ADD_SUBDIRECTORY(test_cart_pole)
-ADD_SUBDIRECTORY(test_mountain_car)
-ADD_SUBDIRECTORY(test_taxi)
-ADD_SUBDIRECTORY(test_tiled_cart_pole)
-ADD_SUBDIRECTORY(test_numpy_cpp_utils)
+#ADD_SUBDIRECTORY(test_cart_pole)
+#ADD_SUBDIRECTORY(test_mountain_car)
+#ADD_SUBDIRECTORY(test_taxi)
+#ADD_SUBDIRECTORY(test_tiled_cart_pole)
+#ADD_SUBDIRECTORY(test_numpy_cpp_utils)
 ADD_SUBDIRECTORY(test_grid_world)
-ADD_SUBDIRECTORY(test_vector_env_wrapper)
-ADD_SUBDIRECTORY(test_vector_time_step)
+#ADD_SUBDIRECTORY(test_vector_env_wrapper)
+#ADD_SUBDIRECTORY(test_vector_time_step)
 

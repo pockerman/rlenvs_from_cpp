@@ -38,7 +38,7 @@ FrozenLake<side_size>::action_from_int(uint_t aidx){
 template<uint_t side_size>
 FrozenLake<side_size>::FrozenLake(const std::string& api_base_url)
 :
- ToyTextEnvBase<typename FrozenLakeData<side_size>::time_step_type>(api_base_url + "/frozen-lake-env"),
+ ToyTextEnvBase<typename FrozenLakeData<side_size>::time_step_type>(api_base_url + "/gymnasium/frozen-lake-env"),
  is_slippery_(true)
  {}
 

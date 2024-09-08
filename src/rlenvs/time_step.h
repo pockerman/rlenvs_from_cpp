@@ -36,12 +36,12 @@ public:
     ///
     /// \brief TimeStep. Constructor
     ///
-    TimeStep(TimeStepTp type, real_t reward, state_type obs, real_t discount_factor);
+    TimeStep(TimeStepTp type, real_t reward, const state_type&  obs, real_t discount_factor);
 
     ///
     /// \brief TimeStep. Constructor
     ///
-    TimeStep(TimeStepTp type, real_t reward, state_type obs,
+    TimeStep(TimeStepTp type, real_t reward, const state_type& obs,
              real_t discount_factor, std::unordered_map<std::string, std::any>&& extra);
 
     ///
@@ -180,7 +180,7 @@ TimeStep<StateTp>::TimeStep()
 {}
 
 template<typename StateTp>
-TimeStep<StateTp>::TimeStep(TimeStepTp type, real_t reward, state_type obs, real_t discount_factor)
+TimeStep<StateTp>::TimeStep(TimeStepTp type, real_t reward, const state_type& obs, real_t discount_factor)
     :
       type_(type),
       reward_(reward),
@@ -190,7 +190,7 @@ TimeStep<StateTp>::TimeStep(TimeStepTp type, real_t reward, state_type obs, real
 {}
 
 template<typename StateTp>
-TimeStep<StateTp>::TimeStep(TimeStepTp type, real_t reward, state_type obs, real_t discount_factor,
+TimeStep<StateTp>::TimeStep(TimeStepTp type, real_t reward, const state_type& obs, real_t discount_factor,
                             std::unordered_map<std::string, std::any>&& extra)
     :
     type_(type),

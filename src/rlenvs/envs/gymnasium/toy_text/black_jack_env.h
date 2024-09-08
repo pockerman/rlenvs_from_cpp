@@ -56,11 +56,6 @@ struct BlackJackData
 
 
     ///
-    /// \brief name
-    ///
-    static  const std::string name;
-
-    ///
     /// \brief time_step_t. The type of the time step
     ///
     typedef TimeStep<state_type> time_step_type;
@@ -76,10 +71,17 @@ class BlackJack final:  public ToyTextEnvBase<BlackJackData::time_step_type>
 
 public:
 
+
     ///
-    /// \brief dynamics_t
+    /// \brief name
     ///
-    typedef std::vector<std::tuple<real_t, uint_t, real_t, bool>> dynamics_type;
+    static  const std::string name;
+
+     /**
+     * @brief Convert the action index to a valid FrozenLakeActionsEnum
+     *
+     * */
+    static BlackJackActionsEnum action_from_int(uint_t aidx);
 
     ///
     /// \brief env_data_t
@@ -89,42 +91,27 @@ public:
     ///
     /// \brief action_space_t. The type of the action space
     ///
-    typedef BlackJackData::action_space_type action_space_type;
+    typedef env_data_type::action_space_type action_space_type;
 
     ///
     /// \brief action_t
     ///
-    typedef BlackJackData::action_type action_type;
+    typedef env_data_type::action_type action_type;
 
     ///
     /// \brief state_space_t
     ///
-    typedef BlackJackData::state_space_type state_space_type;
+    typedef env_data_type::state_space_type state_space_type;
 
     ///
     /// \brief state_t
     ///
-    typedef BlackJackData::state_type state_type;
+    typedef env_data_type::state_type state_type;
 
     ///
     /// \brief time_step_t. The type of the time step
     ///
-    typedef BlackJackData::time_step_type time_step_type;
-
-    ///
-    /// \brief action_t
-    ///
-    typedef uint_t action_t;
-
-    ///
-    /// \brief state_t
-    ///
-    typedef uint_t state_t;
-
-    ///
-    /// \brief time_step_t
-    ///
-    typedef TimeStep<state_t> time_step_t;
+    typedef env_data_type::time_step_type time_step_type;
 
     ///
     /// \brief BlackJack. Constructor.
@@ -160,6 +147,12 @@ public:
     /// \return
     ///
     time_step_type step(BlackJackActionsEnum action);
+
+    /**
+     * @brief Step in the environment following the given action
+     *
+     * */
+    time_step_type step(uint_t action);
 
     ///
     ///

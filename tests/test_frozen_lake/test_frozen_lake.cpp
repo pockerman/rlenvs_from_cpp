@@ -1,205 +1,87 @@
-#include "gymfcpp/frozen_lake_env.h"
-#include "gymfcpp/time_step.h"
-#include "gymfcpp/time_step_type.h"
-#include "gymfcpp/gymfcpp_types.h"
+#include "rlenvs/envs/gymnasium/toy_text/frozen_lake_env.h"
+#include "rlenvs/rlenvs_types_v2.h"
 
 #include <gtest/gtest.h>
-#include <boost/python.hpp>
+#include <unordered_map>
+#include <string>
+#include <any>
 
 namespace{
 
 using rlenvs_cpp::uint_t;
 using rlenvs_cpp::real_t;
-using rlenvs_cpp::gymfcpp::FrozenLake;
-}
 
+const std::string SERVER_URL = "http://0.0.0.0:8001/api";
+
+}
 
 TEST(TestFrozenLake, TestConstructor4x4) {
 
-    try{
+    rlenvs_cpp::envs::gymnasium::FrozenLake<4> env(SERVER_URL);
 
-        Py_Initialize();
-        auto main_module = boost::python::import("__main__");
-        auto main_namespace = main_module.attr("__dict__");
-        FrozenLake<4> env("v0", main_namespace);
+    ASSERT_EQ(env.n_states(), static_cast<uint_t>(16));
+    ASSERT_EQ(env.n_actions(), static_cast<uint_t>(4));
+    ASSERT_EQ(env.map_type(), "4x4");
 
-        ASSERT_EQ(env.n_states(), static_cast<uint_t>(16));
-        ASSERT_EQ(env.n_actions(), static_cast<uint_t>(4));
-        ASSERT_EQ(env.map_type(), "4x4");
-
-    }
-    catch(const boost::python::error_already_set&)
-    {
-        PyErr_Print();
-        FAIL();
-    }
 }
 
 TEST(TestFrozenLake, TestConstructor8x8) {
 
-    try{
-
-        Py_Initialize();
-        auto main_module = boost::python::import("__main__");
-        auto main_namespace = main_module.attr("__dict__");
-        FrozenLake<8> env("v0", main_namespace);
-
-        ASSERT_EQ(env.n_states(), static_cast<uint_t>(64));
-        ASSERT_EQ(env.n_actions(), static_cast<uint_t>(4));
-        ASSERT_EQ(env.map_type(), "8x8");
-
-    }
-    catch(const boost::python::error_already_set&)
-    {
-        PyErr_Print();
-        FAIL();
-    }
+    rlenvs_cpp::envs::gymnasium::FrozenLake<8> env(SERVER_URL);
+    ASSERT_EQ(env.n_states(), static_cast<uint_t>(64));
+    ASSERT_EQ(env.n_actions(), static_cast<uint_t>(4));
+    ASSERT_EQ(env.map_type(),"8x8");
 }
 
-TEST(TestFrozenLake, Test_Make)
-{
+TEST(TestFrozenLake, Test_Make){
+    rlenvs_cpp::envs::gymnasium::FrozenLake<8> env(SERVER_URL);
 
-    try{
-
-        Py_Initialize();
-
-        auto main_module = boost::python::import("__main__");
-        auto main_namespace = main_module.attr("__dict__");
-
-        FrozenLake<4> env("v0", main_namespace, false);
-        env.make();
-
-        //ASSERT_EQ(env.n_states(), static_cast<uint_t>(16));
-        //ASSERT_EQ(env.n_actions(), static_cast<uint_t>(4));
-
-    }
-    catch(const boost::python::error_already_set&)
-    {
-        PyErr_Print();
-        FAIL();
-    }
+    std::unordered_map<std::string, std::any> options;
+    env.make("v1", options);
 }
 
 
-TEST(TestFrozenLake, Test_Reset)
-{
+TEST(TestFrozenLake, Test_Reset){
 
-    try{
+    rlenvs_cpp::envs::gymnasium::FrozenLake<8> env(SERVER_URL);
 
-        Py_Initialize();
+    std::unordered_map<std::string, std::any> options;
+    env.make("v1", options);
 
-        auto main_module = boost::python::import("__main__");
-        auto main_namespace = main_module.attr("__dict__");
+    auto state = env.reset();
+    ASSERT_TRUE(state.first());
 
-        FrozenLake<4> env("v0", main_namespace, false);
-        env.make();
-
-        auto state = env.reset();
-        ASSERT_TRUE(state.first());
-
-    }
-    catch(const boost::python::error_already_set&)
-    {
-        PyErr_Print();
-        FAIL()<<"Error could not reset the environment";
-    }
 }
 
 TEST(TestFrozenLake, Test_Step)
 {
 
-    try{
+    rlenvs_cpp::envs::gymnasium::FrozenLake<8> env(SERVER_URL);
 
-        Py_Initialize();
+    std::unordered_map<std::string, std::any> options;
+    env.make("v1", options);
+    env.reset();
 
-        auto main_module = boost::python::import("__main__");
-        auto main_namespace = main_module.attr("__dict__");
+    auto step_result = env.step(0);
+    ASSERT_TRUE(step_result.mid());
 
-        FrozenLake<4> env("v0", main_namespace, false);
-        env.make();
-
-        auto step_result = env.step(0);
-        ASSERT_TRUE(step_result.mid());
-
-    }
-    catch(const boost::python::error_already_set&)
-    {
-        PyErr_Print();
-        FAIL()<<"Error could not step in the environment";
-    }
-}
-
-TEST(TestFrozenLake, Test_Step_With_Query)
-{
-
-    try{
-
-        Py_Initialize();
-
-        auto main_module = boost::python::import("__main__");
-        auto main_namespace = main_module.attr("__dict__");
-
-        FrozenLake<4> env("v0", main_namespace, false);
-        env.make();
-
-        auto step_result = env.step(0, true);
-        ASSERT_TRUE(step_result.mid());
-        ASSERT_DOUBLE_EQ(step_result.get_extra<real_t>("prob"), 0.3333333333333333);
-    }
-    catch(const boost::python::error_already_set&)
-    {
-        PyErr_Print();
-        FAIL()<<"Error could not step in the environment";
-    }
 }
 
 
-TEST(TestFrozenLake, Test_Get_Dynamics)
-{
+TEST(TestFrozenLake, Test_Get_Dynamics){
 
-    try{
+    rlenvs_cpp::envs::gymnasium::FrozenLake<8> env(SERVER_URL);
 
-        Py_Initialize();
+    std::unordered_map<std::string, std::any> options;
+    env.make("v1", options);
+    env.reset();
 
-        auto main_module = boost::python::import("__main__");
-        auto main_namespace = main_module.attr("__dict__");
+    auto step_result = env.step(0);
+    ASSERT_TRUE(step_result.mid());
 
-        FrozenLake<4> env("v0", main_namespace, false);
-        env.make();
-
-        auto dynamics = env.p(1, 3);
-
-        ASSERT_EQ(dynamics.size(), static_cast<uint_t>(3) );
-
-    }
-    catch(const boost::python::error_already_set&)
-    {
-        PyErr_Print();
-        FAIL()<<"Error could not step in the environment";
-    }
+    auto dynamics = env.p(1, 3);
+    ASSERT_EQ(dynamics.size(), static_cast<uint_t>(3));
 }
 
-TEST(TestFrozenLake, TestRender)
-{
 
-    try{
-
-        Py_Initialize();
-
-        auto main_module = boost::python::import("__main__");
-        auto main_namespace = main_module.attr("__dict__");
-
-        FrozenLake<4> env("v0", main_namespace, false);
-        env.make();
-        env.reset();
-
-        env.render(rlenvs_cpp::RenderModeType::human);
-
-    }
-    catch(const boost::python::error_already_set&)
-    {
-        PyErr_Print();
-        FAIL()<<"Error could not step in the environment";
-    }
-}
 

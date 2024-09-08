@@ -46,13 +46,24 @@ ENDIF()
 
 # where to install the library
 
-SET(ENABLE_TESTS_FLAG OFF)
+SET(ENABLE_TESTS_FLAG ON)
 SET(ENABLE_EXAMPLES_FLAG ON)
 SET(ENABLE_DOC_FLAG OFF)
 
-# only neccessary if tests are enabled
-SET(GTEST_INCLUDE_DIR /home/alex/MySoftware/gtest/install/include)
-SET(GTEST_LIB_DIR /home/alex/MySoftware/gtest/install/lib)
+IF(ENABLE_TESTS_FLAG)
+	# find gtest
+	FIND_PACKAGE(GTest REQUIRED)
+
+	IF(GTest_FOUND)
+		INCLUDE_DIRECTORIES(${GTEST_INCLUDE_DIRS})
+		LINK_DIRECTORIES("/usr/local/lib")
+
+		MESSAGE( STATUS  "Found Gtest at ${GTEST_INCLUDE_DIRS}.")
+		#MESSAGE( STATUS  "Found Gtest libs at  ${GTEST_BOTH_LIBRARIES}.")
+    ELSE()
+	    MESSAGE( FATAL_ERROR  "ENABLE_TESTS_FLAG is ON but could not find GTest library.")
+	ENDIF()
+ENDIF()
 
 LIST(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 
@@ -85,17 +96,13 @@ INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIRS})
 
 IF( USE_PYTORCH )
 	INCLUDE_DIRECTORIES(${TORCH_INCLUDE_DIRS})
+	MESSAGE(STATUS "Torch include: ${TORCH_INCLUDE_DIRS}")
+ELSE()
+	MESSAGE(WARNING "PyTorch is not used")
 ENDIF()
 
+
 INCLUDE_DIRECTORIES(src/)
-
-MESSAGE(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
-MESSAGE(STATUS "C++ Compiler: ${CMAKE_CXX_COMPILER}")
-MESSAGE(STATUS "C Compiler: ${CMAKE_C_COMPILER}")
-MESSAGE(STATUS "Boost lib: ${Boost_LIBRARY_DIR}")
-MESSAGE(STATUS "Boost include: ${Boost_INCLUDE_DIRS}")
-MESSAGE(STATUS "Torch include: ${TORCH_INCLUDE_DIRS}")
-
 
 FILE(GLOB SRCS src/rlenvs/*.cpp
                src/rlenvs/api_server/*.cpp
@@ -105,7 +112,9 @@ FILE(GLOB SRCS src/rlenvs/*.cpp
                src/rlenvs/envs/gymnasium/classic_control/*.cpp
                src/rlenvs/envs/gymnasium/vector/*.cpp
                src/rlenvs/envs/gdrl/*.cpp
-               src/rlenvs/envs/gym_pybullet_drones/*.cpp)
+               src/rlenvs/envs/gym_pybullet_drones/*.cpp
+               src/rlenvs/envs/grid_world/*.cpp
+   )
 
 ADD_LIBRARY(rlenvscpplib SHARED ${SRCS})
 

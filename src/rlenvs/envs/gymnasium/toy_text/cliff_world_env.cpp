@@ -6,13 +6,14 @@
 #include <cassert>
 #endif
 
+#include <iostream>
 
 
 namespace rlenvs_cpp{
 namespace envs {
 namespace gymnasium{
 
-const std::string CliffWorldData::name = "CliffWalking";
+const std::string CliffWorld::name = "CliffWalking";
 
 
 CliffWorldActionsEnum
@@ -67,7 +68,7 @@ CliffWorld::create_time_step_from_response_(const http::Response& response)const
 
 CliffWorld::CliffWorld(const std::string& api_base_url)
     :
-ToyTextEnvBase<CliffWorldData::time_step_type>(api_base_url + "/cliff-walking-env")
+ToyTextEnvBase<CliffWorldData::time_step_type>(api_base_url + "/gymnasium/cliff-walking-env")
 {}
 
 
@@ -85,8 +86,8 @@ CliffWorld::make(const std::string& version,
     using json = nlohmann::json;
     json j;
     j["version"] = version;
-
     auto body = j.dump();
+
     const auto response = request.send("POST", body);
 
     if(response.status.code != 201){
@@ -95,7 +96,6 @@ CliffWorld::make(const std::string& version,
 
     this->set_version(version);
     this->make_created();
-
 
 }
 

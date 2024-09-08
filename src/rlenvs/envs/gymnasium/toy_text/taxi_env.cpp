@@ -17,7 +17,7 @@ std::string TaxiData::name = "Taxi";
 
 Taxi::Taxi(const std::string& api_base_url)
     :
-     ToyTextEnvBase<TaxiData::time_step_type>(api_base_url + "/taxi-env")
+     ToyTextEnvBase<TaxiData::time_step_type>(api_base_url + "/gymnasium/taxi-env")
 {}
 
 Taxi::dynamics_t

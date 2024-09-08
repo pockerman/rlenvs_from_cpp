@@ -21,7 +21,7 @@ struct synchronized_env_mixin
      * @brief Synchronize the environment
      *
      */
-    virtual void sync(const std::unordered_map<std::string, std::any>& options){}
+    virtual void sync(const std::unordered_map<std::string, std::any>& /*options*/){}
 };
 
 }

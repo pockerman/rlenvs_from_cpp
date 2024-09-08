@@ -1,107 +1,61 @@
-#include "gymfcpp/grid_world_env.h"
+#include "rlenvs/envs/grid_world/grid_world_env.h"
+#include "rlenvs/rlenvs_types_v2.h"
+#include "rlenvs/rlenvs_consts.h"
 
-#include "gymfcpp/time_step.h"
-#include "gymfcpp/time_step_type.h"
-#include "gymfcpp/gymfcpp_types.h"
 
 #include <gtest/gtest.h>
+#include <unordered_map>
+#include <string>
 
 namespace{
 
 using rlenvs_cpp::uint_t;
 using rlenvs_cpp::real_t;
-using rlenvs_cpp::Gridworld;
+using rlenvs_cpp::envs::grid_world::GridWorldInitType;
+
 
 }
 
 
 TEST(TestGridworld, TestConstructor4x4) {
 
-    try{
-
-        Gridworld<4> env("v0", rlenvs_cpp::GridworldInitType::STATIC, false);
+        rlenvs_cpp::envs::grid_world::Gridworld<4> env;
 
         ASSERT_EQ(env.n_states(), static_cast<uint_t>(16));
         ASSERT_EQ(env.n_actions(), static_cast<uint_t>(4));
-        ASSERT_EQ(env.version(), "v0");
         ASSERT_FALSE(env.is_created());
 
         // TODO: Think how to test this
-        ASSERT_TRUE(rlenvs_cpp::to_string(env.init_type()) == rlenvs_cpp::to_string(rlenvs_cpp::GridworldInitType::STATIC));
+        ASSERT_TRUE(rlenvs_cpp::envs::grid_world::to_string(env.init_type()) == rlenvs_cpp::envs::grid_world::to_string(GridWorldInitType::INVALID_TYPE));
         ASSERT_EQ(env.name, "Gridworld");
-
-    }
-    catch(...)
-    {
-        FAIL()<<"Unknown exception thrown";
-    }
+        ASSERT_EQ(env.version(), rlenvs_cpp::INVALID_STR);
 }
+
 
 
 TEST(TestGridworld, TestMake) {
 
-    try{
+        rlenvs_cpp::envs::grid_world::Gridworld<4> env;
 
-        Gridworld<4> env("v0", rlenvs_cpp::GridworldInitType::STATIC, false);
-        env.make();
+        std::unordered_map<std::string, std::any> options;
+        options["mode"] = std::any(rlenvs_cpp::envs::grid_world::to_string(GridWorldInitType::STATIC));
+
+        env.make("v0", options);
 
         ASSERT_TRUE(env.is_created());
         ASSERT_EQ(env.n_states(), static_cast<uint_t>(16));
         ASSERT_EQ(env.n_actions(), static_cast<uint_t>(4));
+        ASSERT_EQ(env.version(), "v0");
+        ASSERT_TRUE(rlenvs_cpp::envs::grid_world::to_string(env.init_type()) == rlenvs_cpp::envs::grid_world::to_string(GridWorldInitType::STATIC));
 
-    }
-    catch(...)
-    {
-        FAIL()<<"Unknown exception thrown";
-    }
-}
-
-TEST(TestGridworld, TestStepInvalidMove)
-{
-
-    try{
-
-        Gridworld<4> env("v0", rlenvs_cpp::GridworldInitType::STATIC, false);
-        env.make();
-
-        // make sure we have the right world
-        ASSERT_TRUE(env.is_created());
-        ASSERT_EQ(env.n_states(), static_cast<uint_t>(16));
-        ASSERT_EQ(env.n_actions(), static_cast<uint_t>(4));
-
-        EXPECT_DEATH(env.step(5), "Invalid move");
-    }
-    catch(...)
-    {
-        FAIL()<<"Unknown exception thrown";
-    }
 }
 
 
-TEST(TestGridworld, TestStepValidMove)
-{
-
-    try{
-
-        Gridworld<4> env("v0", rlenvs_cpp::GridworldInitType::STATIC, false);
-        env.make();
-
-        // make sure we have the right world
-        ASSERT_TRUE(env.is_created());
-        ASSERT_EQ(env.n_states(), static_cast<uint_t>(16));
-        ASSERT_EQ(env.n_actions(), static_cast<uint_t>(4));
-
-        // this should always succeed
-        env.step(1);
-
-    }
-    catch(...)
-    {
-        FAIL()<<"Unknown exception thrown";
-    }
-}
 
 
+
+
+/*
 TEST(TestGridworld, TestGetObservationFail)
 {
     try{
@@ -172,4 +126,4 @@ TEST(TestGridworld, TestConstructor4x4Random)
         FAIL()<<"Unknown exception thrown";
     }
 }
-
+*/

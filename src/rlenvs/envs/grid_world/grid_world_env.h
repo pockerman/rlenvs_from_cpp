@@ -1,3 +1,5 @@
+// SPDX-FileCopyrightText: 2024 <copyright holder> <email>
+// SPDX-License-Identifier: Apache-2.0
 #ifndef GRID_WORLD_ENV_H
 #define GRID_WORLD_ENV_H
 
@@ -8,69 +10,43 @@
   * https://github.com/DeepReinforcementLearning/DeepReinforcementLearningInAction
   * */
 
-#include "gymfcpp/gymfcpp_types.h"
-#include "gymfcpp/time_step.h"
-#include "gymfcpp/discrete_space.h"
-#include "gymfcpp/env_mixin.h"
-#include "gymfcpp/extern/enum.h"
-#include "gymfcpp/gymfcpp_config.h"
-#include "gymfcpp/time_step_type.h"
-#include "gymfcpp/numpy_cpp_utils.h"
+#include "rlenvs/rlenvscpp_config.h"
+#include "rlenvs/rlenvs_types_v2.h"
+#include "rlenvs/rlenvs_consts.h"
+#include "rlenvs/discrete_space.h"
+#include "rlenvs/time_step.h"
+#include "rlenvs/envs/synchronized_env_mixin.h"
+#include "rlenvs/extern/enum.h"
 
-#ifdef GYMFCPP_DEBUG
+#ifdef RLENVSCPP_DEBUG
 #include <cassert>
 #endif
 
+#include <boost/noncopyable.hpp>
 #include <vector>
 #include <string>
 #include <utility>
+#include <unordered_map>
 #include <map>
+#include <any>
+#include <iostream>
 
 ///
 /// Different namespace so that we differentiate
 /// from OpenAI-Gym environment
 ///
-namespace rlenvs_cpp
-{
+namespace rlenvs_cpp{
 
 // still we may want to use some utilities
 //using namespace gymfcpp;
 
-namespace{
-
-uint_t
-max(const std::pair<uint_t,  uint_t>& position){
-    return position.first > position.second ? position.first : position.second;
-}
-
-uint_t
-min(const std::pair<uint_t,  uint_t>& position){
-    return position.first < position.second ? position.first : position.second;
-}
-
-uint_t
-get_non_zero_idx(std::pair<uint_t, uint_t>& p){
-
-}
-
-inline
-bool operator == (const std::pair<uint_t,  uint_t>& p1, const std::pair<uint_t,  uint_t>& p2){
-    return p1.first == p2.first && p1.second == p2.second;
-}
-
-inline
-std::pair<uint_t, uint_t>
-operator + (const std::pair<uint_t,  uint_t>& p1, const std::pair<uint_t,  uint_t>& p2){
-    return std::make_pair(p1.first + p2.first, p1.second + p2.second);
-}
-
-}
-
+namespace envs{
+namespace grid_world{
 
 ///
 /// \brief The RenderModeType enum
 ///
-BETTER_ENUM(GridworldInitType, char, STATIC=0, RANDOM, PLAYER, INVALID_TYPE);
+BETTER_ENUM(GridWorldInitType, char, STATIC=0, RANDOM=1, PLAYER=2, INVALID_TYPE=4);
 
 
 ///
@@ -78,8 +54,11 @@ BETTER_ENUM(GridworldInitType, char, STATIC=0, RANDOM, PLAYER, INVALID_TYPE);
 /// \param type The RenderModeType to convert
 /// \return std::string
 inline
-std::string to_string(GridworldInitType type){return type._to_string();}
+std::string to_string(GridWorldInitType type){return type._to_string();}
 
+
+GridWorldInitType
+from_string(const std::string& gw_init_type);
 
 
 ///
@@ -93,44 +72,52 @@ std::string to_string(GridworldInitType type){return type._to_string();}
 /// Random initialization means that all the objects are placed randomly
 ///
 template<uint_t side_size_>
-class Gridworld final
+class Gridworld final: private boost::noncopyable, protected synchronized_env_mixin
 {
 public:
 
-    static_assert (side_size_ >= 4, "The side size should be greater than 4");
+    static_assert (side_size_ >= 4, "The side size should be greater than or equal to 4");
 
     ///
     /// \brief name
     ///
     static  const std::string name;
 
-    ///
-    /// \brief action_space_t. The type of the action space
-    ///
-    typedef DiscreteSpace<4> action_space_type;
+    /**
+     * @brief The type of the action space
+     */
+    typedef DiscreteSpace<side_size_> action_space_type;
 
-    ///
-    /// \brief action_t
-    ///
-    typedef action_space_type::item_t action_type;
-
-    ///
-    /// \brief action_space_t. The type of the action space
-    ///
+    /**
+     * @brief The state space type. The state space
+     *
+     *
+     */
     typedef DiscreteSpace<side_size_ * side_size_> state_space_type;
 
-    ///
-    /// \brief state_type
-    ///
-    //typedef typename state_space_type::item_t state_type;
+    /**
+     * @brief The action type
+     *
+     */
+    typedef typename action_space_type::item_t action_type;
+
+     /**
+     * @brief The state_type
+     *
+     */
+    typedef typename state_space_type::item_t state_type;
+
+
+    /**
+     * @brief The type of the time step
+     *
+     */
+    typedef TimeStep<state_type> time_step_type;
+
 
      typedef std::vector<std::vector<std::vector<real_t>>> raw_state_type;
-     typedef std::vector<real_t> state_type;
+     //typedef std::vector<real_t> state_type;
 
-    ///
-    /// \brief time_step_t. The type of the time step
-    ///
-    typedef TimeStep<state_type> time_step_type;
 
     ///
     /// \brief n_components
@@ -145,14 +132,13 @@ public:
     ///
     /// \brief Constructor
     ///
-    Gridworld(std::string version, GridworldInitType init_mode, bool create=true);
+    Gridworld();
 
-    ///
-    /// \brief Constructor. Initializes the world by allowing noise to be
-    /// added in the observation vector
-    ///
-    Gridworld(std::string version, GridworldInitType init_mode, uint_t seed,
-              real_t noise_factor, bool create=true);
+    /*
+     * Expose functionality
+     *
+     */
+    using synchronized_env_mixin::sync;
 
     ///
     /// \brief version
@@ -164,7 +150,7 @@ public:
     /// \brief init_type
     /// \return
     ///
-    GridworldInitType init_type()const noexcept{return init_mode_;}
+    GridWorldInitType init_type()const noexcept{return init_mode_;}
 
     ///
     /// \brief is_created
@@ -176,7 +162,8 @@ public:
     /// \brief make. Builds the environment. Optionally we can choose if the
     /// environment will be slippery
     ///
-    void make();
+    void make(const std::string& version,
+              const std::unordered_map<std::string, std::any>& options);
 
     ///
     /// \brief n_states. Returns the number of states
@@ -194,11 +181,6 @@ public:
     /// \return
     ///
     time_step_type step(action_type action);
-
-    ///
-    /// \brief render. Does nothing simply here to respect the contract.
-    ///
-    void render(){return;}
 
     ///
     /// \brief close
@@ -250,7 +232,7 @@ private:
     ///
     /// \brief init_mode_
     ///
-    GridworldInitType init_mode_;
+    GridWorldInitType init_mode_;
 
     ///
     /// \brief randomize_state_
@@ -429,60 +411,72 @@ const std::string Gridworld<side_size>::name = "Gridworld";
 
 
 template<uint_t side_size>
-Gridworld<side_size>::Gridworld(std::string version, GridworldInitType init_mode, bool create)
+Gridworld<side_size>::Gridworld()
     :
-      version_(version),
-      init_mode_(init_mode),
+      version_(INVALID_STR),
+      init_mode_(GridWorldInitType::INVALID_TYPE),
       randomize_state_(false),
       seed_(0),
       noise_factor_(0.0),
       is_created_(false)
-{
-    if(create){
-        make();
-    }
-}
-
-template<uint_t side_size>
-Gridworld<side_size>::Gridworld(std::string version, GridworldInitType init_mode, uint_t seed,
-                                real_t noise_factor, bool create)
-    :
-      version_(version),
-      init_mode_(init_mode),
-      randomize_state_(true),
-      seed_(seed),
-      noise_factor_(noise_factor),
-      is_created_(false)
 {}
+
 
 template<uint_t side_size>
 void
-Gridworld<side_size>::make(){
+Gridworld<side_size>::make(const std::string& version,
+                           const std::unordered_map<std::string, std::any>& options){
 
     if(is_created()){
         return;
+    }
+
+
+    // find the mode
+    auto mode = options.find("mode");
+
+    if(mode != options.end()){
+       init_mode_ = from_string(std::any_cast<std::string>(mode->second));
+    }
+    else{
+       init_mode_ = GridWorldInitType::STATIC;
+    }
+
+    auto seed = options.find("seed");
+    if(seed != options.end()){
+        seed_ = std::any_cast<uint_t>(seed->second);
+    }
+
+    auto noise_factor = options.find("noise_factor");
+    if(noise_factor != options.end()){
+        noise_factor_ = std::any_cast<real_t>(noise_factor->second);
+    }
+
+    auto randomize_state = options.find("randomize_state");
+    if(randomize_state != options.end()){
+        randomize_state_ = std::any_cast<bool>(randomize_state->second);
     }
 
     // initialize the board
     init_board_();
     switch (init_mode_) {
 
-        case GridworldInitType::STATIC:
+        case GridWorldInitType::STATIC:
         {
             build_static_mode_();
             break;
         }
-        case GridworldInitType::RANDOM:
+        case GridWorldInitType::RANDOM:
         {
             build_random_mode_();
             break;
         }
-        case GridworldInitType::PLAYER:
+        case GridWorldInitType::PLAYER:
         {
             build_player_mode_();
             break;
         }
-#ifdef GYMFCPP_DEBUG
+#ifdef RLENVSCPP_DEBUG
         default:
         {
             assert(false && "Invalid initialization mode");
@@ -491,7 +485,10 @@ Gridworld<side_size>::make(){
 
     }
 
+    // set the version and set the board
+    // to created
     is_created_ = true;
+    version_ = version;
 }
 
 template<uint_t side_size>
@@ -769,7 +766,8 @@ Gridworld<side_size>::Board::move_piece(BoardComponentType piece, Position pos){
 
 }
 
-
-}
+}// grid_world
+}// envs
+}// rlenvs_cpp
 
 #endif // GRID_WORLD_ENV_H
