@@ -17,6 +17,7 @@ In addition there are wrappers for
 
 - ```GymWalk``` environment from <a href="https://github.com/mimoralea/gym-walk2">gym_walk</a>
 - ```gym-pybullet-drones``` from <a href="https://github.com/utiasDSL/gym-pybullet-drones/tree/main">gym-pybullet-drones</a>
+- ```GridWorld``` from <a href="https://github.com/DeepReinforcementLearning/DeepReinforcementLearningInAction">Deep Reinforcement Learning In Action</a>
 
 In general, the environments exposed by the library  should abide with <a href="https://github.com/deepmind/dm_env/blob/master/docs/index.md">dm_env</a> specification.
 The following snippet shows how to use the ```FrozenLake```  and ```Taxi``` environments from <a href="https://github.com/Farama-Foundation/Gymnasium/tree/main">Gymnasium</a>.
@@ -169,7 +170,7 @@ Namely, they are exposed via an API developed using FastAPI.
 You need to fire up the server, see dependencies, before using the environments in your code. To do so
 
 ```cpp
-cd rest_api && ./start_uvicorn.sh
+./start_uvicorn.sh
 
 ```
 
