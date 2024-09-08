@@ -53,9 +53,12 @@ namespace gymnasium {
 
 BETTER_ENUM(CliffWorldActionsEnum, int, UP=0, RIGHT=1, DOWN=2, LEFT=3, INVALID_ACTION=4);
 
-///
-/// \brief The CliffWorldData struct
-///
+/**
+  * @brief The CliffWorldData struct
+  * Information  for the data comes from:
+  * https://github.com/Farama-Foundation/Gymnasium/blob/main/gymnasium/envs/toy_text/cliffwalking.py
+  *
+  */
 struct CliffWorldData
 {
     ///
@@ -71,17 +74,14 @@ struct CliffWorldData
     ///
     /// \brief state_space_type
     ///
-    typedef DiscreteSpace<48> state_space_type;
+    typedef DiscreteSpace<37> state_space_type;
 
     ///
     /// \brief state_type
     ///
     typedef typename state_space_type::item_t state_type;
 
-    ///
-    /// \brief name
-    ///
-    static  const std::string name;
+
 
     ///
     /// \brief time_step_t. The type of the time step
@@ -98,6 +98,11 @@ class CliffWorld final: public ToyTextEnvBase<CliffWorldData::time_step_type>
 {
 
 public:
+
+    ///
+    /// \brief name
+    ///
+    static  const std::string name;
 
     ///
     /// \brief dynamics_t

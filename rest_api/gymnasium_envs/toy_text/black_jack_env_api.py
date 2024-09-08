@@ -92,7 +92,6 @@ async def step(action: int = Body(...)) -> JSONResponse:
     if env is not None:
         observation, reward, terminated, truncated, info = env.step(action)
 
-        print(f"Observation {observation}")
         step = TimeStep(observation=observation,
                         reward=reward,
                         step_type=TimeStepType.MID if terminated == False else TimeStepType.LAST,

@@ -20,6 +20,7 @@ TEST(TestCliffWorld, TestConstructor) {
 
     CliffWorld env(SERVER_URL);
     ASSERT_EQ(env.n_actions(), static_cast<uint_t>(4));
+    ASSERT_EQ(env.name, "CliffWalking");
 
 }
 
@@ -31,7 +32,7 @@ TEST(TestCliffWorld, Test_Make)
     std::unordered_map<std::string, std::any> options;
     env.make("v0", options);
     ASSERT_EQ(env.n_actions(), static_cast<uint_t>(4));
-    ASSERT_EQ(env.n_states(), static_cast<uint_t>(48));
+    ASSERT_EQ(env.n_states(), static_cast<uint_t>(37));
 }
 
 
@@ -52,6 +53,7 @@ TEST(TestCliffWorld, Test_Step)
 
     std::unordered_map<std::string, std::any> options;
     env.make("v0", options);
+    env.reset();
 
     auto step_result = env.step(0);
     ASSERT_TRUE(step_result.mid());
@@ -64,11 +66,11 @@ TEST(TestCliffWorld, Test_Step_With_Query)
 
     std::unordered_map<std::string, std::any> options;
     env.make("v0", options);
-
+    env.reset();
     auto step_result = env.step(0);
-    ASSERT_TRUE(step_result.mid());
 
-    ASSERT_DOUBLE_EQ(step_result.get_extra<real_t>("prob"), 0.3333333333333333);
+    ASSERT_TRUE(step_result.mid());
+    ASSERT_DOUBLE_EQ(step_result.get_extra<real_t>("prob"), 1.0);
 
 }
 
@@ -79,12 +81,13 @@ TEST(TestCliffWorld, Test_Get_Dynamics)
     CliffWorld env(SERVER_URL);
 
     std::unordered_map<std::string, std::any> options;
-    env.make("v1", options);
+    env.make("v0", options);
+    env.reset();
 
     auto step_result = env.step(0);
 
     ASSERT_TRUE(step_result.mid());
-    ASSERT_DOUBLE_EQ(step_result.get_extra<real_t>("prob"), 0.3333333333333333);
+    ASSERT_DOUBLE_EQ(step_result.get_extra<real_t>("prob"), 1.0);
 
     auto dynamics = env.p(1, 3);
     ASSERT_EQ(dynamics.size(), static_cast<uint_t>(1));

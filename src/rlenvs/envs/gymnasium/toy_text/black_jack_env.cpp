@@ -14,7 +14,7 @@ namespace envs{
 namespace gymnasium
 {
 
-const std::string BlackJackData::name = "BlackJack";
+const std::string BlackJack::name = "BlackJack";
 
 
 BlackJackActionsEnum
@@ -111,22 +111,15 @@ BlackJack::step(BlackJackActionsEnum action){
      assert(this->is_created_ && "Environment has not been created");
 #endif
 
-     /*if(this->get_current_time_step_().last()){
+    if(this->get_current_time_step_().last()){
          return this->reset(42, std::unordered_map<std::string, std::any>());
-     }*/
+    }
 
-    //std::cout<<"Request URL: "<<this->get_url()<<std::endl;
-    const std::string request_url = "http://0.0.0.0:8001/api//gymnasium/black-jack-env/step"; //+ //std::string(this->get_url()) + "/step";
+    const std::string request_url = std::string(this->get_url()) + "/step";
 
-    std::cout<<"Request URL: "<<request_url<<std::endl;
+    http::Request request{request_url};
 
-    /*http::Request request{request_url};
-
-    using json = nlohmann::json;
-    json j;
-    j["action"] = 0; //static_cast<int>(action); //._to_integral();
-
-    auto body = j.dump();
+    auto body = std::to_string(action);
     const auto response = request.send("POST", body);
 
     if(response.status.code != 202){
@@ -134,10 +127,7 @@ BlackJack::step(BlackJackActionsEnum action){
     }
 
     this->get_current_time_step_() = this->create_time_step_from_response_(response);
-    return this->get_current_time_step_();*/
-
-
-
+    return this->get_current_time_step_();
 }
 
 

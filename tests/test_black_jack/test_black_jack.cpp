@@ -15,10 +15,11 @@ using rlenvs_cpp::envs::gymnasium::BlackJack;
 
 }
 
-/*TEST(TestBlackJack, TestConstructor) {
+TEST(TestBlackJack, TestConstructor) {
 
          BlackJack env(SERVER_URL);
          ASSERT_EQ(env.n_actions(), static_cast<uint_t>(2));
+         ASSERT_EQ(env.name, "BlackJack");
 
 }
 
@@ -28,6 +29,8 @@ TEST(TestBlackJack, Test_Make_NO_NATURAL){
     std::unordered_map<std::string, std::any> options;
     options["natural"] = false;
     env.make("v1", options);
+
+    ASSERT_FALSE(env.is_natural());
 }
 
 TEST(TestBlackJack, Test_Make_NATURAL){
@@ -35,6 +38,8 @@ TEST(TestBlackJack, Test_Make_NATURAL){
     std::unordered_map<std::string, std::any> options;
     options["natural"] = true;
     env.make("v1", options);
+
+    ASSERT_TRUE(env.is_natural());
 }
 
 TEST(TestBlackJack, Test_Reset){
@@ -45,7 +50,7 @@ TEST(TestBlackJack, Test_Reset){
 
     auto state = env.reset();
     ASSERT_TRUE(state.first());
-}*/
+}
 
 TEST(TestBlackJack, Test_Step)
 {
@@ -57,7 +62,7 @@ TEST(TestBlackJack, Test_Step)
 
     auto state = env.reset();
 
-    //ASSERT_TRUE(state.first());
+    ASSERT_TRUE(state.first());
 
     auto step_result = env.step(rlenvs_cpp::envs::gymnasium::BlackJackActionsEnum::STICK);
 
