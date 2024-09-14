@@ -36,15 +36,12 @@ operator==(const board_position& p1, const board_position& p2){
         return true;
 
     return false;
-
-
 }
 
 board_position
 operator+(const board_position& p1, const board_position& p2){
     return {p1.first + p2.first, p1.second + p2.second};
 }
-
 
 uint_t
 max(const board_position& p){
@@ -62,9 +59,8 @@ void board::close(){
     masks.clear();
 }
 
-
-void
-board::init_board(uint_t board_s){
+board_state_type
+board::init_board(uint_t board_s, GridWorldInitType init_type){
 
     // TODO: make sure board_s  != 0
     board_size = board_s;
@@ -72,7 +68,76 @@ board::init_board(uint_t board_s){
     components[board_component_type::GOAL] = board_piece("Goal", "G", std::make_pair(1, 0));
     components[board_component_type::PIT] = board_piece("Pit", "-", std::make_pair(2, 0));
     components[board_component_type::WALL] = board_piece("Wall", "W", std::make_pair(3, 0));
+
+    switch (init_type) {
+
+        case GridWorldInitType::STATIC:
+        {
+            build_static_mode();
+            break;
+        }
+        case GridWorldInitType::RANDOM:
+        {
+            build_random_mode();
+            break;
+        }
+        case GridWorldInitType::PLAYER:
+        {
+            build_player_mode();
+            break;
+        }
+#ifdef RLENVSCPP_DEBUG
+        default:
+        {
+            assert(false && "Invalid initialization mode");
+        }
+#endif
+
+    }
+
+    return get_state();
 }
+
+
+board_state_type
+board::step(GridWorldActionType action){
+
+    switch( action ){
+        case GridWorldActionType::UP:
+            {
+                // move up
+                 check_move(-1, 0);
+                 break;
+            }
+        case GridWorldActionType::DOWN:
+            {
+                //down
+                check_move(1, 0);
+                break;
+            }
+        case GridWorldActionType::LEFT:
+            {
+                // left
+                 check_move(0, -1);
+                 break;
+            }
+        case GridWorldActionType::RIGHT:
+            {
+                // right
+                check_move(0, 1);
+                break;
+            }
+#ifdef RLENVSCPP_DEBUG
+            default:
+            {
+                assert(false && "Invalid move");
+            }
+#endif
+        }
+
+    return get_state();
+}
+
 
 real_t
 board::get_reward()const{

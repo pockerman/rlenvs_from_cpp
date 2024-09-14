@@ -71,8 +71,16 @@ from_string(const std::string& gw_init_type);
 namespace detail{
 
 
-    // models a position on the board
+    /**
+     *
+     * @brief Models a position on the board
+     */
     typedef std::pair<uint_t,  uint_t> board_position;
+
+    /**
+     * @brief Array specifying the state of the board
+     */
+    typedef std::vector<std::vector<std::vector<real_t>>> board_state_type;
 
 
     /**
@@ -94,12 +102,6 @@ namespace detail{
      * @brief Returns the min component of a position
      */
     uint_t min(const board_position& p);
-
-
-    /**
-     * @brief Array specifying the state of the board
-     */
-    typedef std::vector<std::vector<std::vector<real_t>>> board_state_type;
 
     ///
     /// \brief The BoardComponentType enum
@@ -195,7 +197,13 @@ namespace detail{
         /**
          * @brief initialize the board
          */
-        void init_board(uint_t board_s);
+        board_state_type init_board(uint_t board_s,
+                                    GridWorldInitType init_type);
+
+        /**
+         * @brief Execute the action on the board
+         */
+        board_state_type step(GridWorldActionType action);
 
         ///
         /// \brief move_piece Move the pice to the given position
@@ -241,7 +249,6 @@ namespace detail{
          * change the position of the player
          */
         void check_move(uint_t row, uint_t col);
-
 
         ///
         /// \brief validate_move_
@@ -316,19 +323,13 @@ public:
      * @brief The state_type
      *
      */
-    typedef typename state_space_type::item_t state_type;
-
+    typedef detail::board_state_type state_type;
 
     /**
      * @brief The type of the time step
      *
      */
     typedef TimeStep<state_type> time_step_type;
-
-    /**
-     * @brief The state type as this is returned from the underlying board
-     */
-    typedef std::vector<std::vector<std::vector<real_t>>> raw_state_type;
 
 
     ///
@@ -401,18 +402,6 @@ public:
     time_step_type reset();
 
     ///
-    /// \brief get_reward
-    /// \return
-    ///
-    real_t get_reward()const;
-
-    ///
-    /// \brief get_observation
-    /// \return
-    ///
-    raw_state_type get_raw_observation()const;
-
-    ///
     /// \brief has_random_state
     /// \return
     ///
@@ -463,13 +452,10 @@ private:
     bool is_created_;
 
 
-
-
     ///
-    /// \brief init_board_
+    /// \brief current_state
     ///
-    void init_board_();
-
+    time_step_type current_state_;
 
     ///
     /// \brief board_
@@ -514,7 +500,8 @@ Gridworld<side_size>::Gridworld()
       randomize_state_(false),
       seed_(0),
       noise_factor_(0.0),
-      is_created_(false)
+      is_created_(false),
+      current_state_()
 {}
 
 
@@ -526,7 +513,6 @@ Gridworld<side_size>::make(const std::string& version,
     if(is_created()){
         return;
     }
-
 
     // find the mode
     auto mode = options.find("mode");
@@ -554,32 +540,7 @@ Gridworld<side_size>::make(const std::string& version,
     }
 
     // initialize the board
-    init_board_();
-    switch (init_mode_) {
-
-        case GridWorldInitType::STATIC:
-        {
-            build_static_mode_();
-            break;
-        }
-        case GridWorldInitType::RANDOM:
-        {
-            build_random_mode_();
-            break;
-        }
-        case GridWorldInitType::PLAYER:
-        {
-            build_player_mode_();
-            break;
-        }
-#ifdef RLENVSCPP_DEBUG
-        default:
-        {
-            assert(false && "Invalid initialization mode");
-        }
-#endif
-
-    }
+    board_.init_board(side_size, init_mode_);
 
     // set the version and set the board
     // to created
@@ -600,57 +561,12 @@ template<uint_t side_size>
 typename Gridworld<side_size>::time_step_type
 Gridworld<side_size>::step(GridWorldActionType action){
 
-    switch( action ){
-        case GridWorldActionType::UP:
-            {
-                // move up
-                 check_move_(-1, 0);
-                 break;
-            }
-        case GridWorldActionType::DOWN:
-            {
-                //down
-                check_move_(1, 0);
-                break;
-            }
-        case GridWorldActionType::LEFT:
-            {
-                // left
-                 check_move_(0, -1);
-                 break;
-            }
-        case GridWorldActionType::RIGHT:
-            {
-                // right
-                check_move_(0, 1);
-                break;
-            }
-#ifdef RLENVSCPP_DEBUG
-            default:
-            {
-                assert(false && "Invalid move");
-            }
-#endif
+    auto obs = board_.step(action);
+    auto reward = board_.get_reward();
 
-        }
-
-        // what is the next state
-        /*auto reward = get_reward();
-
-        // get the observation
-        auto obs = to_1d_from_3d<raw_state_type, real_t>(n_components, side_size, side_size, get_raw_observation());
-
-        if(has_random_state()){
-
-            // add uniform noise and scale
-            add_uniform_noise(obs, this->seed(), noise_factor());
-        }*/
-
-        auto reward = get_reward();
-        auto obs = get_raw_observation();
-        auto step_type = reward == -1.0 ? TimeStepTp::LAST : TimeStepTp::MID;
-        auto time_step = time_step_type(step_type, reward, obs);
-        return time_step;
+    auto step_type = reward == -1.0 ? TimeStepTp::LAST : TimeStepTp::MID;
+    current_state_ = time_step_type(step_type, reward, obs);
+    return current_state_;
 }
 
 template<uint_t side_size>
@@ -658,39 +574,11 @@ typename Gridworld<side_size>::time_step_type
 Gridworld<side_size>::reset(){
 
     // reinitialize the board
-    init_board_();
-    auto raw_observation = get_raw_observation();
-    auto obs = to_1d_from_3d<raw_state_type, real_t>(n_components, side_size, side_size, get_raw_observation());
-
-    /*if(has_random_state()){
-
-        // add uniform noise and scale
-        add_uniform_noise(obs, this->seed(), noise_factor());
-    }*/
-
-    auto reward = get_reward();
-    auto time_step = time_step_type(TimeStepTp::FIRST, reward, obs);
-    return time_step;
+    auto obs = board_.init_board(side_size, init_mode_);
+    auto reward = board_.get_reward();
+    current_state_ = time_step_type(TimeStepTp::FIRST, reward, obs);
+    return current_state_;
 }
-
-template<uint_t side_size>
-real_t
-Gridworld<side_size>::get_reward()const{
-    return board_.get_reward();
-}
-
-template<uint_t side_size>
-typename Gridworld<side_size>::raw_state_type
-Gridworld<side_size>::get_raw_observation()const{
-
-#ifdef GYMFCPP_DEBUG
-    if(!is_created_){
-        assert(false && "Environment has not been created. Have you called make?");
-    }
-#endif
-    return board_.get_observation();
-}
-
 
 template<uint_t side_size>
 void
