@@ -51,6 +51,30 @@ TEST(TestGridworld, TestMake) {
 }
 
 
+TEST(TestGridworld, TestRawObservation) {
+
+        rlenvs_cpp::envs::grid_world::Gridworld<4> env;
+
+        std::unordered_map<std::string, std::any> options;
+        options["mode"] = std::any(rlenvs_cpp::envs::grid_world::to_string(GridWorldInitType::STATIC));
+
+        env.make("v0", options);
+
+        ASSERT_TRUE(env.is_created());
+        ASSERT_EQ(env.n_states(), static_cast<uint_t>(16));
+        ASSERT_EQ(env.n_actions(), static_cast<uint_t>(4));
+        ASSERT_EQ(env.version(), "v0");
+        ASSERT_TRUE(rlenvs_cpp::envs::grid_world::to_string(env.init_type()) == rlenvs_cpp::envs::grid_world::to_string(GridWorldInitType::STATIC));
+
+        auto raw_obs  = env.get_raw_observation();
+
+        ASSERT_EQ(raw_obs.size(), rlenvs_cpp::envs::grid_world::Gridworld<4>::side_size);
+        ASSERT_EQ(raw_obs[0].size(), rlenvs_cpp::envs::grid_world::Gridworld<4>::n_components);
+
+
+}
+
+
 
 
 
