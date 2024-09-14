@@ -12,10 +12,10 @@ namespace{
 using rlenvs_cpp::uint_t;
 using rlenvs_cpp::real_t;
 using rlenvs_cpp::envs::grid_world::GridWorldInitType;
+using rlenvs_cpp::envs::grid_world::GridWorldActionType;
 
 
 }
-
 
 TEST(TestGridworld, TestConstructor4x4) {
 
@@ -30,8 +30,6 @@ TEST(TestGridworld, TestConstructor4x4) {
         ASSERT_EQ(env.name, "Gridworld");
         ASSERT_EQ(env.version(), rlenvs_cpp::INVALID_STR);
 }
-
-
 
 TEST(TestGridworld, TestMake) {
 
@@ -50,104 +48,72 @@ TEST(TestGridworld, TestMake) {
 
 }
 
+TEST(TestGridworld, TestSTATICBoardCreation) {
 
-TEST(TestGridworld, TestRawObservation) {
+    const auto board_size = 4;
+    rlenvs_cpp::envs::grid_world::detail::board env;
 
-        rlenvs_cpp::envs::grid_world::Gridworld<4> env;
+    env.init_board(board_size, GridWorldInitType::STATIC);
+    auto state = env.get_state();
 
-        std::unordered_map<std::string, std::any> options;
-        options["mode"] = std::any(rlenvs_cpp::envs::grid_world::to_string(GridWorldInitType::STATIC));
+    ASSERT_EQ(state.size(), board_size);
 
-        env.make("v0", options);
-
-        ASSERT_TRUE(env.is_created());
-        ASSERT_EQ(env.n_states(), static_cast<uint_t>(16));
-        ASSERT_EQ(env.n_actions(), static_cast<uint_t>(4));
-        ASSERT_EQ(env.version(), "v0");
-        ASSERT_TRUE(rlenvs_cpp::envs::grid_world::to_string(env.init_type()) == rlenvs_cpp::envs::grid_world::to_string(GridWorldInitType::STATIC));
-
-        auto raw_obs  = env.get_raw_observation();
-
-        ASSERT_EQ(raw_obs.size(), rlenvs_cpp::envs::grid_world::Gridworld<4>::side_size);
-        ASSERT_EQ(raw_obs[0].size(), rlenvs_cpp::envs::grid_world::Gridworld<4>::n_components);
-
-
+    // we haven't made a move so reward should be negative
+    ASSERT_TRUE(env.get_reward() < 0);
 }
 
+TEST(TestGridworld, TestSTATICBoardStepUP) {
 
+    const auto board_size = 4;
+    rlenvs_cpp::envs::grid_world::detail::board env;
 
+    env.init_board(board_size, GridWorldInitType::STATIC);
+    auto state = env.step(GridWorldActionType::UP);
 
+    ASSERT_EQ(state.size(), board_size);
 
-
-/*
-TEST(TestGridworld, TestGetObservationFail)
-{
-    try{
-
-        Gridworld<4> env("v0", rlenvs_cpp::GridworldInitType::STATIC, false);
-
-        EXPECT_DEATH(env.get_raw_observation(), "Environment has not been created. Have you called make?");
-    }
-    catch(...)
-    {
-
-        FAIL()<<"Unknown exception thrown";
-    }
+    // we haven't made a move so reward should be negative
+    ASSERT_TRUE(env.get_reward() < 0);
 }
 
+TEST(TestGridworld, TestSTATICBoardStepDOWN) {
 
-TEST(TestGridworld, TestGetObservation)
-{
+    const auto board_size = 4;
+    rlenvs_cpp::envs::grid_world::detail::board env;
 
-    try{
+    env.init_board(board_size, GridWorldInitType::STATIC);
+    auto state = env.step(GridWorldActionType::DOWN);
 
-        Gridworld<4> env("v0", rlenvs_cpp::GridworldInitType::STATIC, false);
-        env.make();
+    ASSERT_EQ(state.size(), board_size);
 
-        // make sure we have the right world
-        ASSERT_TRUE(env.is_created());
-        ASSERT_EQ(env.n_states(), static_cast<uint_t>(16));
-        ASSERT_EQ(env.n_actions(), static_cast<uint_t>(4));
-
-        auto state = env.get_raw_observation();
-
-        ASSERT_EQ(state.size(), static_cast<uint_t>(env.n_components));
-
-        for(uint_t c=0; c< env.n_components; ++c){
-            ASSERT_EQ(state[c].size(), static_cast<uint_t>(env.side_size));
-        }
-    }
-    catch(...)
-    {
-        FAIL()<<"Unknown exception thrown";
-    }
+    // we haven't made a move so reward should be negative
+    ASSERT_TRUE(env.get_reward() > 0);
 }
 
+TEST(TestGridworld, TestSTATICBoardStepRIGHT) {
 
-TEST(TestGridworld, TestConstructor4x4Random)
-{
+    const auto board_size = 4;
+    rlenvs_cpp::envs::grid_world::detail::board env;
 
-    try{
+    env.init_board(board_size, GridWorldInitType::STATIC);
+    auto state = env.step(GridWorldActionType::RIGHT);
 
-        Gridworld<4> env("v0", rlenvs_cpp::GridworldInitType::STATIC, 42, 10.0, false);
+    ASSERT_EQ(state.size(), board_size);
 
-        ASSERT_EQ(env.n_states(), static_cast<uint_t>(16));
-        ASSERT_EQ(env.n_actions(), static_cast<uint_t>(4));
-        ASSERT_EQ(env.version(), "v0");
-        ASSERT_FALSE(env.is_created());
-        ASSERT_TRUE(env.has_random_state());
-        ASSERT_EQ(env.seed(), 42);
-        ASSERT_EQ(env.noise_factor(), 10.0);
-
-        // TODO: Think how to test this
-        ASSERT_TRUE(rlenvs_cpp::to_string(env.init_type()) == rlenvs_cpp::to_string(rlenvs_cpp::GridworldInitType::STATIC));
-        ASSERT_EQ(env.name, "Gridworld");
-
-    }
-    catch(...)
-    {
-
-        FAIL()<<"Unknown exception thrown";
-    }
+    // we haven't made a move so reward should be negative
+    ASSERT_TRUE(env.get_reward() > 0);
 }
-*/
+
+TEST(TestGridworld, TestSTATICBoardStepLEFT) {
+
+    const auto board_size = 4;
+    rlenvs_cpp::envs::grid_world::detail::board env;
+
+    env.init_board(board_size, GridWorldInitType::STATIC);
+    auto state = env.step(GridWorldActionType::LEFT);
+
+    ASSERT_EQ(state.size(), board_size);
+
+    // we haven't made a move so reward should be negative
+    ASSERT_TRUE(env.get_reward() > 0);
+}
