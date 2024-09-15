@@ -30,6 +30,36 @@ namespace detail{
 
 
 bool
+validate_board(const board& b){
+
+    auto valid = true;
+
+    auto player_itr = b.components.find(board_component_type::PLAYER);
+    if(player_itr == b.components.end()){
+        throw std::logic_error("PLAYER is missing from the board");
+    }
+
+    auto goal_itr = b.components.find(board_component_type::GOAL);
+    if(goal_itr == b.components.end()){
+        throw std::logic_error("GOAL is missing from the board");
+    }
+
+    auto pit_itr = b.components.find(board_component_type::PIT);
+     if(pit_itr == b.components.end()){
+        throw std::logic_error("PIT is missing from the board");
+    }
+
+    auto wall_itr = b.components.find(board_component_type::WALL);
+     if(wall_itr == b.components.end()){
+        throw std::logic_error("WALL is missing from the board");
+    }
+
+    return true;
+
+}
+
+
+bool
 operator==(const board_position& p1, const board_position& p2){
 
     if(p1.first == p2.first && p1.second == p2.second)
@@ -64,10 +94,12 @@ board::init_board(uint_t board_s, GridWorldInitType init_type){
 
     // TODO: make sure board_s  != 0
     board_size = board_s;
-    components[board_component_type::PLAYER] = board_piece("Player", "P", std::make_pair(0, 0));
-    components[board_component_type::GOAL] = board_piece("Goal", "G", std::make_pair(1, 0));
-    components[board_component_type::PIT] = board_piece("Pit", "-", std::make_pair(2, 0));
-    components[board_component_type::WALL] = board_piece("Wall", "W", std::make_pair(3, 0));
+
+    // add the pieces on the board
+    components[board_component_type::PLAYER] = board_piece("Player", "P", std::make_pair(0, 3));
+    components[board_component_type::GOAL] = board_piece("Goal", "G", std::make_pair(0, 0));
+    components[board_component_type::PIT] = board_piece("Pit", "-", std::make_pair(0, 1));
+    components[board_component_type::WALL] = board_piece("Wall", "W", std::make_pair(1, 1));
 
     switch (init_type) {
 
@@ -95,6 +127,11 @@ board::init_board(uint_t board_s, GridWorldInitType init_type){
 
     }
 
+    auto is_valid_board = validate_board(*this);
+
+    if(!is_valid_board){
+     throw std::logic_error("The board is invalid");
+    }
     return get_state();
 }
 
@@ -106,25 +143,25 @@ board::step(GridWorldActionType action){
         case GridWorldActionType::UP:
             {
                 // move up
-                 check_move(-1, 0);
+                 check_and_move(-1, 0);
                  break;
             }
         case GridWorldActionType::DOWN:
             {
                 //down
-                check_move(1, 0);
+                check_and_move(1, 0);
                 break;
             }
         case GridWorldActionType::LEFT:
             {
                 // left
-                 check_move(0, -1);
+                 check_and_move(0, -1);
                  break;
             }
         case GridWorldActionType::RIGHT:
             {
                 // right
-                check_move(0, 1);
+                check_and_move(0, 1);
                 break;
             }
 #ifdef RLENVSCPP_DEBUG
@@ -147,6 +184,8 @@ board::get_reward()const{
     auto goal_pos = components.find(board_component_type::GOAL)->second.pos;
 
     // check where the player is
+    // if the player is at the PIT position
+    // then the game is lost
     if (player_pos == pit_pos){
         return -10.;
     }
@@ -253,7 +292,7 @@ board::validate_move(board_component_type piece, board_position pos){
 }
 
  void
- board::check_move(uint_t row, uint_t col){
+ board::check_and_move(uint_t row, uint_t col){
 
     auto position = std::make_pair(row, col);
     auto move_type = validate_move(board_component_type::PLAYER, position);

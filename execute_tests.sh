@@ -29,5 +29,5 @@ echo "Running TiledCartPole environment tests"
 #cd ..
 echo "Running GridWorld environment tests"
 cd test_grid_world
-#./test_grid_world
+./test_grid_world
 cd ..

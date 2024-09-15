@@ -246,9 +246,11 @@ namespace detail{
 
         /**
          * @brief check if the given move is valid and
-         * change the position of the player
+         * change the position of the player if the move
+         * either causes the game to be lost (PIT) or is a valid
+         * move i.e. not stepping into the WALL or out of the board
          */
-        void check_move(uint_t row, uint_t col);
+        void check_and_move(uint_t row, uint_t col);
 
         ///
         /// \brief validate_move_
@@ -419,6 +421,13 @@ public:
     ///
     real_t noise_factor()const noexcept{return noise_factor_;}
 
+    /**
+     * @brief Returns true if the PLAYER position is the same
+     * as the PIT position
+     *
+     */
+    bool is_game_lost()const;
+
 private:
 
     ///
@@ -578,6 +587,20 @@ Gridworld<side_size>::reset(){
     auto reward = board_.get_reward();
     current_state_ = time_step_type(TimeStepTp::FIRST, reward, obs);
     return current_state_;
+}
+
+template<uint_t side_size>
+bool
+Gridworld<side_size>::is_game_lost()const{
+
+    auto player = board_.components.find(detail::board_component_type::PLAYER)->second.pos;
+    auto pit_pos = board_.components.find(detail::board_component_type::PIT)->second.pos;
+
+     if (player == pit_pos){
+        return true;
+    }
+
+    return false;
 }
 
 template<uint_t side_size>
