@@ -44,9 +44,16 @@ namespace envs{
 namespace grid_world{
 
 ///
-/// \brief The RenderModeType enum
+/// \brief The enum describing how to initialize the world
 ///
-BETTER_ENUM(GridWorldInitType, char, STATIC=0, RANDOM=1, PLAYER=2, INVALID_TYPE=4);
+BETTER_ENUM(GridWorldInitType, int, STATIC=0, RANDOM=1, PLAYER=2, INVALID_TYPE=4);
+
+/**
+ * @brief Enumeration describing the action type
+ */
+BETTER_ENUM(GridWorldActionType, int, UP=0, DOWN=1, LEFT=2, RIGHT=3, INVALID_TYPE=4);
+
+
 
 
 ///
@@ -59,6 +66,203 @@ std::string to_string(GridWorldInitType type){return type._to_string();}
 
 GridWorldInitType
 from_string(const std::string& gw_init_type);
+
+
+namespace detail{
+
+
+    /**
+     *
+     * @brief Models a position on the board
+     */
+    typedef std::pair<uint_t,  uint_t> board_position;
+
+    /**
+     * @brief Array specifying the state of the board
+     */
+    typedef std::vector<std::vector<std::vector<real_t>>> board_state_type;
+
+
+    /**
+     * @brief Test if two positions are equal
+     */
+    bool operator==(const board_position& p1, const board_position& p2);
+
+    /**
+     * @brief Add two positions and return their result
+     */
+    board_position operator+(const board_position& p1, const board_position& p2);
+
+    /**
+     * @brief Returns the max component of a position
+     */
+    uint_t max(const board_position& p);
+
+    /**
+     * @brief Returns the min component of a position
+     */
+    uint_t min(const board_position& p);
+
+    ///
+    /// \brief The BoardComponentType enum
+    ///
+    enum board_component_type{PLAYER=0, GOAL=1, PIT=2, WALL=3};
+
+    ///
+    /// \brief The MoveType enum
+    ///
+    enum board_move_type{VALID=0, INVALID=1, LOST_GAME=2};
+
+    ///
+    /// \brief The BoardPiece struct
+    ///
+    struct board_piece
+    {
+        ///
+        ///
+        ///
+        std::string name;
+        ///
+        /// n ASCII character to display on the board
+        ///
+        std::string code;
+
+        ///
+        /// \brief pos 2-tuple e.g. (1,4)
+        ///
+        board_position pos;
+
+        ///
+        /// \brief BoardPiece
+        /// \param name_
+        /// \param code_
+        /// \param pos_
+        ///
+        board_piece(std::string name_, std::string code_, board_position pos_)
+            :
+              name(name_),
+              code(code_),
+              pos(pos_)
+        {}
+
+        ///
+        /// \brief Default constructor
+        ///
+        board_piece()=default;
+    };
+
+    ///
+    /// \brief The BoardPiece struct
+    ///
+    /*struct BoardMask
+    {
+        ///
+        ///
+        ///
+        std::string name;
+        ///
+        /// n ASCII character to display on the board
+        ///
+        std::string code;
+
+        ///
+        /// \brief pos 2-tuple e.g. (1,4)
+        ///
+        Position pos;
+
+        ///
+        /// \brief BoardPiece
+        /// \param name_
+        /// \param code_
+        /// \param pos_
+        ///
+        BoardMask(std::string name_, std::string code_, Position pos_)
+            :
+              name(name_),
+              code(code_),
+              pos(pos_)
+        {}
+    };*/
+
+    using board_mask = board_piece;
+     ///
+    /// Represents the board
+    ///
+    struct board
+    {
+        uint_t board_size;
+        std::map<board_component_type, board_piece> components;
+        std::map<std::string, board_mask> masks;
+
+        /**
+         * @brief initialize the board
+         */
+        board_state_type init_board(uint_t board_s,
+                                    GridWorldInitType init_type);
+
+        /**
+         * @brief Execute the action on the board
+         */
+        board_state_type step(GridWorldActionType action);
+
+        ///
+        /// \brief move_piece Move the pice to the given position
+        /// \param piece
+        /// \param pos
+        ///
+        void move_piece(board_component_type piece, board_position pos);
+
+        ///
+        /// \brief get_state. Returns the state of the board
+        /// \return
+        ///
+        board_state_type get_state()const;
+
+        /**
+         * @brief Get the reward the board currently returns depending
+         * on the position of the player
+         */
+        real_t get_reward()const;
+
+        ///
+        /// \brief close
+        ///
+        void close();
+
+        ///
+        /// \brief build_static_mode
+        ///
+        void build_static_mode();
+
+        ///
+        /// \brief build_random_mode
+        ///
+        void build_random_mode();
+
+        ///
+        /// \brief build_player_mode
+        ///
+        void build_player_mode();
+
+        /**
+         * @brief check if the given move is valid and
+         * change the position of the player if the move
+         * either causes the game to be lost (PIT) or is a valid
+         * move i.e. not stepping into the WALL or out of the board
+         */
+        void check_and_move(uint_t row, uint_t col);
+
+        ///
+        /// \brief validate_move_
+        /// \param piece
+        /// \param row
+        /// \param col
+        ///
+        board_move_type validate_move(board_component_type piece, board_position pos);
+    };
+
+
+}
 
 
 ///
@@ -83,6 +287,22 @@ public:
     ///
     static  const std::string name;
 
+    ///
+    /// \brief n_components
+    ///
+    static const uint_t n_components;
+
+    ///
+    /// \brief side_size
+    ///
+    static const uint_t side_size;
+
+    /**
+     * @brief Convert the action index to a valid FrozenLakeActionsEnum
+     *
+     * */
+    static GridWorldActionType action_from_int(uint_t aidx);
+
     /**
      * @brief The type of the action space
      */
@@ -105,8 +325,7 @@ public:
      * @brief The state_type
      *
      */
-    typedef typename state_space_type::item_t state_type;
-
+    typedef detail::board_state_type state_type;
 
     /**
      * @brief The type of the time step
@@ -114,20 +333,6 @@ public:
      */
     typedef TimeStep<state_type> time_step_type;
 
-
-     typedef std::vector<std::vector<std::vector<real_t>>> raw_state_type;
-     //typedef std::vector<real_t> state_type;
-
-
-    ///
-    /// \brief n_components
-    ///
-    static const uint_t n_components = 4;
-
-    ///
-    /// \brief side_size
-    ///
-    static const uint_t side_size = side_size_;
 
     ///
     /// \brief Constructor
@@ -182,6 +387,12 @@ public:
     ///
     time_step_type step(action_type action);
 
+    /**
+     * @brief Step in the environment
+     *
+     */
+    time_step_type step(GridWorldActionType action);
+
     ///
     /// \brief close
     ///
@@ -191,18 +402,6 @@ public:
     /// \brief reset the environment
     ///
     time_step_type reset();
-
-    ///
-    /// \brief get_reward
-    /// \return
-    ///
-    real_t get_reward()const;
-
-    ///
-    /// \brief get_observation
-    /// \return
-    ///
-    raw_state_type get_raw_observation()const;
 
     ///
     /// \brief has_random_state
@@ -221,6 +420,13 @@ public:
     /// \return
     ///
     real_t noise_factor()const noexcept{return noise_factor_;}
+
+    /**
+     * @brief Returns true if the PLAYER position is the same
+     * as the PIT position
+     *
+     */
+    bool is_game_lost()const;
 
 private:
 
@@ -254,160 +460,45 @@ private:
     ///
     bool is_created_;
 
-    ///
-    /// \brief The MoveType enum
-    ///
-    enum MoveType{VALID=0, INVALID=1, LOST_GAME=2};
 
     ///
-    /// \brief The BoardComponentType enum
+    /// \brief current_state
     ///
-    enum BoardComponentType{PLAYER=0, GOAL=1, PIT=2, WALL=3};
-
-    typedef std::pair<uint_t,  uint_t> Position;
-
-    ///
-    /// \brief init_board_
-    ///
-    void init_board_();
-
-    ///
-    /// \brief build_static_mode_
-    ///
-    void build_static_mode_();
-
-    ///
-    /// \brief build_random_mode_
-    ///
-    void build_random_mode_();
-
-    ///
-    /// \brief build_player_mode_
-    ///
-    void build_player_mode_();
-
-    ///
-    /// \brief check_move_
-    /// \param row
-    /// \param col
-    ///
-    void check_move_(uint_t row, uint_t col);
-
-    ///
-    /// \brief validate_move_
-    /// \param piece
-    /// \param row
-    /// \param col
-    ///
-    MoveType validate_move_(BoardComponentType piece, Position pos);
-
-    ///
-    /// \brief The BoardPiece struct
-    ///
-    struct BoardPiece
-    {
-        ///
-        ///
-        ///
-        std::string name;
-        ///
-        /// n ASCII character to display on the board
-        ///
-        std::string code;
-
-        ///
-        /// \brief pos 2-tuple e.g. (1,4)
-        ///
-        Position pos;
-
-        ///
-        /// \brief BoardPiece
-        /// \param name_
-        /// \param code_
-        /// \param pos_
-        ///
-        BoardPiece(std::string name_, std::string code_, Position pos_)
-            :
-              name(name_),
-              code(code_),
-              pos(pos_)
-        {}
-
-        ///
-        /// \brief Default constructor
-        ///
-        BoardPiece()=default;
-    };
-
-    ///
-    /// \brief The BoardPiece struct
-    ///
-    struct BoardMask
-    {
-        ///
-        ///
-        ///
-        std::string name;
-        ///
-        /// n ASCII character to display on the board
-        ///
-        std::string code;
-
-        ///
-        /// \brief pos 2-tuple e.g. (1,4)
-        ///
-        Position pos;
-
-        ///
-        /// \brief BoardPiece
-        /// \param name_
-        /// \param code_
-        /// \param pos_
-        ///
-        BoardMask(std::string name_, std::string code_, Position pos_)
-            :
-              name(name_),
-              code(code_),
-              pos(pos_)
-        {}
-    };
-
-    ///
-    /// Represents the board
-    ///
-    struct Board
-    {
-        uint_t size;
-        std::map<BoardComponentType, BoardPiece> components;
-        std::map<std::string, BoardMask> masks;
-
-        ///
-        /// \brief move_piece Move the pice to the given position
-        /// \param piece
-        /// \param pos
-        ///
-        void move_piece(BoardComponentType piece, Position pos);
-
-        ///
-        /// \brief get_observation
-        /// \return
-        ///
-        raw_state_type get_observation()const;
-
-        ///
-        /// \brief close
-        ///
-        void close();
-    };
+    time_step_type current_state_;
 
     ///
     /// \brief board_
     ///
-    Board board_;
+    detail::board board_;
 };
 
 template<uint_t side_size>
 const std::string Gridworld<side_size>::name = "Gridworld";
+
+template<uint_t side_size_>
+const uint_t Gridworld<side_size_>::side_size = side_size_;
+
+template<uint_t side_size_>
+const uint_t Gridworld<side_size_>:: n_components = 4;
+
+template<uint_t side_size>
+GridWorldActionType
+Gridworld<side_size>::action_from_int(uint_t aidx){
+
+    switch(aidx){
+        case 0:
+           return rlenvs_cpp::envs::grid_world::GridWorldActionType::UP;
+        case 1:
+            return rlenvs_cpp::envs::grid_world::GridWorldActionType::DOWN;
+        case 2:
+            return rlenvs_cpp::envs::grid_world::GridWorldActionType::LEFT;
+        case 3:
+            return rlenvs_cpp::envs::grid_world::GridWorldActionType::RIGHT;
+    }
+
+    return rlenvs_cpp::envs::grid_world::GridWorldActionType::INVALID_TYPE;
+
+}
 
 
 template<uint_t side_size>
@@ -418,7 +509,8 @@ Gridworld<side_size>::Gridworld()
       randomize_state_(false),
       seed_(0),
       noise_factor_(0.0),
-      is_created_(false)
+      is_created_(false),
+      current_state_()
 {}
 
 
@@ -430,7 +522,6 @@ Gridworld<side_size>::make(const std::string& version,
     if(is_created()){
         return;
     }
-
 
     // find the mode
     auto mode = options.find("mode");
@@ -458,32 +549,7 @@ Gridworld<side_size>::make(const std::string& version,
     }
 
     // initialize the board
-    init_board_();
-    switch (init_mode_) {
-
-        case GridWorldInitType::STATIC:
-        {
-            build_static_mode_();
-            break;
-        }
-        case GridWorldInitType::RANDOM:
-        {
-            build_random_mode_();
-            break;
-        }
-        case GridWorldInitType::PLAYER:
-        {
-            build_player_mode_();
-            break;
-        }
-#ifdef RLENVSCPP_DEBUG
-        default:
-        {
-            assert(false && "Invalid initialization mode");
-        }
-#endif
-
-    }
+    board_.init_board(side_size, init_mode_);
 
     // set the version and set the board
     // to created
@@ -495,54 +561,21 @@ template<uint_t side_size>
 typename Gridworld<side_size>::time_step_type
 Gridworld<side_size>::step(action_type action){
 
-        switch( action ){
-            case 0:
-            {
-                // move up
-                 check_move_(-1, 0);
-                 break;
-            }
-            case 1:
-            {
-                //down
-                check_move_(1, 0);
-                break;
-            }
-            case 2:
-            {
-                // left
-                 check_move_(0, -1);
-                 break;
-            }
-            case 3:
-            {
-                // right
-                check_move_(0, 1);
-                break;
-            }
-#ifdef GYMFCPP_DEBUG
-            default:
-            {
-                assert(false && "Invalid move");
-            }
-#endif
+        auto action_enum = Gridworld<side_size>::action_from_int(action);
+        return step(action_enum);
+}
 
-        }
 
-        // get the observation
-        auto obs = to_1d_from_3d<raw_state_type, real_t>(n_components, side_size, side_size, get_raw_observation());
+template<uint_t side_size>
+typename Gridworld<side_size>::time_step_type
+Gridworld<side_size>::step(GridWorldActionType action){
 
-        if(has_random_state()){
+    auto obs = board_.step(action);
+    auto reward = board_.get_reward();
 
-            // add uniform noise and scale
-            add_uniform_noise(obs, this->seed(), noise_factor());
-        }
-
-        auto reward = get_reward();
-        auto step_type = reward == -1.0 ? TimeStepTp::LAST : TimeStepTp::MID;
-        auto time_step = time_step_type(step_type, reward, obs);
-
-        return time_step;
+    auto step_type = reward == -1.0 ? TimeStepTp::LAST : TimeStepTp::MID;
+    current_state_ = time_step_type(step_type, reward, obs);
+    return current_state_;
 }
 
 template<uint_t side_size>
@@ -550,220 +583,30 @@ typename Gridworld<side_size>::time_step_type
 Gridworld<side_size>::reset(){
 
     // reinitialize the board
-    init_board_();
-    auto obs = to_1d_from_3d<raw_state_type, real_t>(n_components, side_size, side_size, get_raw_observation());
-
-    if(has_random_state()){
-
-        // add uniform noise and scale
-        add_uniform_noise(obs, this->seed(), noise_factor());
-    }
-
-    auto reward = get_reward();
-    auto time_step = time_step_type(TimeStepTp::FIRST, reward, obs);
-    return time_step;
+    auto obs = board_.init_board(side_size, init_mode_);
+    auto reward = board_.get_reward();
+    current_state_ = time_step_type(TimeStepTp::FIRST, reward, obs);
+    return current_state_;
 }
 
 template<uint_t side_size>
-real_t
-Gridworld<side_size>::get_reward()const{
+bool
+Gridworld<side_size>::is_game_lost()const{
 
-    auto player_pos = board_.components.find(BoardComponentType::PLAYER)->second.pos;
-    auto pit_pos = board_.components.find(BoardComponentType::PIT)->second.pos;
-    auto goal_pos = board_.components.find(BoardComponentType::GOAL)->second.pos;
-    if (player_pos == pit_pos){
-        return -10.;
-    }
-    else if (player_pos == goal_pos){
-        return 10.0;
+    auto player = board_.components.find(detail::board_component_type::PLAYER)->second.pos;
+    auto pit_pos = board_.components.find(detail::board_component_type::PIT)->second.pos;
+
+     if (player == pit_pos){
+        return true;
     }
 
-    return -1.0;
+    return false;
 }
-
-template<uint_t side_size>
-typename Gridworld<side_size>::raw_state_type
-Gridworld<side_size>::get_raw_observation()const{
-
-#ifdef GYMFCPP_DEBUG
-    if(!is_created_){
-        assert(false && "Environment has not been created. Have you called make?");
-    }
-#endif
-    return board_.get_observation();
-}
-
 
 template<uint_t side_size>
 void
 Gridworld<side_size>::close(){
     board_.close();
-}
-
-template<uint_t side_size>
-void
-Gridworld<side_size>::init_board_(){
-
-    board_.size = side_size;
-    board_.components[BoardComponentType::PLAYER] = BoardPiece("Player", "P", std::make_pair(0, 0));
-    board_.components[BoardComponentType::GOAL] = BoardPiece("Goal", "G", std::make_pair(1, 0));
-    board_.components[BoardComponentType::PIT] = BoardPiece("Pit", "-", std::make_pair(2, 0));
-    board_.components[BoardComponentType::WALL] = BoardPiece("Wall", "W", std::make_pair(3, 0));
-}
-
-
-template<uint_t side_size>
-typename Gridworld<side_size>::MoveType
-Gridworld<side_size>::validate_move_(BoardComponentType piece, Position pos){
-
-    // 0 is valid
-    //auto outcome = 0 #0 is valid, 1 invalid, 2 lost game
-    auto outcome = Gridworld<side_size>::MoveType::VALID;
-
-    // get position of pit
-    auto pit_pos = board_.components[BoardComponentType::PIT].pos;
-    auto wall_pos = board_.components[BoardComponentType::WALL].pos;
-
-    auto new_pos = board_.components[piece].pos + pos;
-
-     if (new_pos == wall_pos){
-         //1 //block move, player can't move to wall
-         outcome = Gridworld<side_size>::MoveType::INVALID;
-     }
-     else if( max(new_pos) > (board_.size - 1 )){
-        // #if outside bounds of board
-         outcome = Gridworld<side_size>::MoveType::INVALID;
-    }
-    else if( min(new_pos) < 0){
-        // #if outside bounds
-         outcome = Gridworld<side_size>::MoveType::INVALID;
-    }
-    else if( new_pos == pit_pos){
-         outcome = Gridworld<side_size>::MoveType::LOST_GAME;
-    }
-
-    return outcome;
-}
-
-template<uint_t side_size>
-void
-Gridworld<side_size>::check_move_(uint_t row, uint_t col){
-
-    auto position = std::make_pair(row, col);
-    auto move_type = validate_move_(BoardComponentType::PLAYER, position);
-
-    if( move_type == MoveType::VALID || move_type == MoveType::LOST_GAME){
-
-        auto new_pos = board_.components[BoardComponentType::PLAYER].pos + position;
-        board_.move_piece(BoardComponentType::PLAYER, new_pos);
-    }
-
-}
-
-template<uint_t side_size>
-void
-Gridworld<side_size>::build_static_mode_(){
-
-    // Row, Column
-    board_.components[BoardComponentType::PLAYER].pos = std::make_pair(0,3);
-    board_.components[BoardComponentType::GOAL].pos = std::make_pair(0,0);
-    board_.components[BoardComponentType::PIT].pos = std::make_pair(0,1);
-    board_.components[BoardComponentType::WALL].pos = std::make_pair(1,1);
-
-}
-
-template<uint_t side_size>
-void
-Gridworld<side_size>::build_random_mode_(){
-
-}
-
-template<uint_t side_size>
-void
-Gridworld<side_size>:: build_player_mode_(){
-
-}
-
-// Board inner struct
-
-template<uint_t side_size>
-void
-Gridworld<side_size>::Board::close(){
-
-    components.clear();
-    masks.clear();
-}
-
-template<uint_t side_size>
-typename Gridworld<side_size>::raw_state_type
-Gridworld<side_size>::Board::get_observation()const{
-
-    // initialize the data struct the
-    // represents the state
-    auto num_pieces = components.size() + masks.size();
-    raw_state_type board(num_pieces);
-
-    for(uint_t i=0; i<num_pieces; ++i){
-        board[i].resize(size);
-
-        for(uint_t j=0; j<size; ++j){
-            board[i][j].resize(size);
-
-            for(uint_t k=0; k<size; ++k){
-                board[i][j][k] = 0;
-            }
-        }
-    }
-
-    auto layer = 0;
-
-    // check if we can move the piece
-    auto comp_begin = components.begin();
-    auto comp_end = components.end();
-
-    for(; comp_begin != comp_end; ++comp_begin){
-
-        auto position = comp_begin->second.pos;
-        board[layer][position.first][position.second] = 1;
-        layer +=1;
-    }
-
-    return board;
-
-    // initialize the data struct the
-    // represents the state
-    /* displ_board = np.zeros((num_pieces, self.size, self.size), dtype=np.uint8)
-            layer = 0
-            for name, piece in self.components.items():
-                pos = (layer,) + piece.pos
-                displ_board[pos] = 1
-                layer += 1*/
-
-
-}
-
-template<uint_t side_size>
-void
-Gridworld<side_size>::Board::move_piece(BoardComponentType piece, Position pos){
-
-    auto move = true;
-
-    // check if we can move the piece
-    //auto mask_begin = masks.begin();
-    //auto mask_end = masks.end();
-
-    /*for(; mask_begin != mask_end; ++mask_begin){
-        position =
-    }*/
-
-
-    //        for _, mask in self.masks.items():
-    //            if pos in zip_positions2d(mask.get_positions()):
-    //                move = False
-    if( move){
-        components[piece].pos = pos;
-    }
-
 }
 
 }// grid_world

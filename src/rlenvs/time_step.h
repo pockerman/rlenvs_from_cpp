@@ -36,6 +36,11 @@ public:
     ///
     /// \brief TimeStep. Constructor
     ///
+    TimeStep(TimeStepTp type, real_t reward, const state_type&  obs);
+
+    ///
+    /// \brief TimeStep. Constructor
+    ///
     TimeStep(TimeStepTp type, real_t reward, const state_type&  obs, real_t discount_factor);
 
     ///
@@ -187,6 +192,12 @@ TimeStep<StateTp>::TimeStep(TimeStepTp type, real_t reward, const state_type& ob
       obs_(obs),
       discount_(discount_factor),
       extra_()
+{}
+
+template<typename StateTp>
+TimeStep<StateTp>::TimeStep(TimeStepTp type, real_t reward, const state_type& obs)
+    :
+    TimeStep<StateTp>(type, reward, obs, 1.0)
 {}
 
 template<typename StateTp>
