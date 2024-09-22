@@ -163,7 +163,7 @@ public:
     /// \brief make. Build the environment
     ///
     void make(const std::string& version,
-              const std::unordered_map<std::string, std::any>& options) override final;
+              const std::unordered_map<std::string, std::any>& /*options*/) override final;
 
     ///
     /// \brief n_actions. Returns the number of actions

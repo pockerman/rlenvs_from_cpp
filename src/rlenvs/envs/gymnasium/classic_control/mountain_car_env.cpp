@@ -48,7 +48,7 @@ MountainCar::MountainCar(const std::string& api_base_url)
 
 void
 MountainCar::make(const std::string& version,
-              const std::unordered_map<std::string, std::any>& options){
+              const std::unordered_map<std::string, std::any>& /*options*/){
 
     if(this->is_created()){
         return;

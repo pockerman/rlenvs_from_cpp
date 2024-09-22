@@ -59,7 +59,7 @@ GymnasiumEnvBase<CartPoleData::time_step_type>(api_base_url + "/cart-pole-env")
 
 void
 CartPole::make(const std::string& version,
-              const std::unordered_map<std::string, std::any>& options){
+              const std::unordered_map<std::string, std::any>& /*options*/){
 
     if(this->is_created()){
         return;

@@ -19,7 +19,10 @@ namespace rlenvs_cpp{
 namespace envs{
 namespace gymnasium{
 
-BETTER_ENUM(MountainCarActionsEnum, int, ACCELERATE_LEFT=0, DO_NOT_ACCELERATE=1, ACCELERATE_RIGHT=2, INVALID_ACTION=3);
+BETTER_ENUM(MountainCarActionsEnum, int, ACCELERATE_LEFT=0, 
+										 DO_NOT_ACCELERATE=1, 
+										 ACCELERATE_RIGHT=2, 
+										 INVALID_ACTION=3);
 
 ///
 /// \brief The MountainCarData struct. Wrapper for the environment data
@@ -114,7 +117,7 @@ public:
     /// \brief make. Build the environment
     ///
     void make(const std::string& version,
-              const std::unordered_map<std::string, std::any>& options) override final;
+              const std::unordered_map<std::string, std::any>& /*options*/) override final;
 
     ///
     /// \brief n_actions. Returns the number of actions

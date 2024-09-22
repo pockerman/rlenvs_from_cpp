@@ -573,7 +573,10 @@ Gridworld<side_size>::step(GridWorldActionType action){
     auto obs = board_.step(action);
     auto reward = board_.get_reward();
 
-    auto step_type = reward == -1.0 ? TimeStepTp::LAST : TimeStepTp::MID;
+	// if the reward is not -1.0 then either
+	// we reached the goal or we hit the PIT
+	// in any case the game is over
+    auto step_type = reward != -1.0 ? TimeStepTp::LAST : TimeStepTp::MID;
     current_state_ = time_step_type(step_type, reward, obs);
     return current_state_;
 }
