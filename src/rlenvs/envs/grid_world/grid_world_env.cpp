@@ -3,6 +3,8 @@
 
 #include "rlenvs/envs/grid_world/grid_world_env.h"
 #include <string>
+#include <random>
+#include <utility>
 
 namespace rlenvs_cpp{
 namespace envs{
@@ -53,8 +55,24 @@ validate_board(const board& b){
      if(wall_itr == b.components.end()){
         throw std::logic_error("WALL is missing from the board");
     }
-
-    return true;
+	
+	/*static uint_t corners[][] = {{0,0}, 
+								 {0, board.board_size}, 
+								 {board.board_size, 0}, 
+	{board.board_size,board.board_size}};*/
+	
+	auto player_pos = player_itr->second.pos;
+	auto goal_pos   = goal_itr->second.pos;
+	auto pit_pos    = pit_itr->second.pos;
+	auto wall_pos   = wall_itr->second.pos;
+	
+	
+	if( player_pos != goal_pos 
+	    && player_pos != pit_pos 
+		&& player_pos != wall_pos)
+			return true;
+			
+    return false;
 
 }
 
@@ -66,6 +84,11 @@ operator==(const board_position& p1, const board_position& p2){
         return true;
 
     return false;
+}
+
+bool 
+operator!=(const board_position& p1, const board_position& p2){
+	return !(p1 == p2);
 }
 
 board_position
@@ -115,7 +138,7 @@ board::init_board(uint_t board_s, GridWorldInitType init_type){
         }
         case GridWorldInitType::PLAYER:
         {
-            build_player_mode();
+            build_player_mode(seed);
             break;
         }
 #ifdef RLENVSCPP_DEBUG
@@ -327,9 +350,40 @@ board::build_random_mode(){
 }
 
 void
-board::build_player_mode(){
+board::build_player_mode(uint_t seed){
 
-    // TODO: Have we called init_board?
+    // height x width x depth (number of pieces)
+	build_static_mode();
+	
+	// get the positions of the
+	// pieces on the board
+	auto goal_pos = components[board_component_type::GOAL].pos;
+	auto pit_pos  = components[board_component_type::PIT].pos;
+	auto wall_pos = components[board_component_type::WALL].pos;
+	
+	// generate random index
+	std::mt19937 generator(seed);
+    std::discrete_distribution<int> distribution(0, static_cast<int>(board_size));
+	
+	auto x = distribution(generator);
+	auto y = distribution(generator);
+        
+	// place player randmly on the grid
+	components[board_component_type::PLAYER].pos = std::pair<int, int>(x, y);
+
+	const uint_t n_retries = 20;
+	uint_t current_n_retries = 0;
+	while(!validate_board(*this) && current_n_retries++ < n_retries){
+		
+		x = distribution(generator);
+		y = distribution(generator);
+        
+		// place player randmly on the grid
+		components[board_component_type::PLAYER].pos = std::pair<int, int>(x, y);
+	}
+
+        
+
 
 }
 

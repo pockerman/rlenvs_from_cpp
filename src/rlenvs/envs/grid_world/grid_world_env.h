@@ -75,7 +75,7 @@ namespace detail{
      *
      * @brief Models a position on the board
      */
-    typedef std::pair<uint_t,  uint_t> board_position;
+    typedef std::pair<int,  int> board_position;
 
     /**
      * @brief Array specifying the state of the board
@@ -87,6 +87,11 @@ namespace detail{
      * @brief Test if two positions are equal
      */
     bool operator==(const board_position& p1, const board_position& p2);
+	
+	/**
+     * @brief Test if two positions are equal
+     */
+    bool operator!=(const board_position& p1, const board_position& p2);
 
     /**
      * @brief Add two positions and return their result
@@ -131,6 +136,8 @@ namespace detail{
         /// \brief pos 2-tuple e.g. (1,4)
         ///
         board_position pos;
+		
+		
 
         ///
         /// \brief BoardPiece
@@ -191,6 +198,7 @@ namespace detail{
     struct board
     {
         uint_t board_size;
+		uint_t seed = 42;
         std::map<board_component_type, board_piece> components;
         std::map<std::string, board_mask> masks;
 
@@ -242,7 +250,7 @@ namespace detail{
         ///
         /// \brief build_player_mode
         ///
-        void build_player_mode();
+        void build_player_mode(uint_t seed);
 
         /**
          * @brief check if the given move is valid and
