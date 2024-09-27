@@ -11,9 +11,46 @@
 #include <iostream>
 #include <string>
 #include <random>
+#include <unordered_map>
 
 
 namespace example_5{
+	
+	using namespace rlenvs_cpp::envs::grid_world;
+	
+	void create_static(){
+		
+		std::cout<<"Creating STATIC Gridworld..."<<std::endl;
+		
+		rlenvs_cpp::envs::grid_world::Gridworld<4> env;
+
+        std::unordered_map<std::string, std::any> options;
+        options["mode"] = std::any(rlenvs_cpp::envs::grid_world::to_string(rlenvs_cpp::envs::grid_world::GridWorldInitType::STATIC));
+
+        env.make("v0", options);
+		
+		std::cout<<"Number of actions: "<<env.n_actions()<<std::endl;
+		std::cout<<"Number of states:  "<<env.n_states()<<std::endl;
+		
+		env.close();
+	}
+	
+	void create_random(){
+		
+		std::cout<<"Creating RANDOM Gridworld..."<<std::endl;
+		
+		rlenvs_cpp::envs::grid_world::Gridworld<4> env;
+
+        std::unordered_map<std::string, std::any> options;
+        options["mode"] = std::any(rlenvs_cpp::envs::grid_world::to_string(rlenvs_cpp::envs::grid_world::GridWorldInitType::RANDOM));
+
+        env.make("v0", options);
+		
+		std::cout<<"Number of actions: "<<env.n_actions()<<std::endl;
+		std::cout<<"Number of states:  "<<env.n_states()<<std::endl;
+		
+		env.close();
+	}
 
 
 
@@ -21,23 +58,8 @@ namespace example_5{
 
 int main(){
 
-    rlenvs_cpp::envs::grid_world::Gridworld<4> env;
-    std::cout<<"Environment name: "<<env.name<<std::endl;
-
-    // make the environment
-    std::unordered_map<std::string, std::any> options;
-    env.make("v0", options);
-
-
-    /*auto time_step = env.reset(42, std::unordered_map<std::string, std::any>());
-
-    std::cout<<"Is environment created? "<<env.is_created()<<std::endl;
-    std::cout<<"Is environment alive? "<<env.is_alive()<<std::endl;
-    std::cout<<"Time step "<<time_step<<std::endl;*/
-
-   // std::cout<<"Trajectory size: "<<trajectory.size()<<std::endl;
-
-    // finally close the environment
-    env.close();
+	using namespace example_5;
+    create_static();
+	create_random();
     return 0;
 }
