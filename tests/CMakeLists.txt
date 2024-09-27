@@ -31,12 +31,13 @@ IF(GTEST_INCLUDE_DIRS MATCHES " ")
 
 	IF(GTest_FOUND)
 		INCLUDE_DIRECTORIES(${GTEST_INCLUDE_DIRS})
-		LINK_DIRECTORIES("/usr/local/lib")
+		SET(GTEST_LIB_DIR "/usr/local/lib")
+		#LINK_DIRECTORIES("/usr/local/lib")
 	ENDIF()
 
 ELSE()
 	INCLUDE_DIRECTORIES(${GTEST_INCLUDE_DIRS})
-	LINK_DIRECTORIES("/usr/local/lib")
+	SET(GTEST_LIB_DIR "/usr/local/lib")
 ENDIF()
 
 # use the Boost link directories

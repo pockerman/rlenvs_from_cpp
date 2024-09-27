@@ -6,6 +6,7 @@
 #include <gtest/gtest.h>
 #include <unordered_map>
 #include <string>
+#include <set>
 
 namespace{
 
@@ -13,7 +14,15 @@ using rlenvs_cpp::uint_t;
 using rlenvs_cpp::real_t;
 using rlenvs_cpp::envs::grid_world::GridWorldInitType;
 using rlenvs_cpp::envs::grid_world::GridWorldActionType;
+using namespace rlenvs_cpp::envs::grid_world::detail;
 
+struct not_equal
+{
+	bool operator()(board_position a, board_position b)const
+	{
+		return a != b;
+	}
+};
 
 }
 
@@ -26,7 +35,8 @@ TEST(TestGridworld, TestConstructor4x4) {
         ASSERT_FALSE(env.is_created());
 
         // TODO: Think how to test this
-        ASSERT_TRUE(rlenvs_cpp::envs::grid_world::to_string(env.init_type()) == rlenvs_cpp::envs::grid_world::to_string(GridWorldInitType::INVALID_TYPE));
+        ASSERT_TRUE(rlenvs_cpp::envs::grid_world::to_string(env.init_type()) 
+		== rlenvs_cpp::envs::grid_world::to_string(GridWorldInitType::INVALID_TYPE));
         ASSERT_EQ(env.name, "Gridworld");
         ASSERT_EQ(env.version(), rlenvs_cpp::INVALID_STR);
 }
@@ -44,7 +54,8 @@ TEST(TestGridworld, TestMake) {
         ASSERT_EQ(env.n_states(), static_cast<uint_t>(16));
         ASSERT_EQ(env.n_actions(), static_cast<uint_t>(4));
         ASSERT_EQ(env.version(), "v0");
-        ASSERT_TRUE(rlenvs_cpp::envs::grid_world::to_string(env.init_type()) == rlenvs_cpp::envs::grid_world::to_string(GridWorldInitType::STATIC));
+        ASSERT_TRUE(rlenvs_cpp::envs::grid_world::to_string(env.init_type()) 
+		== rlenvs_cpp::envs::grid_world::to_string(GridWorldInitType::STATIC));
 
 }
 
@@ -174,6 +185,7 @@ TEST(TestGridworld, TestSTATICBoardMovePieceGOAL) {
 
     // moving to the GOAL should win
     ASSERT_FLOAT_EQ(env.get_reward(), 10.0);
+	
 }
 
 
@@ -243,7 +255,7 @@ TEST(TestGridworld, TestSTATICBoardMovePieceWALL) {
 }
 
 
-TEST(TestGridworld, TestSTATICSuccessPath) {
+TEST(TestGridworld, TestSTATICSuccessPath ) {
 
      /**
      *
@@ -271,8 +283,82 @@ TEST(TestGridworld, TestSTATICSuccessPath) {
     //ASSERT_TRUE(env.get_reward() < 0);
     ASSERT_FLOAT_EQ(env.get_reward(), 10.0);
 
+}
+
+
+TEST(TestGridworld, TestMakeRANDOM) {
+
+    rlenvs_cpp::envs::grid_world::Gridworld<4> env;
+
+	std::unordered_map<std::string, std::any> options;
+	options["mode"] = std::any(rlenvs_cpp::envs::grid_world::to_string(GridWorldInitType::RANDOM));
+
+	env.make("v0", options);
+
+	ASSERT_TRUE(env.is_created());
+	ASSERT_EQ(env.n_states(), static_cast<uint_t>(16));
+	ASSERT_EQ(env.n_actions(), static_cast<uint_t>(4));
+	ASSERT_EQ(env.version(), "v0");
+	ASSERT_TRUE(rlenvs_cpp::envs::grid_world::to_string(env.init_type()) 
+	== rlenvs_cpp::envs::grid_world::to_string(GridWorldInitType::RANDOM));
 
 }
+
+
+TEST(TestGridworld, TestRANDOMMode ) {
+
+    const auto board_size = 4;
+    rlenvs_cpp::envs::grid_world::detail::board env;
+
+    env.init_board(board_size, GridWorldInitType::RANDOM);
+    
+	auto player_itr = env.components.find(rlenvs_cpp::envs::grid_world::detail::board_component_type::PLAYER);
+	auto goal_itr = env.components.find(rlenvs_cpp::envs::grid_world::detail::board_component_type::GOAL);
+	auto pit_itr = env.components.find(rlenvs_cpp::envs::grid_world::detail::board_component_type::PIT);
+    auto wall_itr = env.components.find(rlenvs_cpp::envs::grid_world::detail::board_component_type::WALL);
+     
+	auto player_pos = player_itr->second.pos;
+	auto goal_pos   = goal_itr->second.pos;
+	auto pit_pos    = pit_itr->second.pos;
+	auto wall_pos   = wall_itr->second.pos;
+	
+    std::set<board_position, not_equal> positions;
+	positions.insert(player_pos);
+	positions.insert(goal_pos);
+	positions.insert(pit_pos);
+	positions.insert(wall_pos);
+	
+	ASSERT_TRUE(positions.size() == 4);
+	
+}
+
+TEST(TestGridworld, TestPLAYERMode ) {
+
+    const auto board_size = 4;
+    rlenvs_cpp::envs::grid_world::detail::board env;
+
+    env.init_board(board_size, GridWorldInitType::PLAYER);
+    
+	auto player_itr = env.components.find(rlenvs_cpp::envs::grid_world::detail::board_component_type::PLAYER);
+	auto goal_itr = env.components.find(rlenvs_cpp::envs::grid_world::detail::board_component_type::GOAL);
+	auto pit_itr = env.components.find(rlenvs_cpp::envs::grid_world::detail::board_component_type::PIT);
+    auto wall_itr = env.components.find(rlenvs_cpp::envs::grid_world::detail::board_component_type::WALL);
+     
+	auto player_pos = player_itr->second.pos;
+	auto goal_pos   = goal_itr->second.pos;
+	auto pit_pos    = pit_itr->second.pos;
+	auto wall_pos   = wall_itr->second.pos;
+	
+    std::set<board_position, not_equal> positions;
+	positions.insert(player_pos);
+	positions.insert(goal_pos);
+	positions.insert(pit_pos);
+	positions.insert(wall_pos);
+	
+	ASSERT_TRUE(positions.size() == 4);
+	
+}
+
 
 
 
