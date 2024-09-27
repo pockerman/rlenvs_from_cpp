@@ -266,7 +266,7 @@ namespace detail{
         /// \param row
         /// \param col
         ///
-        board_move_type validate_move(board_component_type piece, board_position pos);
+        board_move_type validate_move(board_component_type piece, board_position pos)const;
     };
 
 

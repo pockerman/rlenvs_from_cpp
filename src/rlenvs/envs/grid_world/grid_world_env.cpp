@@ -5,6 +5,7 @@
 #include <string>
 #include <random>
 #include <utility>
+#include <set>
 
 namespace rlenvs_cpp{
 namespace envs{
@@ -30,6 +31,14 @@ from_string(const std::string& gw_init_type){
 
 namespace detail{
 
+
+struct not_equal
+{
+	bool operator()(board_position a, board_position b)const
+	{
+		return a != b || a.first != b.first || a.second != b.second;
+	}
+};
 
 bool
 validate_board(const board& b){
@@ -66,13 +75,48 @@ validate_board(const board& b){
 	auto pit_pos    = pit_itr->second.pos;
 	auto wall_pos   = wall_itr->second.pos;
 	
+	// make sure that the positions are distinct
+	std::set<board_position, not_equal> positions;
+	positions.insert(player_pos);
+	positions.insert(goal_pos);
+	positions.insert(pit_pos);
+	positions.insert(wall_pos);
 	
-	if( player_pos != goal_pos 
-	    && player_pos != pit_pos 
-		&& player_pos != wall_pos)
-			return true;
+	if(positions.size() != 4){
+		return false;
+	}
+	
+	
+	static std::set<std::pair<int, int>, not_equal> corners;
+	corners.insert({0, 0});
+	corners.insert({0, b.board_size});
+	corners.insert({b.board_size, 0});
+	corners.insert({b.board_size, b.board_size});
+	
+	if(corners.contains(player_pos) || corners.contains(goal_pos)){
+		
+		
+		// validate the moves for the player
+		auto pos = std::vector<std::pair<int, int>>({{0, 1}, {1, 0}, {-1, 0}, {0, -1}});
+		
+		std::set<int> player_valid_move;
+		std::set<int> goal_valid_move;
+		for(auto x:pos){
 			
-    return false;
+			auto valid_p = b.validate_move(board_component_type::PLAYER, x);
+			player_valid_move.insert(static_cast<int>(valid_p));
+			auto valid_g = b.validate_move(board_component_type::GOAL, x);
+			goal_valid_move.insert(static_cast<int>(valid_g));
+			
+		}
+		
+		if(!player_valid_move.contains(0) || !goal_valid_move.contains(0)){
+			return false;
+		}
+		
+	}
+			
+    return true;
 
 }
 
@@ -283,16 +327,18 @@ board::move_piece(board_component_type piece, board_position pos){
 
 
 board_move_type
-board::validate_move(board_component_type piece, board_position pos){
+board::validate_move(board_component_type piece, board_position pos)const{
 
     // 0 is valid
     //auto outcome = 0 #0 is valid, 1 invalid, 2 lost game
     auto outcome = board_move_type::VALID;
+	
+	auto piece_pos = components.find(piece)->second.pos;
 
     // get position of pit
-    auto pit_pos = components[board_component_type::PIT].pos;
-    auto wall_pos = components[board_component_type::WALL].pos;
-    auto new_pos = components[piece].pos + pos;
+    auto pit_pos = components.find(board_component_type::PIT)->second.pos;
+    auto wall_pos = components.find(board_component_type::WALL)->second.pos;
+    auto new_pos = piece_pos + pos;
 
      if (new_pos == wall_pos){
          //1 //block move, player can't move to wall
@@ -345,8 +391,35 @@ board::build_static_mode(){
 
 void
 board::build_random_mode(){
+	
+	// generate random index
+	std::mt19937 generator(seed);
+	
+	std::vector<real_t> weights(board_size, 1.0/static_cast<real_t>(board_size));
+    std::discrete_distribution<int> distribution(weights.begin(), weights.end());
+	
+    //std::discrete_distribution<int> distribution(0, static_cast<int>(board_size));
+	
+	
+	components[board_component_type::PLAYER].pos = std::make_pair(distribution(generator),
+																  distribution(generator));
+    components[board_component_type::GOAL].pos = std::make_pair(distribution(generator),
+																  distribution(generator));
+    components[board_component_type::PIT].pos = std::make_pair(distribution(generator),
+																  distribution(generator));
+    components[board_component_type::WALL].pos = std::make_pair(distribution(generator),
+																  distribution(generator));
+																  
+																  
+	const uint_t n_retries = 20;
+	uint_t current_n_retries = 0;
+	while(!validate_board(*this) && current_n_retries++ < n_retries){
+		
+		// place player randmly on the grid
+		components[board_component_type::PLAYER].pos = std::make_pair(distribution(generator),
+																  distribution(generator));
+	}
 
-    // TODO: Have we called init_board?
 }
 
 void
@@ -363,7 +436,8 @@ board::build_player_mode(uint_t seed){
 	
 	// generate random index
 	std::mt19937 generator(seed);
-    std::discrete_distribution<int> distribution(0, static_cast<int>(board_size));
+	std::vector<real_t> weights(board_size, 1.0/static_cast<real_t>(board_size));
+    std::discrete_distribution<int> distribution(weights.begin(), weights.end());
 	
 	auto x = distribution(generator);
 	auto y = distribution(generator);
