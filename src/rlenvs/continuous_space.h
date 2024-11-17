@@ -27,6 +27,22 @@ struct ContinuousSpace
 
 };
 
+template<>
+struct ContinuousSpace<1>
+{
+	
+	///
+    /// \brief item_t
+    ///
+    typedef real_t item_t;
+
+    ///
+    /// \brief size. The number of members in the space
+    ///
+    static constexpr uint_t size = 1;
+
+};
+
 
 }
 

@@ -29,13 +29,13 @@ async def get_is_alive():
 
 @black_jack_router.post("/make")
 async def make(version: str = Body(default="v1"), natural: bool = Body(default=False),
-               sab: bool = Body(default=False)):
+               sab: bool = Body(default=False),  max_episode_steps: int = Body(default=500)):
     global env
     if env is not None:
         env.close()
 
     try:
-        env = gym.make(f"{ENV_NAME}-{version}", natural, sab)
+        env = gym.make(f"{ENV_NAME}-{version}", natural, sab, max_episode_steps=max_episode_steps)
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                             detail=str(e))
@@ -92,9 +92,13 @@ async def step(action: int = Body(...)) -> JSONResponse:
     if env is not None:
         observation, reward, terminated, truncated, info = env.step(action)
 
+        step_type = TimeStepType.MID
+        if terminated or truncated:
+            step_type = TimeStepType.LAST
+
         step = TimeStep(observation=observation,
                         reward=reward,
-                        step_type=TimeStepType.MID if terminated == False else TimeStepType.LAST,
+                        step_type=step_type,
                         info=info,
                         discount=1.0)
 

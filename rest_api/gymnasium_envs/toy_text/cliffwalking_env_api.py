@@ -31,13 +31,14 @@ async def get_is_alive():
 
 
 @cliff_walking_router.post("/make")
-async def make(version: EnvCreateForm = Body(default=EnvCreateForm())):
+async def make(version: EnvCreateForm = Body(default=EnvCreateForm()),
+               max_episode_steps: int = Body(default=500)):
     global env
     if env is not None:
         env.close()
 
     try:
-        env = gym.make(f"{ENV_NAME}-{version.version}")
+        env = gym.make(f"{ENV_NAME}-{version.version}", max_episode_steps=max_episode_steps)
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                             detail=str(e))
@@ -60,7 +61,8 @@ async def close() -> JSONResponse:
 
 
 @cliff_walking_router.post("/reset")
-async def reset(seed: int = Body(default=42), options: dict[str, Any] = Body(default={})) -> JSONResponse:
+async def reset(seed: int = Body(default=42),
+                options: dict[str, Any] = Body(default={})) -> JSONResponse:
     """Reset the environment
 
     :return:
@@ -91,9 +93,12 @@ async def step(action: int = Body(...)) -> JSONResponse:
     if env is not None:
         observation, reward, terminated, truncated, info = env.step(action)
 
+        step_type = TimeStepType.MID
+        if terminated or truncated:
+            step_type = TimeStepType.LAST
         step = TimeStep(observation=observation,
                         reward=reward,
-                        step_type=TimeStepType.MID if terminated == False else TimeStepType.LAST,
+                        step_type=step_type,
                         info={'prob':  float(info['prob'])},
                         discount=1.0)
 

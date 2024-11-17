@@ -25,13 +25,13 @@ async def get_is_alive():
 
 
 @taxi_router.post("/make")
-async def make(version: str = Body(default="v3")):
+async def make(version: str = Body(default="v3"),  max_episode_steps: int = Body(default=500)):
     global env
     if env is not None:
         env.close()
 
     try:
-        env = gym.make(f"Taxi-{version}")
+        env = gym.make(f"Taxi-{version}", max_episode_steps=max_episode_steps)
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                             detail=str(e))
@@ -86,10 +86,14 @@ async def step(action: int = Body(...)) -> JSONResponse:
     if env is not None:
         observation, reward, terminated, truncated, info = env.step(action)
 
+        step_type = TimeStepType.MID
+        if terminated or truncated:
+            step_type = TimeStepType.LAST
+
         action_mask = info['action_mask']
         step = TimeStep(observation=observation,
                         reward=reward,
-                        step_type=TimeStepType.MID if terminated == False else TimeStepType.LAST,
+                        step_type=step_type,
                         info={'action_mask': [int(i) for i in action_mask], 'prob': float(info['prob'])},
                         discount=1.0)
 

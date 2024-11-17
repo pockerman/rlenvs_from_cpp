@@ -163,7 +163,7 @@ public:
     /// \brief make. Build the environment
     ///
     void make(const std::string& version,
-              const std::unordered_map<std::string, std::any>& /*options*/) override final;
+              const std::unordered_map<std::string, std::any>& /*options*/=std::unordered_map<std::string, std::any>()) override final;
 
     ///
     /// \brief n_actions. Returns the number of actions
@@ -186,7 +186,7 @@ public:
      * @brief Synchronize the environment
      *
      */
-    void sync(const std::unordered_map<std::string, std::any>& options=std::unordered_map<std::string, std::any>()){}
+    void sync(const std::unordered_map<std::string, std::any>& /*options*/=std::unordered_map<std::string, std::any>()){}
 
 
 
