@@ -11,6 +11,7 @@ Currently, we provide a minimal number of wrappers for some common Gymnasium (fo
 - ```CartPole```
 - ```MountainCar```
 - ```Taxi```
+- ```Pendulum```: https://gymnasium.farama.org/environments/classic_control/pendulum/
 - ```StateAggregationCartPole``` (implements state aggregation for ```CartPole```)
 - ```SerialVectorEnvWrapper``` a vector wrapper for various environments
 
