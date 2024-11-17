@@ -39,14 +39,14 @@ async def close() -> JSONResponse:
 @frozenlake_router.post("/make")
 async def make(version: str = Body(default='v1'),
                map_name: str = Body(default="4x4"),
-               is_slippery: bool = Body(default=True)) -> JSONResponse:
+               is_slippery: bool = Body(default=True),  max_episode_steps: int = Body(default=500)) -> JSONResponse:
     global env
     if env is not None:
         env.close()
 
     try:
         env = gym.make(f"FrozenLake-{version}",
-                       map_name=map_name, is_slippery=is_slippery)
+                       map_name=map_name, is_slippery=is_slippery, max_episode_steps=max_episode_steps)
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                             detail=str(e))
@@ -67,6 +67,7 @@ async def reset(seed: int = Body(default=42), options: dict[str, Any] = Body(def
     if env is not None:
         observation, info = env.reset(seed=seed)
 
+
         step = TimeStep(observation=observation, reward=0.0,
                         step_type=TimeStepType.FIRST, info=info,
                         discount=1.0)
@@ -85,8 +86,12 @@ async def step(action: int = Body(...)) -> JSONResponse:
     if env is not None:
         observation, reward, terminated, truncated, info = env.step(action)
 
+        step_type = TimeStepType.MID
+        if terminated or truncated:
+            step_type = TimeStepType.LAST
+
         step = TimeStep(observation=observation, reward=reward,
-                        step_type=TimeStepType.MID if terminated == False else TimeStepType.LAST,
+                        step_type=step_type,
                         info=info,
                         discount=1.0)
 

@@ -13,11 +13,9 @@ env = None
 ENV_NAME = "MountainCar"
 
 # actions that the environment accepts
-ACTIONS_SPACE = {0: "Accelerate to the left", 1: "Don't accelerate", 2: "Accelerate to the right"}
-
-
-class MountainCarParams(BaseModel):
-    pass
+ACTIONS_SPACE = {0: "Accelerate to the left",
+                 1: "Don't accelerate",
+                 2: "Accelerate to the right"}
 
 
 @mountain_car_router.get("/action-space")
@@ -40,13 +38,14 @@ async def get_is_alive() -> JSONResponse:
 
 @mountain_car_router.post("/make")
 async def make(version: str = Body(default="v0"),
-               params: MountainCarParams = Body(default=None)) -> JSONResponse:
+               max_episode_steps: int = Body(default=200)
+               ) -> JSONResponse:
     global env
     if env is not None:
         env.close()
 
     try:
-        env = gym.make(f"{ENV_NAME}-{version}")
+        env = gym.make(f"{ENV_NAME}-{version}", max_episode_steps=max_episode_steps)
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                             detail=str(e))
@@ -104,9 +103,13 @@ async def step(action: int = Body(...)) -> JSONResponse:
     if env is not None:
         observation, reward, terminated, truncated, info = env.step(action)
         observation = [float(val) for val in observation]
+
+        step_type = TimeStepType.MID
+        if terminated or truncated:
+            step_type = TimeStepType.LAST
         step = TimeStep(observation=observation,
                         reward=reward,
-                        step_type=TimeStepType.MID if not terminated else TimeStepType.LAST,
+                        step_type=step_type,
                         info=info,
                         discount=1.0)
 

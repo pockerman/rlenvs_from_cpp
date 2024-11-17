@@ -1,28 +1,19 @@
-#include "rlenvs/rlenvscpp_config.h"
-#include "rlenvs/envs/gymnasium/classic_control/mountain_car_env.h"
+#include "rlenvs/envs/gymnasium/classic_control/pendulum_env.h"
+#include "rlenvs/rlenvs_types_v2.h"
 #include "rlenvs/time_step.h"
+#include "rlenvs/rlenvscpp_config.h"
 #include "rlenvs/extern/nlohmann/json/json.hpp"
-#include "rlenvs/extern/HTTPRequest.hpp"
 
-#ifdef GYMFCPP_DEBUG
-#include <cassert>
-#endif
-
-#include <string>
-#include <vector>
-#include <tuple>
-#include <any>
 
 namespace rlenvs_cpp{
 namespace envs{
 namespace gymnasium{
+	
+	// static data
+std::string Pendulum::name = "Pendulum";
 
-
-const std::string MountainCarData::name = "MountainCar";
-
-
-MountainCar::time_step_type
-MountainCar::create_time_step_from_response_(const http::Response& response)const{
+Pendulum::time_step_type
+Pendulum::create_time_step_from_response_(const http::Response& response)const{
 
     auto str_response = std::string(response.body.begin(), response.body.end());
     using json = nlohmann::json;
@@ -34,20 +25,19 @@ MountainCar::create_time_step_from_response_(const http::Response& response)cons
     auto discount = j["time_step"]["discount"];
     auto observation = j["time_step"]["observation"];
     auto info = j["time_step"]["info"];
-    return MountainCar::time_step_type(time_step_type_from_int(step_type),
-                                                 reward, observation, discount,
-                                                 std::unordered_map<std::string, std::any>());
+    return Pendulum::time_step_type(time_step_type_from_int(step_type),
+									reward, observation, discount,
+									std::unordered_map<std::string, std::any>());
 }
 
 
-MountainCar::MountainCar(const std::string& api_base_url)
-    :
-      GymnasiumEnvBase<MountainCarData::time_step_type>(api_base_url + "/gymnasium/mountain-car-env")
+Pendulum::Pendulum(const std::string& api_base_url)
+:
+GymnasiumEnvBase<Pendulum::time_step_type>(api_base_url + "/gymnasium/pendulum-env")
 {}
 
-
 void
-MountainCar::make(const std::string& version,
+Pendulum::make(const std::string& version,
               const std::unordered_map<std::string, std::any>& /*options*/){
 
     if(this->is_created()){
@@ -70,11 +60,11 @@ MountainCar::make(const std::string& version,
 
     this->set_version(version);
     this->make_created();
-
 }
 
-MountainCar::time_step_type
-MountainCar::step(MountainCarActionsEnum action){
+
+Pendulum::time_step_type
+Pendulum::step(const Pendulum::action_type action){
 
 #ifdef RLENVSCPP_DEBUG
      assert(this->is_created_ && "Environment has not been created");
@@ -96,26 +86,8 @@ MountainCar::step(MountainCarActionsEnum action){
 
     this->get_current_time_step_() = this->create_time_step_from_response_(response);
     return this->get_current_time_step_();
-
 }
 
-MountainCarActionsEnum
-MountainCar::sample_action()const{
-
-    auto action = sample_action_id();
-
-    if (action == 0){
-        return MountainCarActionsEnum::ACCELERATE_LEFT;
-    }
-    else if(action == 1){
-        return MountainCarActionsEnum::DO_NOT_ACCELERATE;
-    }
-    else if(action == 2){
-        return MountainCarActionsEnum::ACCELERATE_RIGHT;
-    }
-
-   throw std::runtime_error("Invalid action");
-}
 
 }
 }
