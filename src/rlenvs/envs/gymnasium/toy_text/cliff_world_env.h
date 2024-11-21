@@ -190,6 +190,11 @@ public:
 
 
 protected:
+	
+	///
+	/// \brief Maximum episodes per step
+	///
+	uint_t max_episode_steps_;
 
     ///
     /// \brief build the dynamics from response

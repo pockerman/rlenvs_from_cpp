@@ -51,7 +51,7 @@ Taxi::create_time_step_from_response_(const http::Response& response)const{
 
 void
 Taxi::make(const std::string& version,
-                      const std::unordered_map<std::string, std::any>& /*options*/){
+		   const std::unordered_map<std::string, std::any>& /*options*/){
 
      if(this->is_created()){
         return;
@@ -60,7 +60,13 @@ Taxi::make(const std::string& version,
     const auto request_url = std::string(this->get_url()) + "/make";
     http::Request request{request_url};
 
-    auto body = "\""+version+"\"";
+    //auto body = "\""+version+"\"";
+	
+	using json = nlohmann::json;
+    json j;
+    j["version"] = version;
+	auto body = j.dump();
+	
     const auto response = request.send("POST", body);
 
     if(response.status.code != 201){

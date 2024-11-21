@@ -13,7 +13,7 @@ namespace envs{
 namespace gymnasium{
 
 template<uint_t side_size>
-const std::string FrozenLakeData<side_size>::name = "FrozenLake";
+const std::string FrozenLake<side_size>::name = "FrozenLake";
 
 template<uint_t side_size>
 FrozenLakeActionsEnum
@@ -89,7 +89,7 @@ FrozenLake<side_size>::make(const std::string& version,
     if( slip_itr != options.end()){
         is_slippery_ = std::any_cast<bool>(slip_itr->second);
     }
-
+	
     const auto request_url = std::string(this->get_url()) + "/make";
     http::Request request{request_url};
 

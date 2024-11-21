@@ -1,5 +1,6 @@
 import gymnasium as gym
 from typing import Any
+from loguru import logger
 from fastapi import APIRouter, Body, status
 from fastapi.responses import JSONResponse
 from fastapi import HTTPException
@@ -29,14 +30,16 @@ async def get_is_alive():
 
 @black_jack_router.post("/make")
 async def make(version: str = Body(default="v1"), natural: bool = Body(default=False),
-               sab: bool = Body(default=False),  max_episode_steps: int = Body(default=500)):
+               sab: bool = Body(default=False)):
     global env
     if env is not None:
         env.close()
 
     try:
-        env = gym.make(f"{ENV_NAME}-{version}", natural, sab, max_episode_steps=max_episode_steps)
+        env = gym.make(f"{ENV_NAME}-{version}", natural, sab)# max_episode_steps=max_episode_steps)
     except Exception as e:
+        logger.error('Exception raised')
+        logger.opt(exception=e).info("Logging exception traceback")
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                             detail=str(e))
 

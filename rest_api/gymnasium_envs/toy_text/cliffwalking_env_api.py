@@ -1,6 +1,7 @@
 import gymnasium as gym
 from pydantic import BaseModel, Field
 from typing import Any
+from loguru import logger
 from fastapi import APIRouter, Body, status
 from fastapi.responses import JSONResponse
 from fastapi import HTTPException
@@ -31,15 +32,17 @@ async def get_is_alive():
 
 
 @cliff_walking_router.post("/make")
-async def make(version: EnvCreateForm = Body(default=EnvCreateForm()),
+async def make(version: str = Body(default="v1"),
                max_episode_steps: int = Body(default=500)):
     global env
     if env is not None:
         env.close()
 
     try:
-        env = gym.make(f"{ENV_NAME}-{version.version}", max_episode_steps=max_episode_steps)
+        env = gym.make(f"{ENV_NAME}-{version}", max_episode_steps=max_episode_steps)
     except Exception as e:
+        logger.error('Exception raised')
+        logger.opt(exception=e).info("Logging exception traceback")
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                             detail=str(e))
 
