@@ -69,8 +69,6 @@ public:
     bool is_alive()const noexcept;
 
 
-
-
 private:
 
 

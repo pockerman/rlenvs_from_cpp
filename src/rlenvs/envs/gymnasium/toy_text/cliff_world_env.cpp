@@ -7,6 +7,7 @@
 #endif
 
 #include <iostream>
+#include <any>
 
 
 namespace rlenvs_cpp{
@@ -68,7 +69,8 @@ CliffWorld::create_time_step_from_response_(const http::Response& response)const
 
 CliffWorld::CliffWorld(const std::string& api_base_url)
     :
-ToyTextEnvBase<CliffWorldData::time_step_type>(api_base_url + "/gymnasium/cliff-walking-env")
+ToyTextEnvBase<CliffWorldData::time_step_type>(api_base_url + "/gymnasium/cliff-walking-env"),
+max_episode_steps_(200)
 {}
 
 
@@ -79,6 +81,12 @@ CliffWorld::make(const std::string& version,
     if(this->is_created()){
         return;
     }
+	
+	
+	auto max_episode_steps_itr = options.find("max_episode_steps");
+    if( max_episode_steps_itr != options.end()){
+        max_episode_steps_ = std::any_cast<uint_t>(max_episode_steps_itr->second);
+    }
 
     const auto request_url = std::string(this->get_url()) + "/make";
     http::Request request{request_url};
@@ -86,6 +94,7 @@ CliffWorld::make(const std::string& version,
     using json = nlohmann::json;
     json j;
     j["version"] = version;
+	j["max_episode_steps"] = max_episode_steps_;
     auto body = j.dump();
 
     const auto response = request.send("POST", body);

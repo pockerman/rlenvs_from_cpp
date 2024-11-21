@@ -151,6 +151,7 @@ void test_cliff_world(){
 
     // make the environment
     std::unordered_map<std::string, std::any> options;
+	options["max_episode_steps"] = std::any(static_cast<rlenvs_cpp::uint_t>(10));
     env.make("v0", options);
 
     std::cout<<"Is environment created? "<<env.is_created()<<std::endl;

@@ -160,7 +160,7 @@ struct FrozenLakeData
     ///
     /// \brief name
     ///
-    static  const std::string name;
+    //static  const std::string name;
 
     ///
     /// \brief time_step_t. The type of the time step
@@ -178,6 +178,11 @@ template<uint_t side_size>
 class FrozenLake final: public ToyTextEnvBase<typename FrozenLakeData<side_size>::time_step_type>
 {
 public:
+	
+	///
+    /// \brief name
+    ///
+    static  const std::string name;
 
     ///
     /// \brief dynamics_t
