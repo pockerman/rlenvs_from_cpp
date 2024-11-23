@@ -43,7 +43,7 @@ async def make(version: str = Body(default="v1"), natural: bool = Body(default=F
         env.close()
 
     try:
-        env = gym.make(f"{ENV_NAME}-{version}", natural, sab, max_episode_steps=max_episode_steps)
+        env = gym.make(f"{ENV_NAME}-{version}", natural, sab)
     except Exception as e:
         logger.error('An exception was raised')
         logger.opt(exception=e).info("Logging exception traceback")
