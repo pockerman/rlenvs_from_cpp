@@ -39,6 +39,7 @@ async def make(version: str = Body(default="v1"),
         env.close()
 
     try:
+        print(type(max_episode_steps))
         env = gym.make(f"{ENV_NAME}-{version}", max_episode_steps=max_episode_steps)
     except Exception as e:
         logger.error('Exception raised')

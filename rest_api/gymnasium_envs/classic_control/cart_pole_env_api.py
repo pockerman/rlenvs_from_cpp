@@ -1,5 +1,6 @@
 import gymnasium as gym
 from typing import Any
+from loguru import logger
 from fastapi import APIRouter, Body, status
 from fastapi.responses import JSONResponse
 from fastapi import HTTPException
@@ -42,8 +43,10 @@ async def make(version: str = Body(default="v1"), natural: bool = Body(default=F
         env.close()
 
     try:
-        env = gym.make(f"{ENV_NAME}-{version}", natural, sab, max_episode_steps=max_episode_steps)
+        env = gym.make(f"{ENV_NAME}-{version}", natural, sab)
     except Exception as e:
+        logger.error('An exception was raised')
+        logger.opt(exception=e).info("Logging exception traceback")
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                             detail=str(e))
 

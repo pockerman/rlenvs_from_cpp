@@ -61,9 +61,15 @@ CliffWorld::create_time_step_from_response_(const http::Response& response)const
     auto discount = j["time_step"]["discount"];
     auto observation = j["time_step"]["observation"];
     auto info = j["time_step"]["info"];
+	
+	std::unordered_map<std::string, std::any> info_;
+	info_["prob"] = std::any(static_cast<real_t>(info["prob"]));
+	
+	
     return CliffWorld::time_step_type(time_step_type_from_int(step_type),
                                                  reward, observation, discount,
-                                                 std::unordered_map<std::string, std::any>());
+												 std::move(info_));
+                                                
 }
 
 
