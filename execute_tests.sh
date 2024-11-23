@@ -5,18 +5,18 @@ cd ./build/tests/
 #cd ..
 echo "Running BlackJack tests"
 cd test_black_jack 
-#./test_black_jack
+./test_black_jack
 cd ..
 echo "Running CartPole tests"
 #cd test_cart_pole/ && ./test_cart_pole
 #cd ..
 echo "Running CliffWorld tests"
 cd test_cliff_world
-#./test_cliff_world
+./test_cliff_world
 cd ..
 echo "Running ForzenLake tests"
 cd test_frozen_lake
-#./test_frozen_lake
+./test_frozen_lake
 cd ..
 #echo "Running MountainCar tests"
 #cd test_mountain_car/ && ./test_mountain_car
