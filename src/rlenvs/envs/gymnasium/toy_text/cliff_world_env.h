@@ -39,6 +39,7 @@
 #include "rlenvs/discrete_space.h"
 #include "rlenvs/time_step.h"
 #include "rlenvs/extern/HTTPRequest.hpp"
+#include "rlenvs/extern/enum.h"
 #include "rlenvs/envs/gymnasium/toy_text/toy_text_base.h"
 
 #include <string>

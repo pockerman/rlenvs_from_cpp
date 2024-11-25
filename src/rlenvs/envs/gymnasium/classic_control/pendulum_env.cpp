@@ -10,7 +10,7 @@ namespace envs{
 namespace gymnasium{
 	
 	// static data
-std::string Pendulum::name = "Pendulum";
+const std::string Pendulum::name = "Pendulum";
 
 Pendulum::time_step_type
 Pendulum::create_time_step_from_response_(const http::Response& response)const{

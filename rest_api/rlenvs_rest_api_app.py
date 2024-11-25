@@ -10,7 +10,7 @@ from gymnasium_envs.toy_text.black_jack_env_api import black_jack_router
 from gymnasium_envs.classic_control.cart_pole_env_api import cart_pole_router
 from gymnasium_envs.classic_control.mountain_car_env_api import mountain_car_router
 from gymnasium_envs.classic_control.pendulum_env_api import pendulum_router
-
+from gymnasium_envs.classic_control.acrobot_env_api import acrobot_router
 from gdrl.gym_walk_env.gym_walk_env_api import gym_walk_env_router
 from gym_pybullet_drones_env.quadrotor_sim_env_api import quadrotor_sim_router
 
@@ -42,6 +42,7 @@ app.include_router(cart_pole_router, prefix=BASE_URL)
 app.include_router(mountain_car_router, prefix=BASE_URL)
 app.include_router(gym_walk_env_router, prefix=BASE_URL)
 app.include_router(pendulum_router, prefix=BASE_URL)
+app.include_router(acrobot_router, prefix=BASE_URL)
 app.include_router(quadrotor_sim_router, prefix=BASE_URL)
 
 

@@ -8,6 +8,7 @@
 #include "rlenvs/continuous_space.h"
 #include "rlenvs/time_step.h"
 #include "rlenvs/extern/HTTPRequest.hpp"
+#include "rlenvs/extern/enum.h"
 
 #include <map>
 #include <string>
@@ -47,10 +48,7 @@ struct TaxiData
     ///
     typedef uint_t state_type;
 
-    ///
-    /// \brief name
-    ///
-    static  std::string name;
+    
 
     ///
     /// \brief time_step_t. The type of the time step
@@ -66,7 +64,12 @@ struct TaxiData
 class Taxi final: public  ToyTextEnvBase<TaxiData::time_step_type>
 {
 public:
-
+	
+	///
+    /// \brief name
+    ///
+    static  const std::string name;
+	
     ///
     /// \brief env_data_t
     ///

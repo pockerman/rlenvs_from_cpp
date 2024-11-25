@@ -12,7 +12,7 @@ namespace rlenvs_cpp{
 namespace envs{
 namespace gymnasium{
 
-std::string TaxiData::name = "Taxi";
+const std::string Taxi::name = "Taxi";
 
 
 Taxi::Taxi(const std::string& api_base_url)

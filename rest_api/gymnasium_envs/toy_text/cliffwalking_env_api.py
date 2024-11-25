@@ -8,15 +8,11 @@ from fastapi import HTTPException
 from loguru import logger
 from time_step_response import TimeStep, TimeStepType
 
-
 cliff_walking_router = APIRouter(prefix="/gymnasium/cliff-walking-env", tags=["cliff-walking-env"])
 
 # the environment to create
 env = None
 ENV_NAME = "CliffWalking"
-
-class EnvCreateForm(BaseModel):
-    version: str = Field(title="version", default="v0")
 
 
 @cliff_walking_router.get("/is-alive")
@@ -39,7 +35,6 @@ async def make(version: str = Body(default="v1"),
         env.close()
 
     try:
-        print(type(max_episode_steps))
         env = gym.make(f"{ENV_NAME}-{version}", max_episode_steps=max_episode_steps)
     except Exception as e:
         logger.error('Exception raised')
@@ -103,7 +98,7 @@ async def step(action: int = Body(...)) -> JSONResponse:
         step = TimeStep(observation=observation,
                         reward=reward,
                         step_type=step_type,
-                        info={'prob':  float(info['prob'])},
+                        info={'prob': float(info['prob'])},
                         discount=1.0)
 
         return JSONResponse(status_code=status.HTTP_202_ACCEPTED,

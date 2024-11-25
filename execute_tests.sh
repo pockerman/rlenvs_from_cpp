@@ -35,3 +35,9 @@ echo "Running GridWorld environment tests"
 cd test_grid_world
 ./test_grid_world
 cd ..
+
+echo "Running Acrobot environment tests"
+cd test_acrobot
+./test_acrobot
+cd ..
+

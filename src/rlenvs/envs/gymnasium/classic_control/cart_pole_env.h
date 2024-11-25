@@ -43,6 +43,8 @@
 #include "rlenvs/continuous_space.h"
 #include "rlenvs/time_step.h"
 #include "rlenvs/envs/gymnasium/gymnasium_env_base.h"
+#include "rlenvs/extern/enum.h"
+#include "rlenvs/extern/HTTPRequest.hpp"
 
 
 #include <string>
@@ -87,10 +89,7 @@ struct CartPoleData
     ///
     typedef state_space_type::item_t state_type;
 
-    ///
-    /// \brief name
-    ///
-    static  std::string name;
+    
 
     ///
     /// \brief time_step_t. The type of the time step
@@ -111,6 +110,11 @@ class CartPole final: public GymnasiumEnvBase<CartPoleData::time_step_type>
 {
 
 public:
+	
+	///
+    /// \brief name
+    ///
+    static const std::string name;
 
     ///
     /// \brief env_data_t

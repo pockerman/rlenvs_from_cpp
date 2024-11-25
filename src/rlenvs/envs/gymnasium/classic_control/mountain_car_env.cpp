@@ -18,7 +18,7 @@ namespace envs{
 namespace gymnasium{
 
 
-const std::string MountainCarData::name = "MountainCar";
+const std::string MountainCar::name = "MountainCar";
 
 
 MountainCar::time_step_type
