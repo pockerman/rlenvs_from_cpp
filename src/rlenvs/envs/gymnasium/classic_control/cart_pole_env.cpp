@@ -14,11 +14,8 @@
 namespace rlenvs_cpp{
 namespace envs {
 namespace gymnasium{
-
-// static data
-std::string CartPoleData::name = "CartPole";
-
-
+	
+const std::string CartPole::name = "CartPole";
 
 CartPoleActionsEnum
 CartPole::action_from_int(uint_t aidx){

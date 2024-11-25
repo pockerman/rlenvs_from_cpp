@@ -7,6 +7,7 @@
 #include "rlenvs/discrete_space.h"
 #include "rlenvs/continuous_space.h"
 #include "rlenvs/time_step.h"
+#include "rlenvs/extern/enum.h"
 
 
 #include <string>
@@ -49,10 +50,7 @@ struct MountainCarData
     ///
     typedef state_space_type::item_t state_type;
 
-    ///
-    /// \brief name
-    ///
-    static  const std::string name;
+    
 
     ///
     /// \brief time_step_t. The type of the time step
@@ -69,6 +67,11 @@ class MountainCar final:  public GymnasiumEnvBase<MountainCarData::time_step_typ
 {
 
 public:
+	
+	///
+    /// \brief name
+    ///
+    static  const std::string name;
 
     ///
     /// \brief env_data_t

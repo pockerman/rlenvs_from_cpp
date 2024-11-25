@@ -114,7 +114,7 @@ public:
 	///
     /// \brief name
     ///
-	static  std::string name;
+	static  const std::string name;
 
 	///
     /// \brief action_space_t. The type of the action space

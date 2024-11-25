@@ -1,7 +1,7 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.6)
 
-SET(SOURCE test_cart_pole.cpp)
-SET(EXECUTABLE  test_cart_pole)
+SET(EXECUTABLE test_acrobot)
+SET(SOURCE ${EXECUTABLE}.cpp)
 
 ADD_EXECUTABLE(${EXECUTABLE} ${SOURCE})
 
@@ -9,3 +9,4 @@ TARGET_LINK_LIBRARIES(${EXECUTABLE} rlenvscpplib)
 TARGET_LINK_LIBRARIES(${EXECUTABLE} gtest)
 TARGET_LINK_LIBRARIES(${EXECUTABLE} gtest_main) # so that tests dont need to have a main
 TARGET_LINK_LIBRARIES(${EXECUTABLE} pthread)
+
