@@ -44,11 +44,16 @@ ELSEIF(CMAKE_BUILD_TYPE STREQUAL "Release")
     SET(RLENVSCPP_DEBUG OFF)
 ENDIF()
 
+MESSAGE(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
+MESSAGE(STATUS "C++ Compiler: ${CMAKE_CXX_COMPILER}")
+MESSAGE(STATUS "C Compiler: ${CMAKE_C_COMPILER}")
+
 # where to install the library
 
 SET(ENABLE_TESTS_FLAG ON)
 SET(ENABLE_EXAMPLES_FLAG ON)
 SET(ENABLE_DOC_FLAG OFF)
+SET(ENABLE_ALE_ENVS ON)
 
 IF(ENABLE_TESTS_FLAG)
 	# find gtest
@@ -64,7 +69,15 @@ IF(ENABLE_TESTS_FLAG)
 	ENDIF()
 ENDIF()
 
+IF(ENABLE_ALE_ENVS)
+	FIND_PACKAGE(ale REQUIRED)
+	SET(USE_ALE_ENS ON)
+	MESSAGE(STATUS "Using Farama ALE environments")
+ENDIF()
+
+
 LIST(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
+#LIST(APPEND CMAKE_MODULE_PATH "/usr/local/lib/cmake")
 
 configure_file(config.h.in ${PROJECT_SOURCE_DIR}/src/rlenvs/rlenvscpp_config.h @ONLY)
 configure_file(version.h.in ${PROJECT_SOURCE_DIR}/src/rlenvs/rlenvscpp_version.h @ONLY)
@@ -79,9 +92,7 @@ ELSE()
 	MESSAGE( FATAL_ERROR  "Boost C++ library is required but not found.")
 ENDIF()
 
-MESSAGE(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
-MESSAGE(STATUS "C++ Compiler: ${CMAKE_CXX_COMPILER}")
-MESSAGE(STATUS "C Compiler: ${CMAKE_C_COMPILER}")
+
 MESSAGE(STATUS "Boost lib: ${Boost_LIBRARY_DIR}")
 MESSAGE(STATUS "Boost include: ${Boost_INCLUDE_DIRS}")
 
@@ -98,6 +109,7 @@ FILE(GLOB SRCS src/rlenvs/*.cpp
                src/rlenvs/envs/gdrl/*.cpp
                src/rlenvs/envs/gym_pybullet_drones/*.cpp
                src/rlenvs/envs/grid_world/*.cpp
+			   src/rlenvs/envs/rlenvsale/*.cpp
    )
 
 ADD_LIBRARY(rlenvscpplib SHARED ${SRCS})

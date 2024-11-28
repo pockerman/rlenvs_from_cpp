@@ -4,8 +4,13 @@
 /*DEBUG*/
 #cmakedefine RLENVSCPP_DEBUG
 
+/*Use Farama ALE environments*/
+#cmakedefine USE_ALE_ENS
+
 /*Use PyTorch */
 #cmakedefine USE_PYTORCH
+
+
 
 #endif
 
