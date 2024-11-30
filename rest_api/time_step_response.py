@@ -1,12 +1,13 @@
 import enum
 import copy
-from typing import Generic, Optional, TypeVar, Dict
+from typing import Generic, Optional, TypeVar
 from pydantic import BaseModel, Field, Extra
 import numpy as np
 
 _Reward = TypeVar('_Reward')
 _Discount = TypeVar('_Discount')
 _Observation = TypeVar('_Observation')
+
 
 class TimeStepType(enum.IntEnum):
     """Defines the status of a `TimeStep` within a sequence.
@@ -37,7 +38,7 @@ class TimeStep(BaseModel, Generic[_Reward, _Discount, _Observation]):
     reward: Optional[_Reward] = Field(title="reward")
     discount: Optional[_Discount] = Field(title="discount")
     observation: _Observation = Field(title="observation")
-    info: Dict = Field(title="info")
+    info: dict = Field(title="info")
 
     def first(self) -> bool:
         return self.step_type == TimeStepType.FIRST
@@ -59,3 +60,11 @@ class TimeStep(BaseModel, Generic[_Reward, _Discount, _Observation]):
     #         "observation": self.observation,
     #         "info": self.info
     #     }
+
+
+class TimeStepV(BaseModel, Generic[_Reward, _Discount, _Observation]):
+    step_types: list[TimeStepType] = Field(title='step_types')
+    rewards: Optional[list[_Reward]] = Field(title='rewards')
+    discounts: Optional[list[_Discount]] = Field(title='discounts')
+    observations: Optional[list[_Observation]] = Field(title="observations")
+    infos: list[dict] = Field(title="infos")

@@ -59,8 +59,7 @@ public:
     std::string_view version()const noexcept{return version_;}
 
     ///
-    /// \brief make. Builds the environment. Optionally we can choose if the
-    /// environment will be slippery
+    /// \brief make. Builds the environment. 
     ///
     virtual void make(const std::string& version,
                       const std::unordered_map<std::string, std::any>& options) = 0;
