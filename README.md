@@ -22,6 +22,8 @@ In addition there are wrappers for
 - ```gym-pybullet-drones``` from <a href="https://github.com/utiasDSL/gym-pybullet-drones/tree/main">gym-pybullet-drones</a>
 - ```GridWorld``` from <a href="https://github.com/DeepReinforcementLearning/DeepReinforcementLearningInAction">Deep Reinforcement Learning In Action</a>
 
+### Vectorised environemtns
+
 There exist some wrappers for vector environments: 
 
 - ```AcrobotV```: <a href="examples/example_8/example_8.cpp">example_8</a>
@@ -144,11 +146,8 @@ void test_taxi(){
 
     // close the environment
     env.close();
-
 }
-
 }
-
 
 int main(){
 
@@ -168,7 +167,6 @@ int main(){
 Some algorithms, such as Monte Carlo, require that we should generate a trajectory, <a href="examples/example_3/example_3.cpp">example 3</a>
 shows how to do this. Various RL algorithms using the environments can be found at <a href="https://github.com/pockerman/cuberl/tree/master">cuberl</a>
 
-
 ## How to use
 
 The general use case is to build the library and link it with your driver code to access its functionality.
@@ -176,20 +174,22 @@ Furthermore, the ```Gymnasium```, ```gym_pybullet_drones``` environments are acc
 Namely, they are exposed via an API developed using FastAPI.
 You need to fire up the server, see dependencies, before using the environments in your code. To do so
 
-```cpp
+```
 ./start_uvicorn.sh
-
 ```
 
 By default the ```uvicorn``` server listents on port 8001. Change this if needed. You can access the OpenAPI specification at
 
 ```
 http://0.0.0.0:8001/docs
-
 ```
 
 Note that currently the implementation is not thread/process safe i.e. if multiple threads/processes access the environment
 a global instance of the environment is manipulated. Thus no session based environment exists.
+
+If you need multiple instances of the same environment you can either use one of the exissting vectorised environments (see list above) or 
+launch several instances of uvirocrn (listening on different ports). However in this case you need to implement
+all the interactions logic yourself as currently no implementation exists to handle such a scenario.
 
 
 ## Dependencies
