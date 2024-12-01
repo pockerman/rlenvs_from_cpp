@@ -26,7 +26,7 @@ namespace envs{
 namespace gymnasium {
 	
 	
-template<typename VectoTimeStepType>
+template<typename VectorTimeStepType>
 class GymnasiumVecEnvBase: public GymnasiumEnvBase<VectorTimeStepType>
 {
 	
@@ -46,6 +46,16 @@ public:
 	///
 	uint_t get_n_envs()const noexcept {return n_envs_;}
 	
+	///
+	/// \brief 
+	///
+	void reset_if_any_done(bool flag)noexcept{reset_if_any_done_ = flag;}
+	
+	///
+	/// \brief 
+	///
+	bool get_reset_if_any_done()const noexcept{return reset_if_any_done_;}
+	
 protected:
 	
 	///
@@ -58,13 +68,19 @@ private:
 	
 	uint_t n_envs_{0};
 	
+	///
+	/// \brief Flag indicating that the vector environment
+	/// is reset if any of the environments is done
+	///
+	bool reset_if_any_done_{false};
+	
 };
 
 
 template<typename VectoTimeStepType>
 GymnasiumVecEnvBase<VectoTimeStepType>::GymnasiumVecEnvBase(const std::string& url)
 :
-GymnasiumEnvBase<>(url)
+GymnasiumEnvBase<VectoTimeStepType>(url)
 {}
 
 template<typename VectoTimeStepType>
@@ -72,6 +88,12 @@ void
 GymnasiumVecEnvBase<VectoTimeStepType>::make(const std::string& version,
                                              const std::unordered_map<std::string, std::any>& options){
 
+	auto reset_if_any_done_itr = options.find("reset_if_any_done");
+	
+	if(reset_if_any_done_itr != options.end()){
+		reset_if_any_done_ = std::any_cast<bool>(reset_if_any_done_itr->second);
+	}
+	
 	auto n_envs_itr = options.find("num_envs");
 	
 	if(n_envs_itr != options.end()){

@@ -12,10 +12,9 @@
 #include "rlenvs/rlenvs_types_v2.h"
 #include "rlenvs/discrete_space.h"
 #include "rlenvs/continuous_space.h"
-#include "rlenvs/time_step.h"
-#include "rlenvs/envs/gymansium/acrobot_env.h"
+#include "rlenvs/vector_time_step.h"
+#include "rlenvs/envs/gymnasium/classic_control/acrobot_env_actions_enum.h"
 #include "rlenvs/envs/gymnasium/gymnasium_vector_env_base.h"
-#include "rlenvs/extern/enum.h"
 #include "rlenvs/extern/HTTPRequest.hpp"
 
 
@@ -28,18 +27,18 @@
 namespace rlenvs_cpp{
 
 /// Forward declaration
-template<typename StateTp> class TimeStep;
+template<typename StateTp> class VectorTimeStep;
 
 namespace envs{
 namespace gymnasium{
 
 
-typedef TimeStep<ContinuousSpace<6>::item_t> acrobot_time_step_type;
-typedef std::vector<acrobot_time_step_type> acrobot_v_time_step_type;
+typedef VectorTimeStep<ContinuousSpace<6>::item_t> acrobot_v_time_step_type;
+
 ///
 /// \brief The CartPole class Interface for CartPole environment
 ///
-class AcrobotV final: public GymnasiumVecEnvBase<acrobot_v_time_step_type>
+class AcrobotV final: public GymnasiumVecEnvBase<VectorTimeStep<ContinuousSpace<6>::item_t>>
 {
 
 public:
@@ -49,12 +48,6 @@ public:
     ///
 	static  const std::string name;
 	
-	/**
-     * @brief Convert the action index to a valid FrozenLakeActionsEnum
-     *
-     * */
-    static AcrobotActionsEnum action_from_int(uint_t aidx);
-
 	///
     /// \brief action_space_t. The type of the action space
     ///
@@ -84,7 +77,7 @@ public:
     ///
     /// \brief Acrobot. Constructor
     ///
-    AcrobotV(const std::string& api_base_url );
+    AcrobotV(const std::string& api_base_url);
 
     ///
     /// \brief make. Build the environment
@@ -108,11 +101,10 @@ public:
     time_step_type step(const std::vector<AcrobotActionsEnum>& action);
 
 
-    /**
-     * @brief Synchronize the environment
-     *
-     */
-    void sync(const std::unordered_map<std::string, std::any>& /*options*/=
+    ///
+	/// \brief Synchronize the environment
+	///
+    void sync(const std::unordered_map<std::string, std::any>& =
 	          std::unordered_map<std::string, std::any>()){}
 
 protected:

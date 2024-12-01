@@ -22,6 +22,10 @@ In addition there are wrappers for
 - ```gym-pybullet-drones``` from <a href="https://github.com/utiasDSL/gym-pybullet-drones/tree/main">gym-pybullet-drones</a>
 - ```GridWorld``` from <a href="https://github.com/DeepReinforcementLearning/DeepReinforcementLearningInAction">Deep Reinforcement Learning In Action</a>
 
+There exist some wrappers for vector environments: 
+
+- ```AcrobotV```
+
 In general, the environments exposed by the library  should abide with <a href="https://github.com/deepmind/dm_env/blob/master/docs/index.md">dm_env</a> specification.
 The following snippet shows how to use the ```FrozenLake```  and ```Taxi``` environments from <a href="https://github.com/Farama-Foundation/Gymnasium/tree/main">Gymnasium</a>.
 

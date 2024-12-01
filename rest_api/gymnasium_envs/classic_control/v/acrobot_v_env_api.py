@@ -86,6 +86,7 @@ async def close() -> JSONResponse:
     if env is not None:
         logger.info(f"Closing environment {ENV_NAME}")
         env.close()
+        env = None
         return JSONResponse(status_code=status.HTTP_202_ACCEPTED,
                             content={"message": f"Environment {ENV_NAME} is closed"})
 
@@ -125,10 +126,11 @@ async def reset(seed: int = Body(default=42), options: dict[str, Any] = Body(def
 
 
 @acrobot_v_router.post("/step")
-async def step(actions: list[int] = Body(...)) -> JSONResponse:
+async def step(actions: dict[str, list[int]] = Body(title='actions')) -> JSONResponse:
     global env
     global NUM_COPIES
 
+    actions = actions['actions']
     if len(actions) != NUM_COPIES:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                             detail=f"actions length should be {NUM_COPIES} ")

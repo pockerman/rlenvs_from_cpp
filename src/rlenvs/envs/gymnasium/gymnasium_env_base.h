@@ -152,13 +152,13 @@ GymnasiumEnvBase<TimeStepType>::is_alive()const noexcept{
     http::Request request{url_ + "/is-alive"};
     const auto response = request.send("GET");
     const auto str_response = std::string(response.body.begin(), response.body.end());
-    auto pos = str_response.find("true");
+	
+	 using json = nlohmann::json;
 
-    if (pos == std::string::npos){
-        return false;
-    }
+	// parse the response
+    json j = json::parse(str_response);
+	return j["result"];
 
-    return true;
 }
 
 template<typename TimeStepType>
