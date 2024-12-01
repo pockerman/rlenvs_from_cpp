@@ -31,7 +31,7 @@ int main(){
 	
 	std::cout<<"Reseting the environment... "<<std::endl;
 	auto time_step = env.reset();
-	//std::cout<<"Time step: "<<time_step<<std::endl;
+	std::cout<<"Time step: "<<time_step<<std::endl;
 	
 	std::cout<<"Acting on the environment... "<<std::endl;
 	// step in the environment
@@ -40,7 +40,7 @@ int main(){
 	actions[2] = 2;
 	time_step = env.step(actions);
 	
-	//std::cout<<"Time step after action: "<<time_step<<std::endl;
+	std::cout<<"Time step after action: "<<time_step<<std::endl;
 	
 	std::cout<<"Closing the environment... "<<std::endl;
 	env.close();

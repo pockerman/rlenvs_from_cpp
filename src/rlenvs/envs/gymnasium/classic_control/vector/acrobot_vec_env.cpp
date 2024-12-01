@@ -2,6 +2,7 @@
 #include "rlenvs/envs/gymnasium/classic_control/acrobot_env_actions_enum.h"
 #include "rlenvs/vector_time_step.h"
 #include "rlenvs/time_step_type.h"
+#include "rlenvs/extern/nlohmann/json/json.hpp"
 
 #include <iostream>
 

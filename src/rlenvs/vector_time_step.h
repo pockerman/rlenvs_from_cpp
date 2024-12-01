@@ -4,11 +4,13 @@
 
 #include "rlenvs/rlenvs_types_v2.h"
 #include "rlenvs/time_step_type.h"
+#include "rlenvs/extern/nlohmann/json/json.hpp"
 
 #include <vector>
 #include <algorithm>
 #include <any>
 #include <unordered_map>
+#include <ostream>
 
 namespace rlenvs_cpp{
 
@@ -267,6 +269,33 @@ bool
 VectorTimeStep<StateType>::last()const noexcept{
 	return done();
 }
+
+
+template<typename StateTp>
+inline
+std::ostream& operator<<(std::ostream& out, const VectorTimeStep<StateTp>& step){
+
+	using json = nlohmann::json;
+	json j;
+	
+	auto types = step.types();
+	std::vector<std::string> step_to_str(types.size());
+	
+	for(uint_t i =0; i<step_to_str.size(); ++i){
+		step_to_str[i] = rlenvs_cpp::to_string(types[i]);
+	}
+	
+	j["step_types"] = step_to_str;
+	j["rewards"] = step.rewards();
+	j["observations"] = step.observations();
+	j["discounts"] = step.discounts();
+	
+    out<< j <<std::endl;
+    return out;
+}
+
+
+
 
 }
 
