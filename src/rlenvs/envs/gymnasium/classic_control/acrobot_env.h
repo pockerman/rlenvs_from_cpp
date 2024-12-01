@@ -119,6 +119,7 @@
 #include "rlenvs/continuous_space.h"
 #include "rlenvs/time_step.h"
 #include "rlenvs/envs/gymnasium/gymnasium_env_base.h"
+#include "rlenvs/envs/gymnasium/classic_control/acrobot_env_actions_enum.h"
 #include "rlenvs/extern/enum.h"
 #include "rlenvs/extern/HTTPRequest.hpp"
 
@@ -139,7 +140,7 @@ namespace gymnasium{
 
 typedef TimeStep<ContinuousSpace<6>::item_t> acrobot_time_step_type;
 
-BETTER_ENUM(AcrobotActionsEnum, int, ZERO=0, ONE=1, TWO=2, INVALID_ACTION=3);
+//BETTER_ENUM(AcrobotActionsEnum, int, ZERO=0, ONE=1, TWO=2, INVALID_ACTION=3);
 
 ///
 /// \brief The CartPole class Interface for CartPole environment
@@ -154,11 +155,7 @@ public:
     ///
 	static  const std::string name;
 	
-	/**
-     * @brief Convert the action index to a valid FrozenLakeActionsEnum
-     *
-     * */
-    static AcrobotActionsEnum action_from_int(uint_t aidx);
+	
 
 	///
     /// \brief action_space_t. The type of the action space

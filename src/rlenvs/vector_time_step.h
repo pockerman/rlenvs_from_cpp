@@ -1,11 +1,16 @@
 #ifndef VECTOR_TIME_STEP_H
 #define VECTOR_TIME_STEP_H
 
+
 #include "rlenvs/rlenvs_types_v2.h"
-#include "rlenvs/time_step.h"
 #include "rlenvs/time_step_type.h"
+#include "rlenvs/extern/nlohmann/json/json.hpp"
 
 #include <vector>
+#include <algorithm>
+#include <any>
+#include <unordered_map>
+#include <ostream>
 
 namespace rlenvs_cpp{
 
@@ -18,129 +23,279 @@ class VectorTimeStep
 {
 
 public:
+	
+	///
+    /// \brief state_ Type of the state
+    ///
+    typedef StateType state_type;
 
+	///
+	/// \brief Default construcotr
+	///
     VectorTimeStep()=default;
+	
+	
+	///
+    /// \brief VectorTimeStep. Constructor
+    ///
+    VectorTimeStep(const std::vector<TimeStepTp>& types, 
+	               const std::vector<real_t>& rewards, 
+				   const std::vector<state_type>&  obs);
+
+    
+	///
+    /// \brief VectorTimeStep. Constructor
+    ///
+    VectorTimeStep(const std::vector<TimeStepTp>& types, 
+	               const std::vector<real_t>& rewards, 
+				   const std::vector<state_type>&  obs, 
+				   const std::vector<real_t>& discount_factors);
+				   
+				   
+	VectorTimeStep(const std::vector<TimeStepTp>& types, 
+	               const std::vector<real_t>& rewards, 
+				   const std::vector<state_type>&  obs, 
+				   const std::vector<real_t>& discount_factors,
+				   std::unordered_map<std::string, std::any>&& extra);
+				   
+				   
+	///
+    /// \brief TimeStep
+    /// \param other
+    ///
+    VectorTimeStep(const VectorTimeStep& other);
+
+    /**
+     * @brief Assignment operator
+     *
+     *
+     * */
+    VectorTimeStep& operator=(const VectorTimeStep& other);
 
     ///
-    /// \brief reserve
-    /// \param ncopies
+    /// \brief TimeStep
+    /// \param other
     ///
-    void reserve(uint_t ncopies){time_steps_.reserve(ncopies);}
+    VectorTimeStep(VectorTimeStep&& other)noexcept;
 
     ///
-    /// \brief clear
-    ///
-    void clear()noexcept{time_steps_.clear();}
-
-    ///
-    /// \brief add_time_step
-    /// \param step
-    ///
-    void add_time_step(const TimeStep<StateType>& step);
-
-    ///
-    /// \brief size
+    /// \brief operator =
+    /// \param other
     /// \return
     ///
-    uint_t size()const noexcept{return time_steps_.size();}
+    VectorTimeStep& operator=(VectorTimeStep&& other)noexcept;
 
+    
     ///
-    /// \brief empty
+    /// \brief type
     /// \return
     ///
-    bool empty()const noexcept{return time_steps_.empty();}
+    const std::vector<TimeStepTp>& types()const noexcept{return types_;}
 
     ///
-    ///
-    ///
-    template<typename AdaptorType>
-    typename AdaptorType::value_type stack_states()const;
-
-    ///
-    ///
-    ///
-    template<typename AdaptorType>
-    typename AdaptorType::value_type stack_rewards()const;
-
-    ///
-    /// \brief stack_time_step_types
+    /// \brief observation
     /// \return
     ///
-    std::vector<TimeStepTp> stack_time_step_types()const;
+    const std::vector<state_type>& observations()const{return obs_;}
+
+    ///
+    /// \brief reward
+    /// \return
+    ///
+    const std::vector<real_t>& rewards()const noexcept{return rewards_;}
+	
+	///
+	/// \brief Returns the sum of the rewards received
+	///
+	real_t reward()const noexcept;
+	
+	///
+	/// \brief Returns true if any time step is LAST
+	///
+	bool done()const noexcept; 
+
+    ///
+    /// \brief discount. Returns the discount factor
+    ///
+    const std::vector<real_t>& discounts()const noexcept{return discounts_;}
+	
+	///
+    /// \brief last
+    /// \return
+    ///
+    bool last()const noexcept;
 
 private:
 
+	///
+	/// \brief the step types for the environments
+	///
+	std::vector<TimeStepTp> types_;
+	
+	///
+	/// \brief The rewards received for every environment
+	///
+	std::vector<real_t> rewards_;
+	
+	///
+	/// \brief Observations
+	///
+	std::vector<state_type>  obs_;
+	
+	///
+	/// \brief The discount factors for every environment
+	///
+	std::vector<real_t> discounts_;
+	
+	
+	///
+    /// \brief extra_
     ///
-    /// \brief time_steps_
-    ///
-    std::vector<TimeStep<StateType>> time_steps_;
+    std::unordered_map<std::string, std::any> extra_;
 
 };
 
 template<typename StateType>
-void
-VectorTimeStep<StateType>::add_time_step(const TimeStep<StateType>& step){
-    time_steps_.push_back(step);
+VectorTimeStep<StateType>::VectorTimeStep(const std::vector<TimeStepTp>& types, 
+	               const std::vector<real_t>& rewards, 
+				   const std::vector<state_type>&  obs, 
+				   const std::vector<real_t>& discount_factors,
+				   std::unordered_map<std::string, std::any>&& extra)
+		:
+		types_(types),
+		rewards_(rewards),
+		obs_(obs),
+		discounts_(discount_factors),
+		extra_(extra)
+		{}
+
+template<typename StateType>
+VectorTimeStep<StateType>::VectorTimeStep(const std::vector<TimeStepTp>& types, 
+	                                      const std::vector<real_t>& rewards, 
+				                          const std::vector<state_type>&  obs, 
+				                          const std::vector<real_t>& discount_factors)
+		:
+		types_(types),
+		rewards_(rewards),
+		obs_(obs),
+		discounts_(discount_factors)
+		{}
+
+template<typename StateType>
+VectorTimeStep<StateType>::VectorTimeStep(const std::vector<TimeStepTp>& types, 
+	                                      const std::vector<real_t>& rewards, 
+				                          const std::vector<state_type>&  obs)
+		:
+		VectorTimeStep<StateType>(types, rewards, 
+								  obs, std::vector<real_t>())
+{}
+
+
+
+template<typename StateType>
+VectorTimeStep<StateType>::VectorTimeStep(const VectorTimeStep<StateType>& other)
+    :
+      types_(other.types_),
+      rewards_(other.rewards_),
+      obs_(other.obs_),
+      discounts_(other.discounts_),
+      extra_(other.extra_)
+{}
+
+template<typename StateType>
+VectorTimeStep<StateType>&
+VectorTimeStep<StateType>::operator=(const VectorTimeStep<StateType>& other){
+
+    types_ = other.types_;
+    rewards_ = other.rewards_;
+    obs_ = other.obs_;
+    discounts_ = other.discounts_;
+    extra_ = other.extra_;
+    return *this;
 }
 
 template<typename StateType>
-template<typename AdaptorType>
-typename AdaptorType::value_type
-VectorTimeStep<StateType>::stack_states()const{
-
-    std::vector<typename AdaptorType::value_type> states;
-    states.reserve(time_steps_.size());
-
-    AdaptorType adaptor;
-
-    std::for_each(time_steps_.begin(), time_steps_.end(),
-                  [&](const auto& step){
-
-        states.push_back(adaptor(step.observation()));
-
-    });
-
-    return adaptor.stack(states);
+VectorTimeStep<StateType>::VectorTimeStep(VectorTimeStep<StateType>&& other)noexcept
+    :
+      types_(other.types_),
+      rewards_(other.rewards_),
+      obs_(other.obs_),
+      discounts_(other.discounts_),
+      extra_(other.extra_)
+{
+    //other.clear();
 }
 
 template<typename StateType>
-template<typename AdaptorType>
-typename AdaptorType::value_type
-VectorTimeStep<StateType>::stack_rewards()const{
+VectorTimeStep<StateType>&
+VectorTimeStep<StateType>::operator=(VectorTimeStep<StateType>&& other)noexcept{
 
-    std::vector<real_t> rewards;
-    rewards.reserve(time_steps_.size());
-
-    AdaptorType adaptor;
-
-    std::for_each(time_steps_.begin(), time_steps_.end(),
-                  [&](const auto& step){
-
-        rewards.push_back(step.reward());
-
-    });
-
-    return adaptor(rewards);
+    types_ = other.types_;
+    rewards_ = other.rewards_;
+    obs_ = other.obs_;
+    discounts_ = other.discounts_;
+    extra_ = other.extra_;
+    //other.clear();
+    return *this;
 }
 
 template<typename StateType>
-std::vector<TimeStepTp>
-VectorTimeStep<StateType>::stack_time_step_types()const{
-
-    std::vector<TimeStepTp> step_types;
-    step_types.reserve(time_steps_.size());
-
-
-
-    std::for_each(time_steps_.begin(), time_steps_.end(),
-                  [&](const auto& step){
-
-        step_types.push_back(step.type());
-
-    });
-
-    return step_types;
+real_t 
+VectorTimeStep<StateType>::reward()const noexcept{
+	
+	auto sum_ = 0.0;
+	sum_ = std::accumulate(rewards_.begin(), rewards_.end(), sum_);
+	return sum_;
 }
+
+template<typename StateType>
+bool 
+VectorTimeStep<StateType>::done()const noexcept{
+	auto done_ = false;
+	
+	for(auto step_type: types_){
+		if(step_type._to_index() == TimeStepTp::LAST){
+			done_ = true;
+			break;
+		}
+	}
+	
+	return done_;
+}
+
+
+template<typename StateType>
+bool 
+VectorTimeStep<StateType>::last()const noexcept{
+	return done();
+}
+
+
+template<typename StateTp>
+inline
+std::ostream& operator<<(std::ostream& out, const VectorTimeStep<StateTp>& step){
+
+	using json = nlohmann::json;
+	json j;
+	
+	auto types = step.types();
+	std::vector<std::string> step_to_str(types.size());
+	
+	for(uint_t i =0; i<step_to_str.size(); ++i){
+		step_to_str[i] = rlenvs_cpp::to_string(types[i]);
+	}
+	
+	j["step_types"] = step_to_str;
+	j["rewards"] = step.rewards();
+	j["observations"] = step.observations();
+	j["discounts"] = step.discounts();
+	
+    out<< j <<std::endl;
+    return out;
+}
+
+
+
 
 }
 

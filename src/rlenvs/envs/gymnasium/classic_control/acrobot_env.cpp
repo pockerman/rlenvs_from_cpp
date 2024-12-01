@@ -1,4 +1,5 @@
 #include "rlenvs/envs/gymnasium/classic_control/acrobot_env.h"
+#include "rlenvs/envs/gymnasium/classic_control/acrobot_env_actions_enum.h"
 #include "rlenvs/rlenvs_types_v2.h"
 #include "rlenvs/time_step.h"
 #include "rlenvs/rlenvscpp_config.h"
@@ -9,21 +10,6 @@ namespace envs{
 namespace gymnasium{
 	
 const std::string Acrobot::name = "Acrobot";
-	
-AcrobotActionsEnum
-Acrobot::action_from_int(uint_t aidx){
-
-    if(aidx==0)
-        return AcrobotActionsEnum::ZERO;
-
-    if(aidx==1)
-        return AcrobotActionsEnum::ONE;
-		
-	if(aidx == 2)
-		return AcrobotActionsEnum::TWO;
-
-    return AcrobotActionsEnum::INVALID_ACTION;
-}
 	
 Acrobot::time_step_type
 Acrobot::create_time_step_from_response_(const http::Response& response)const{
@@ -108,7 +94,7 @@ Acrobot::step(uint_t action){
      assert(this->is_created_ && "Environment has not been created");
 #endif
 
-     auto action_enum = Acrobot::action_from_int(action);
+     auto action_enum = AcrobotActionsEnumUtils::action_from_int(action);
      return step(action_enum);
 
 }

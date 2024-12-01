@@ -52,6 +52,7 @@ async def close() -> JSONResponse:
 
     if env is not None:
         env.close()
+        env = None
         return JSONResponse(status_code=status.HTTP_202_ACCEPTED,
                             content={"message": f"Environment {ENV_NAME} is closed"})
 
