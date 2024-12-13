@@ -98,6 +98,7 @@ FILE(GLOB SRCS src/rlenvs/*.cpp
                src/rlenvs/envs/gdrl/*.cpp
                src/rlenvs/envs/gym_pybullet_drones/*.cpp
                src/rlenvs/envs/grid_world/*.cpp
+			   src/rlenvs/envs/connect2/*.cpp
    )
 
 ADD_LIBRARY(rlenvscpplib SHARED ${SRCS})

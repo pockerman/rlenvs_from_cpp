@@ -16,11 +16,13 @@ Currently, we provide a minimal number of wrappers for some common Gymnasium (fo
 - ```StateAggregationCartPole``` (implements state aggregation for ```CartPole```)
 - ```SerialVectorEnvWrapper``` a vector wrapper for various environments
 
+
 In addition there are wrappers for
 
 - ```GymWalk``` environment from <a href="https://github.com/mimoralea/gym-walk2">gym_walk</a>
 - ```gym-pybullet-drones``` from <a href="https://github.com/utiasDSL/gym-pybullet-drones/tree/main">gym-pybullet-drones</a>
 - ```GridWorld``` from <a href="https://github.com/DeepReinforcementLearning/DeepReinforcementLearningInAction">Deep Reinforcement Learning In Action</a>
+- ```Connect2``` from <a href="https://github.com/JoshVarty/AlphaZeroSimple">AlphaZeroSimple</a>
 
 There exist some wrappers for vector environments: 
 
