@@ -7,6 +7,7 @@
 #include "rlenvs/time_step.h"
 #include "rlenvs/envs/synchronized_env_mixin.h"
 
+#include <boost/noncopyable.hpp>
 #include <vector>
 #include <string>
 #include <unordered_map>
@@ -17,6 +18,8 @@ namespace connect2{
 
 ///
 /// \brief Implementation of Connect2 environment from https://github.com/JoshVarty/AlphaZeroSimple
+/// Initially the environment has all its positions set to zero. When a player makes
+/// a move then the position corresponding to this move 
 ///	
 class Connect2 final: private boost::noncopyable, protected synchronized_env_mixin{
 	
@@ -52,10 +55,10 @@ public:
     ///
     Connect2();
 
-    /*
-     * Expose functionality
-     *
-     */
+    ///
+	/// \brief Expose functionality. Use the default as nothing to
+	/// synchronize
+	///
     using synchronized_env_mixin::sync;
 
     ///
@@ -69,7 +72,7 @@ public:
     /// \return
     ///
     bool is_created()const noexcept{return is_created_;}
-
+	
     ///
     /// \brief make. Builds the environment. Optionally we can choose if the
     /// environment will be slippery
@@ -80,7 +83,7 @@ public:
     ///
     /// \brief n_states. Returns the number of states
     ///
-    uint_t n_states()const noexcept{ return side_size_ * side_size_; }
+    uint_t n_states()const noexcept{ return 53; }
 
     ///
     /// \brief n_actions. Returns the number of actions
@@ -88,17 +91,27 @@ public:
     uint_t n_actions()const noexcept{return action_space_type::size;}
 
     ///
-    /// \brief step
+    /// \brief step. Move in the environment with the given action
+	/// This function always moves player_1
     /// \param action
     /// \return
     ///
     time_step_type step(action_type action);
-
+		
+	///
+	/// \brief Make a move for the player with the given id
+	///
+	time_step_type move(const uint_t pid, action_type action);
 
 	///
 	/// \brief Returns true if the player wins
 	///
 	bool is_win(uint_t player)const noexcept;
+	
+	///
+	/// \brief Returns true if there are still legal moves to do
+	///
+	bool has_legal_moves()const noexcept;
 
     ///
     /// \brief close
@@ -109,6 +122,11 @@ public:
     /// \brief reset the environment
     ///
     time_step_type reset();
+	
+	///
+	/// \brief Get the valid moves
+	///
+	std::vector<int> get_valid_moves()const;
 
 private:
 	
@@ -125,6 +143,16 @@ private:
 	real_t discount_;
 	
 	///
+	/// \brief The id of player 1
+	///
+	const uint_t player_id_1_{1};
+	
+	///
+	/// \brief The id of player 2
+	///
+	const uint_t player_id_2_{2};
+	
+	///
 	/// \brief The wining value for a player
 	///
 	const uint_t win_val_{2};
@@ -134,7 +162,12 @@ private:
 	///
 	std::vector<int> board_;
 	
-}
+	///
+	/// \brief Flag indicating if the game is finished
+	///
+	bool is_finished_{false};
+	
+};
 
 inline
 void 
@@ -146,3 +179,5 @@ Connect2::close(){
 }
 }
 }
+
+#endif

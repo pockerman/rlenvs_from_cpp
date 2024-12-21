@@ -3,6 +3,7 @@
 
 #include "rlenvs/rlenvs_types_v2.h"
 #include "rlenvs/time_step_type.h"
+#include "rlenvs/utils/io_utils.h"
 
 #include <string>
 #include <any>
@@ -296,16 +297,19 @@ std::ostream& operator<<(std::ostream& out, const TimeStep<StateTp>& step){
 }
 
 
-inline
+template<typename T>
 std::ostream& operator<<(std::ostream& out,
-                         const TimeStep<std::vector<real_t>>& step){
+                         const TimeStep<std::vector<T>>& step){
 
     out<<"Step type....."<<rlenvs_cpp::to_string(step.type())<<std::endl;
     out<<"Reward........"<<step.reward()<<std::endl;
 
     auto obs = step.observation();
 
-    if(obs.empty()){
+	out<<"Observation...";
+	rlenvs_cpp::utils::io::print_vector(out, obs);
+
+    /*if(obs.empty()){
         out<<"Observation... []"<<std::endl;
     }
     else{
@@ -315,7 +319,7 @@ std::ostream& operator<<(std::ostream& out,
            obs_str += obs[i];
         }
         out<<"Observation..."<<obs_str<<std::endl;
-    }
+    }*/
 
     out<<"Discount..... "<<step.discount()<<std::endl;
     return out;
