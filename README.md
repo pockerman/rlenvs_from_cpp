@@ -21,6 +21,7 @@ In addition there are wrappers for
 - ```GymWalk``` environment from <a href="https://github.com/mimoralea/gym-walk2">gym_walk</a>
 - ```gym-pybullet-drones``` from <a href="https://github.com/utiasDSL/gym-pybullet-drones/tree/main">gym-pybullet-drones</a>
 - ```GridWorld``` from <a href="https://github.com/DeepReinforcementLearning/DeepReinforcementLearningInAction">Deep Reinforcement Learning In Action</a>
+- ```Connect2``` from <a href="https://github.com/JoshVarty/AlphaZeroSimple">AlphaZeroSimple</a> see <a href="examples/example_7/example_7.cpp">example_7</a>
 
 ### Vectorised environemtns
 
