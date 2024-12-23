@@ -57,11 +57,16 @@ struct TaxiData
 
 };
 
+namespace{
+	
+	
+}
+
 
 ///
 /// \brief The Taxi class
 ///
-class Taxi final: public  ToyTextEnvBase<TaxiData::time_step_type>
+class Taxi final: public  ToyTextEnvBase<TimeStep<uint_t>, ContinuousSpace<4>, DiscreteSpace<6>>
 {
 public:
 	
@@ -118,10 +123,7 @@ public:
     virtual void make(const std::string& version,
                       const std::unordered_map<std::string, std::any>& /*options*/) override final;
 
-    ///
-    /// \brief n_actions. Returns the number of actions
-    ///
-    uint_t n_actions()const noexcept{return action_space_type::size;}
+    
 
     ///
     /// \brief Number of states. Hardcoded from here:

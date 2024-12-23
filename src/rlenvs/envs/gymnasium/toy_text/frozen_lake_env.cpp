@@ -16,33 +16,23 @@ template<uint_t side_size>
 const std::string FrozenLake<side_size>::name = "FrozenLake";
 
 template<uint_t side_size>
-FrozenLakeActionsEnum
-FrozenLake<side_size>::action_from_int(uint_t aidx){
-
-    if(aidx==0)
-        return FrozenLakeActionsEnum::LEFT;
-
-    if(aidx==1)
-        return FrozenLakeActionsEnum::DOWN;
-
-    if(aidx==2)
-        return FrozenLakeActionsEnum::RIGHT;
-
-    if(aidx==3)
-        return FrozenLakeActionsEnum::UP;
-
-    return FrozenLakeActionsEnum::INVALID_ACTION;
-}
-
-
-template<uint_t side_size>
 FrozenLake<side_size>::FrozenLake(const std::string& api_base_url)
 :
- ToyTextEnvBase<typename FrozenLakeData<side_size>::time_step_type>(api_base_url + "/gymnasium/frozen-lake-env"),
- is_slippery_(true)
- {}
-
-
+ToyTextEnvBase<typename FrozenLakeData<side_size>::time_step_type>(0, "FrozenLake",
+                                                                    api_base_url,"/gymnasium/frozen-lake-env"),
+is_slippery_(true)
+{}
+ 
+template<uint_t side_size>
+FrozenLake<side_size>::FrozenLake(const std::string& api_base_url, 
+                                  const std::string& version, 
+		                          const uint_t cidx, bool slippery)
+		   :
+ToyTextEnvBase<typename FrozenLakeData<side_size>::time_step_type>(cidx, "FrozenLake",
+                                                                   api_base_url, "/gymnasium/frozen-lake-env"),
+is_slippery_(slippery)
+{}			
+			   
 template<uint_t side_size>
 typename FrozenLake<side_size>::dynamics_t
 FrozenLake<side_size>::build_dynamics_from_response_(const http::Response& response)const{
@@ -106,13 +96,13 @@ FrozenLake<side_size>::make(const std::string& version,
         throw std::runtime_error("Environment server failed to create Environment");
     }
 
-    this->set_version(version);
-    this->make_created();
+    this->set_version_(version);
+    this->make_created_();
 }
 
 template<uint_t side_size>
 typename FrozenLake<side_size>::time_step_type
-FrozenLake<side_size>::step(FrozenLakeActionsEnum action){
+FrozenLake<side_size>::step(const action_type& action){
 
 #ifdef RLENVSCPP_DEBUG
      assert(this->is_created_ && "Environment has not been created");
@@ -124,12 +114,18 @@ FrozenLake<side_size>::step(FrozenLakeActionsEnum action){
 
     const auto request_url = std::string(this->get_url()) + "/step";
     http::Request request{request_url};
+	
+	auto copy_idx = this -> cidx();
+	
+	using json = nlohmann::json;
+    json j;
+	j["cidx"] = copy_idx;
+	j["action"] = action;
+	auto body = j.dump();
 
-    auto body = std::to_string(action);
     const auto response = request.send("POST", body);
 
     if(response.status.code != 202){
-
         throw std::runtime_error("Environment server failed to step environment");
     }
 
@@ -139,17 +135,20 @@ FrozenLake<side_size>::step(FrozenLakeActionsEnum action){
 }
 
 template<uint_t side_size>
-typename FrozenLake<side_size>::time_step_type
-FrozenLake<side_size>::step(uint_t action){
-
-#ifdef RLENVSCPP_DEBUG
-     assert(this->is_created_ && "Environment has not been created");
-#endif
-
-     auto action_enum = FrozenLake<side_size>::action_from_int(action);
-
-     return step(action_enum);
-
+std::unique_ptr<EnvBase<typename FrozenLake<side_size>::time_step_type, 
+						typename FrozenLake<side_size>::state_space_type 
+						typename FrozenLake<side_size>::action_space_type>> 
+FrozenLake<side_size>::make_copy(uint_t cidx)const{
+	
+	auto api_url = this -> get_api_url();
+	auto version = this -> version();
+	auto slippery = this -> is_slippery();
+	return std::make_unique<FrozenLake<side_size>>(api_base_url,
+	                                               version,
+												   cidx,
+												   slippery);
+												   
+	
 }
 
 template class FrozenLake<4>;

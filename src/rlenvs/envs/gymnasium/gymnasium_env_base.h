@@ -9,6 +9,9 @@
 #include "rlenvs/extern/HTTPRequest.hpp"
 #include "rlenvs/rlenvscpp_config.h"
 #include "rlenvs/extern/nlohmann/json/json.hpp"
+#include "rlenvs/envs/with_rest_api_mixin.h"
+#include "rlenvs/envs/env_base.h"
+
 
 #include <boost/noncopyable.hpp>
 #include <string>
@@ -27,58 +30,46 @@ namespace rlenvs_cpp{
 namespace envs{
 namespace gymnasium {
 
-template<typename TimeStepType>
-class GymnasiumEnvBase: private boost::noncopyable{
+template<typename TimeStepType, typename StateSpaceType, typename ActionSpaceType>
+class GymnasiumEnvBase: public EnvBase<TimeStepType, StateSpaceType, ActionSpaceType>, 
+                        public with_rest_api_mixin<TimeStepType>{
 public:
 
+    ///
+	/// \brief The time step type we return every time a step in the
+	/// environment is performed
+	///
     typedef TimeStepType time_step_type;
+	
+	///
+	/// \brief The type describing the state space for the environment
+	///
+	typedef StateSpaceType state_space_type;
+	
+	///
+	/// \brief The type of the action space for the environment
+	///
+	typedef ActionSpaceType action_space_type;
+
+    ///
+	/// \brief The type of the action to be undertaken in the environment
+	///
+    typedef typename action_space_type action_type;
 
     ///
     /// \brief ~GymnasiumEnvBase. Destructor.
     ///
     virtual ~GymnasiumEnvBase();
-
-    ///
-    /// \brief Query the environment server is the environment has been created
-    ///
-    bool is_alive()const noexcept;
-
-    ///
-    /// \brief is_created Returns true is make has been called successfully
-    ///
-    bool is_created()const noexcept{return is_created_;}
-
-    ///
-    /// \brief Returns the url the environment is using
-    ///
-    std::string_view get_url()const noexcept{return url_;}
-
-    ///
-    /// \brief version
-    ///
-    std::string_view version()const noexcept{return version_;}
-
-    ///
-    /// \brief make. Builds the environment. 
-    ///
-    virtual void make(const std::string& version,
-                      const std::unordered_map<std::string, std::any>& options) = 0;
-
-    ///
-    /// \brief Reset the environment
-    ///
-    virtual time_step_type reset(uint_t seed,
-                                 const std::unordered_map<std::string, std::any>& options);
-
-    ///
-    /// \brief Reset the environment always using the same seed
-    ///
-    time_step_type reset(){return reset(42, std::unordered_map<std::string, std::any>());}
+	
+	///
+	/// \brief
+	///
+	virtual bool is_alive()const override;
 
     ///
     /// \brief close the environment
     ///
-    virtual void close();
+    virtual void close() override;
 
 
 protected:
@@ -86,70 +77,37 @@ protected:
     ///
     /// \brief Constructor
     ///
-    GymnasiumEnvBase(const std::string& url);
-
-
-    time_step_type& get_current_time_step_()noexcept{return current_state_;}
-    const time_step_type& get_current_time_step_()const noexcept{return current_state_;}
-
-    ///
-    /// \brief Set the version of the environment
-    ///
-    void set_version(const std::string& v)noexcept{version_ = v;}
-
-    ///
-    /// \brief mark the environment as created
-    ///
-    void make_created()noexcept{is_created_= true;}
-
-
-    ///
-    /// \brief build the time step from the server response
-    ///
-    virtual time_step_type create_time_step_from_response_(const http::Response& response)const=0;
-
-
-    ///
-    /// \brief The urls of the server
-    ///
-    const std::string url_;
-
-    ///
-    /// \brief The version of the environment
-    ///
-    std::string version_;
-
-    ///
-    /// \brief Flag indicating if the environment has been created
-    ///
-    bool is_created_;
-
-    ///
-    /// \brief current_state
-    ///
-    time_step_type current_state_;
-
+    GymnasiumEnvBase(const uint_t cidx, 
+	                 const std::string& name, 
+					 const std::string& api_url,
+					 const std::string& resource_path);
 
 };
 
-template<typename TimeStepType>
-GymnasiumEnvBase<TimeStepType>::GymnasiumEnvBase(const std::string& url)
+template<typename TimeStepType, typename StateSpaceType, typename ActionSpaceType>
+GymnasiumEnvBase<TimeStepType, 
+                 StateSpaceType, 
+				 ActionSpaceType>::GymnasiumEnvBase(const uint_t cidx, const std::string& name, 
+												    const std::string& api_url, const std::string& resource_path)
 :
-url_(url),
-is_created_(false),
-current_state_()
+EnvBase<TimeStepType, StateSpaceType, ActionSpaceType>(cidx, name),
+with_rest_api_mixin<TimeStepType>(api_url, resource_path)
 {}
 
-template<typename TimeStepType>
-GymnasiumEnvBase<TimeStepType>::~GymnasiumEnvBase(){
-
+template<typename TimeStepType, typename StateSpaceType, typename ActionSpaceType>
+GymnasiumEnvBase<TimeStepType, StateSpaceType, ActionSpaceType>::~GymnasiumEnvBase(){
     close();
 }
 
-template<typename TimeStepType>
+template<typename TimeStepType, typename StateSpaceType, typename ActionSpaceType>
 bool
-GymnasiumEnvBase<TimeStepType>::is_alive()const noexcept{
-    http::Request request{url_ + "/is-alive"};
+GymnasiumEnvBase<TimeStepType, StateSpaceType, ActionSpaceType>::is_alive()const{
+	
+	
+	auto url_ = this->get_url();
+	auto copy_idx_str = std::to_string(this -> cidx());
+	
+    http::Request request{url_ + "/is-alive?cidx="+copy_idx_str};
     const auto response = request.send("GET");
     const auto str_response = std::string(response.body.begin(), response.body.end());
 	
@@ -161,14 +119,19 @@ GymnasiumEnvBase<TimeStepType>::is_alive()const noexcept{
 
 }
 
-template<typename TimeStepType>
+template<typename TimeStepType, typename StateSpaceType, typename ActionSpaceType>
 void
-GymnasiumEnvBase<TimeStepType>::close(){
+GymnasiumEnvBase<TimeStepType, StateSpaceType, ActionSpaceType>::close(){
 
      if(!is_created_){
         return;
     }
 
+	auto copy_idx = this -> cidx();
+	using json = nlohmann::json;
+    json j;
+	j["cidx"] = copy_idx;
+	
     http::Request request{url_ + "/close"};
     const auto response = request.send("POST");
     is_created_ = false;
@@ -176,9 +139,9 @@ GymnasiumEnvBase<TimeStepType>::close(){
 }
 
 
-template<typename TimeStepType>
-typename GymnasiumEnvBase<TimeStepType>::time_step_type
-GymnasiumEnvBase<TimeStepType>::reset(uint_t seed,
+template<typename TimeStepType, typename StateSpaceType, typename ActionSpaceType>
+typename GymnasiumEnvBase<TimeStepType, StateSpaceType, ActionSpaceType>::time_step_type
+GymnasiumEnvBase<TimeStepType, StateSpaceType, ActionSpaceType>::reset(uint_t seed,
                                       const std::unordered_map<std::string, std::any>& /*options*/){
 
     if(!is_created_){
@@ -187,7 +150,9 @@ GymnasiumEnvBase<TimeStepType>::reset(uint_t seed,
 #endif
      return time_step_type();
     }
-
+	
+	auto copy_idx = this -> cidx();
+	
     const auto request_url = url_ + "/reset";
     http::Request request{request_url};
 
@@ -195,7 +160,8 @@ GymnasiumEnvBase<TimeStepType>::reset(uint_t seed,
     using json = nlohmann::json;
     json j;
     j["seed"] = seed;
-
+	j["cidx"] = copy_idx;
+	
     auto body = j.dump();
     const auto response = request.send("POST", body);
 

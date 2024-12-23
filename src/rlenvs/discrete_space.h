@@ -14,7 +14,7 @@ struct DiscreteSpace
     ///
     /// \brief item_t
     ///
-    typedef uint_t item_t;
+    typedef uint_t space_item_type;
 
 
     ///
@@ -26,18 +26,18 @@ struct DiscreteSpace
     /// \brief sample
     /// \return
     ///
-    static item_t sample();
+    static space_item_type sample();
 
     ///
     /// \brief sample
     /// \param seed
     /// \return
     ///
-    static item_t sample(uint_t seed);
+    static space_item_type sample(uint_t seed);
 };
 
 template<uint_t SpaceSize>
-typename DiscreteSpace<SpaceSize>::item_t
+typename DiscreteSpace<SpaceSize>::space_item_type
 DiscreteSpace<SpaceSize>::sample(){
 
     std::uniform_int_distribution<> dist(0, SpaceSize - 1);
@@ -47,7 +47,7 @@ DiscreteSpace<SpaceSize>::sample(){
 }
 
 template<uint_t SpaceSize>
-typename DiscreteSpace<SpaceSize>::item_t
+typename DiscreteSpace<SpaceSize>::space_item_type
 DiscreteSpace<SpaceSize>::sample(uint_t seed){
 
     std::uniform_int_distribution<> dist(0, SpaceSize - 1);

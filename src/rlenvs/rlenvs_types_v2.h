@@ -34,6 +34,11 @@ typedef std::size_t uint_t;
 typedef torch::Tensor torch_tensor_t;
 #endif
 
+///
+/// \brief Null placeholder
+///
+struct Null{};
+
 }
 
 #endif // TYPES_H

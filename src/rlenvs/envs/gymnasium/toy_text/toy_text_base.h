@@ -5,6 +5,7 @@
 #include "rlenvs/extern/HTTPRequest.hpp"
 #include "rlenvs/rlenvscpp_config.h"
 #include "rlenvs/envs/gymnasium/gymnasium_env_base.h"
+#include "rlenvs/discrete_space.h"
 
 #include <string>
 #include <vector>
@@ -20,12 +21,37 @@
 namespace rlenvs_cpp{
 namespace envs{
 namespace gymnasium {
+	
+///
+/// \brief ToyTextEnvBase class. Base class
+/// for toy environments from Gymnasium. These environments
+/// have a discrete action space
 
-template<typename TimeStepType>
-class ToyTextEnvBase: public GymnasiumEnvBase<TimeStepType>{
+template<typename TimeStepType, typename StateSpaceType, uint_t space_dim>
+class ToyTextEnvBase: public GymnasiumEnvBase<TimeStepType, StateSpaceType, DiscreteSpace<space_dim>>{
 public:
 
+    ///
+	/// \brief The time step type we return every time a step in the
+	/// environment is performed
+	///
     typedef TimeStepType time_step_type;
+	
+	///
+	/// \brief The type describing the state space for the environment
+	///
+	typedef StateSpaceType state_space_type;
+	
+	///
+	/// \brief The type of the action space for the environment
+	///
+	typedef DiscreteSpace<space_dim> action_space_type;
+
+    ///
+	/// \brief The type of the action to be undertaken in the environment
+	///
+    typedef typename action_space_type::space_item_type action_type;
+	
 
     ///
     /// \brief dynamics_t
@@ -43,28 +69,21 @@ public:
     /// \param aidx
     ///
     dynamics_t p(uint_t sidx, uint_t aidx)const;
-
+	
+	///
+    /// \brief n_actions. Returns the number of actions
     ///
-    /// \brief make. Builds the environment. Optionally we can choose if the
-    /// environment will be slippery
-    ///
-    virtual void make(const std::string& version,
-                      const std::unordered_map<std::string, std::any>& options) = 0;
+    uint_t n_actions()const noexcept{return action_space_type::size;}
 
-
-    /**
-     * @brief Synchronize the environment
-     *
-     */
-    void sync(const std::unordered_map<std::string, std::any>& /*options*/=std::unordered_map<std::string, std::any>()){}
-
-
+    
 protected:
 
     ///
     /// \brief Constructor
     ///
-    ToyTextEnvBase(const std::string& url);
+    ToyTextEnvBase(const uint_t cidx, const std::string& name, 
+	               const std::string& api_url,
+				   const std::string& resource_path);
 
     ///
     /// \brief build the dynamics from response
@@ -79,9 +98,10 @@ protected:
 };
 
 template<typename TimeStepType>
-ToyTextEnvBase<TimeStepType>::ToyTextEnvBase(const std::string& url)
+ToyTextEnvBase<TimeStepType>::ToyTextEnvBase(const uint_t cidx, const std::string& name, 
+                                             const std::string& api_url, const std::string& resource_path)
 :
-GymnasiumEnvBase<TimeStepType>(url)
+GymnasiumEnvBase<TimeStepType>(cidx, name, api_url, resource_path)
 {}
 
 
