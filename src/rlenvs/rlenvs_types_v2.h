@@ -22,7 +22,15 @@ namespace rlenvscpp {
 typedef double real_t;
 
 
+///
+/// \brief float
+///
 typedef float float_t;
+
+///
+/// \brief integer type
+///
+typedef int int_t;
 
 ///
 /// \brief uint_t

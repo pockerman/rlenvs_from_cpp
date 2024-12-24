@@ -38,7 +38,7 @@ TEST(TestGridworld, TestConstructor4x4) {
         ASSERT_TRUE(rlenvscpp::envs::grid_world::to_string(env.init_type()) 
 		== rlenvscpp::envs::grid_world::to_string(GridWorldInitType::INVALID_TYPE));
         ASSERT_EQ(env.name, "Gridworld");
-        ASSERT_EQ(env.version(), rlenvscpp::INVALID_STR);
+        ASSERT_EQ(env.version(), rlenvscpp::consts::INVALID_STR);
 }
 
 TEST(TestGridworld, TestMake) {

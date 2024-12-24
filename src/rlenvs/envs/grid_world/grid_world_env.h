@@ -512,7 +512,7 @@ Gridworld<side_size>::action_from_int(uint_t aidx){
 template<uint_t side_size>
 Gridworld<side_size>::Gridworld()
     :
-      version_(INVALID_STR),
+      version_(rlenvscpp::consts::INVALID_STR),
       init_mode_(GridWorldInitType::INVALID_TYPE),
       randomize_state_(false),
       seed_(0),
