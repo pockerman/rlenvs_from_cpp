@@ -87,7 +87,8 @@ public:
     ///
     /// \brief Constructor
     ///
-    explicit DiffDriveDynamics(DynamicVersion type = DynamicVersion::V1);
+    explicit DiffDriveDynamics(DynamicVersion type = DynamicVersion::V1, 
+	                           bool update_description_matrices_on_evaluate = true);
 
     ///
     /// \brief Constructor

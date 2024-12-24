@@ -121,9 +121,12 @@ DiffDriveDynamics::integrate(const SysState<3>& state, const DiffDriveDynamics::
 
 }
 
-DiffDriveDynamics::DiffDriveDynamics(DiffDriveDynamics::DynamicVersion type)
+DiffDriveDynamics::DiffDriveDynamics(DiffDriveDynamics::DynamicVersion type, 
+                                     bool update_description_matrices_on_evaluate)
     :
-  MotionModelDynamicsBase<SysState<3>, DynamicsMatrixDescriptor, std::map<std::string, std::any>>(),
+  MotionModelDynamicsBase<SysState<3>, 
+                          DynamicsMatrixDescriptor, 
+						  std::map<std::string, std::any>>(update_description_matrices_on_evaluate),
   v_(0.0),
   w_(0.0),
   type_(type)

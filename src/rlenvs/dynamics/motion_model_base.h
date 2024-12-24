@@ -135,7 +135,7 @@ public:
 protected:
 
     /// \brief Constructor
-    MotionModelDynamicsBase();
+    explicit MotionModelDynamicsBase(bool update_description_matrices_on_evaluate = true);
 
     ///
     /// \brief The object describing the state
@@ -168,11 +168,13 @@ protected:
 };
 
 template<typename StateTp, typename MatrixDescriptor, typename InputTp>
-MotionModelDynamicsBase<StateTp, MatrixDescriptor, InputTp>::MotionModelDynamicsBase()
+MotionModelDynamicsBase<StateTp, 
+                        MatrixDescriptor, 
+						InputTp>::MotionModelDynamicsBase(bool update_description_matrices_on_evaluate)
     :
       state_(),
       matrix_description_(),
-      update_description_matrices_on_evaluate_(true),
+      update_description_matrices_on_evaluate_(update_description_matrices_on_evaluate),
       dt_(0.0),
       tol_(rlenvscpp::consts::TOLERANCE)
 {}

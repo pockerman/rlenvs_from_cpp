@@ -28,6 +28,11 @@ namespace rlenvscpp {
 			/// \brief The Pi constant
 			///
 			inline const real_t PI = 3.14159265359;
+			
+			///
+			/// \brief Acceleration due to gravity m/secs
+			///
+			inline const real_t G = 9.82;
 		}
 		
 	}

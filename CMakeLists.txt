@@ -102,6 +102,7 @@ FILE(GLOB SRCS src/rlenvs/*.cpp
                src/rlenvs/envs/grid_world/*.cpp
 			   src/rlenvs/envs/connect2/*.cpp
 			   src/rlenvs/dynamics/*.cpp
+			   src/rlenvs/utils/*.cpp
    )
 
 ADD_LIBRARY(rlenvscpplib SHARED ${SRCS})

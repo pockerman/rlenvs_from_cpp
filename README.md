@@ -1,7 +1,7 @@
 [![Build rlenvs](https://github.com/pockerman/rlenvs_from_cpp/actions/workflows/build.yml/badge.svg)](https://github.com/pockerman/rlenvs_from_cpp/actions/workflows/build.yml)
-# rlenvs_from_cpp
+# rlenvscpp
 
-```rlenvs_from_cpp``` is an effort to provide implementations and wrappers of environments for reinforcement learning algorithms to be used by C++ drivers. 
+```rlenvscpp``` is an effort to provide implementations and wrappers of environments for reinforcement learning algorithms to be used by C++ drivers. 
 Currently, we provide a minimal number of wrappers for some common Gymnasium (former OpenAI-Gym) environments. Namely
 
 - ```FrozenLake``` with ```4x4``` map
@@ -28,6 +28,12 @@ In addition there are wrappers for
 There exist some wrappers for vector environments: 
 
 - ```AcrobotV```: <a href="examples/example_8/example_8.cpp">example_8</a>
+
+### Simple dynamics
+
+Apart from the exposed environments, ```rlenvscpp``` exposes classes that describe the dynamics of some popular rigid bodies:
+
+- <a href="https://en.wikipedia.org/wiki/Differential_wheeled_robot">Differential drive</a> see <a href="examples/example_9/example_9.cpp">example_9</a>
 
 In general, the environments exposed by the library  should abide with <a href="https://github.com/deepmind/dm_env/blob/master/docs/index.md">dm_env</a> specification.
 The following snippet shows how to use the ```FrozenLake```  and ```Taxi``` environments from <a href="https://github.com/Farama-Foundation/Gymnasium/tree/main">Gymnasium</a>.
