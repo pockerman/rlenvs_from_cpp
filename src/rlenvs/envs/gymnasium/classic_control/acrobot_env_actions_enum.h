@@ -5,7 +5,7 @@
 #include "rlenvs/rlenvs_types_v2.h"
 
 #include <vector>
-namespace rlenvs_cpp{
+namespace rlenvscpp{
 namespace envs{
 namespace gymnasium{
 	

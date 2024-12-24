@@ -8,7 +8,7 @@
 #include <iostream>
 #endif
 
-namespace rlenvs_cpp{
+namespace rlenvscpp{
 namespace envs{
 namespace gymnasium{
 

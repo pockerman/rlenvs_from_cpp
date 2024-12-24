@@ -8,9 +8,9 @@
 namespace{
 
 const std::string SERVER_URL = "http://0.0.0.0:8001/api";
-using rlenvs_cpp::uint_t;
-using rlenvs_cpp::real_t;
-using rlenvs_cpp::envs::gymnasium::CartPole;
+using rlenvscpp::uint_t;
+using rlenvscpp::real_t;
+using rlenvscpp::envs::gymnasium::CartPole;
 
 }
 

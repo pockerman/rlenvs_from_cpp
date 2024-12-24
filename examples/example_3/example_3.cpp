@@ -15,11 +15,11 @@
 
 namespace example{
 
-using rlenvs_cpp::uint_t;
+using rlenvscpp::uint_t;
 const std::string SERVER_URL = "http://0.0.0.0:8001/api";
 const uint_t MAX_TRAJECTORY_SIZE = 10;
 
-typedef rlenvs_cpp::envs::gymnasium::FrozenLake<4> env_type;
+typedef rlenvscpp::envs::gymnasium::FrozenLake<4> env_type;
 
 
 auto random_action_selector = [](auto /*state*/){
@@ -53,7 +53,7 @@ int main(){
     std::cout<<"Number of valid actions? "<<env.n_actions()<<std::endl;
     std::cout<<"Number of states? "<<env.n_states()<<std::endl;
 
-    auto trajectory = rlenvs_cpp::envs::create_trajectory(env,
+    auto trajectory = rlenvscpp::envs::create_trajectory(env,
                                                           random_action_selector,
                                                           MAX_TRAJECTORY_SIZE);
 

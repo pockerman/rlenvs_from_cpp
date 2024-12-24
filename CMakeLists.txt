@@ -72,6 +72,8 @@ configure_file(version.h.in ${PROJECT_SOURCE_DIR}/src/rlenvs/rlenvscpp_version.h
 
 # Find boost
 FIND_PACKAGE(Boost 1.74.0 REQUIRED)
+FIND_PACKAGE(BLAS REQUIRED)
+FIND_PACKAGE(Eigen3 REQUIRED)
 IF(Boost_FOUND)
 	MESSAGE( STATUS  "Found needed Boost C++ library.")
 	SET(Boost_USE_SHARED_LIBS ON)
@@ -99,6 +101,7 @@ FILE(GLOB SRCS src/rlenvs/*.cpp
                src/rlenvs/envs/gym_pybullet_drones/*.cpp
                src/rlenvs/envs/grid_world/*.cpp
 			   src/rlenvs/envs/connect2/*.cpp
+			   src/rlenvs/dynamics/*.cpp
    )
 
 ADD_LIBRARY(rlenvscpplib SHARED ${SRCS})

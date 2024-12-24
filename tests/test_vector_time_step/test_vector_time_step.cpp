@@ -22,13 +22,13 @@
 
 namespace{
 
-using rlenvs_cpp::uint_t;
-using rlenvs_cpp::real_t;
-using rlenvs_cpp::gymfcpp::CartPole;
-using rlenvs_cpp::VectorTimeStep;
-using rlenvs_cpp::torch_utils::TorchStateAdaptor;
-using rlenvs_cpp::TimeStep;
-using rlenvs_cpp::TimeStepTp;
+using rlenvscpp::uint_t;
+using rlenvscpp::real_t;
+using rlenvscpp::gymfcpp::CartPole;
+using rlenvscpp::VectorTimeStep;
+using rlenvscpp::torch_utils::TorchStateAdaptor;
+using rlenvscpp::TimeStep;
+using rlenvscpp::TimeStepTp;
 }
 
 

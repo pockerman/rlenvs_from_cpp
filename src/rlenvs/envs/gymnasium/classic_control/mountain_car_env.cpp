@@ -13,7 +13,7 @@
 #include <tuple>
 #include <any>
 
-namespace rlenvs_cpp{
+namespace rlenvscpp{
 namespace envs{
 namespace gymnasium{
 

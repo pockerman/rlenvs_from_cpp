@@ -23,7 +23,7 @@
 #include <cassert>
 #endif
 
-namespace rlenvs_cpp{
+namespace rlenvscpp{
 namespace envs{
 namespace gymnasium {
 

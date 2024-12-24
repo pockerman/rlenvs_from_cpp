@@ -7,7 +7,7 @@
 
 #include <string>
 
-namespace rlenvs_cpp{
+namespace rlenvscpp{
 
 ApiServerWrapper::ApiServerWrapper(const std::string& url)
 :
