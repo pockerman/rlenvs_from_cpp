@@ -16,16 +16,16 @@
 
 namespace example_5{
 	
-	using namespace rlenvs_cpp::envs::grid_world;
+	using namespace rlenvscpp::envs::grid_world;
 	
 	void create_static(){
 		
 		std::cout<<"Creating STATIC Gridworld..."<<std::endl;
 		
-		rlenvs_cpp::envs::grid_world::Gridworld<4> env;
+		rlenvscpp::envs::grid_world::Gridworld<4> env;
 
         std::unordered_map<std::string, std::any> options;
-        options["mode"] = std::any(rlenvs_cpp::envs::grid_world::to_string(rlenvs_cpp::envs::grid_world::GridWorldInitType::STATIC));
+        options["mode"] = std::any(rlenvscpp::envs::grid_world::to_string(rlenvscpp::envs::grid_world::GridWorldInitType::STATIC));
 
         env.make("v0", options);
 		
@@ -39,10 +39,10 @@ namespace example_5{
 		
 		std::cout<<"Creating RANDOM Gridworld..."<<std::endl;
 		
-		rlenvs_cpp::envs::grid_world::Gridworld<4> env;
+		rlenvscpp::envs::grid_world::Gridworld<4> env;
 
         std::unordered_map<std::string, std::any> options;
-        options["mode"] = std::any(rlenvs_cpp::envs::grid_world::to_string(rlenvs_cpp::envs::grid_world::GridWorldInitType::RANDOM));
+        options["mode"] = std::any(rlenvscpp::envs::grid_world::to_string(rlenvscpp::envs::grid_world::GridWorldInitType::RANDOM));
 
         env.make("v0", options);
 		

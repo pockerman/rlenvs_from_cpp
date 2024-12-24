@@ -15,7 +15,7 @@ const std::string SERVER_URL = "http://0.0.0.0:8001/api";
 
 void test_frozen_lake(){
 
-    rlenvs_cpp::envs::gymnasium::FrozenLake<4> env(SERVER_URL);
+    rlenvscpp::envs::gymnasium::FrozenLake<4> env(SERVER_URL);
 
     std::cout<<"Environame URL: "<<env.get_url()<<std::endl;
 
@@ -40,7 +40,7 @@ void test_frozen_lake(){
     std::cout<<time_step<<std::endl;
 
     // take an action in the environment
-    auto new_time_step = env.step(rlenvs_cpp::envs::gymnasium::FrozenLakeActionsEnum::RIGHT);
+    auto new_time_step = env.step(rlenvscpp::envs::gymnasium::FrozenLakeActionsEnum::RIGHT);
 
     std::cout<<new_time_step<<std::endl;
 
@@ -69,7 +69,7 @@ void test_frozen_lake(){
 
 void test_taxi(){
 
-    rlenvs_cpp::envs::gymnasium::Taxi env(SERVER_URL);
+    rlenvscpp::envs::gymnasium::Taxi env(SERVER_URL);
 
     std::cout<<"Environame URL: "<<env.get_url()<<std::endl;
 
@@ -93,7 +93,7 @@ void test_taxi(){
     std::cout<<time_step<<std::endl;
 
     // take an action in the environment
-    auto new_time_step = env.step(rlenvs_cpp::envs::gymnasium::TaxiActionsEnum::RIGHT);
+    auto new_time_step = env.step(rlenvscpp::envs::gymnasium::TaxiActionsEnum::RIGHT);
 
     std::cout<<new_time_step<<std::endl;
 
@@ -120,7 +120,7 @@ void test_taxi(){
 
 void test_black_jack(){
 
-    rlenvs_cpp::envs::gymnasium::BlackJack env(SERVER_URL);
+    rlenvscpp::envs::gymnasium::BlackJack env(SERVER_URL);
     std::unordered_map<std::string, std::any> options;
     options["natural"] = true;
 
@@ -131,8 +131,8 @@ void test_black_jack(){
     auto state = env.reset();
 
     std::cout<<"Environment step..."<<std::endl;
-    env.step(rlenvs_cpp::envs::gymnasium::BlackJackActionsEnum::HIT);
-    env.step(rlenvs_cpp::envs::gymnasium::BlackJackActionsEnum::STICK);
+    env.step(rlenvscpp::envs::gymnasium::BlackJackActionsEnum::HIT);
+    env.step(rlenvscpp::envs::gymnasium::BlackJackActionsEnum::STICK);
 
     // synchronize the environment
     env.sync(std::unordered_map<std::string, std::any>());
@@ -145,13 +145,13 @@ void test_black_jack(){
 
 void test_cliff_world(){
 
-     rlenvs_cpp::envs::gymnasium::CliffWorld env(SERVER_URL);
+	rlenvscpp::envs::gymnasium::CliffWorld env(SERVER_URL);
 
     std::cout<<"Environment URL: "<<env.get_url()<<std::endl;
 
     // make the environment
     std::unordered_map<std::string, std::any> options;
-	options["max_episode_steps"] = std::any(static_cast<rlenvs_cpp::uint_t>(10));
+	options["max_episode_steps"] = std::any(static_cast<rlenvscpp::uint_t>(10));
     env.make("v0", options);
 
     std::cout<<"Is environment created? "<<env.is_created()<<std::endl;
@@ -170,7 +170,7 @@ void test_cliff_world(){
     std::cout<<time_step<<std::endl;
 
     // take an action in the environment
-    auto new_time_step = env.step(rlenvs_cpp::envs::gymnasium::CliffWorldActionsEnum::UP);
+    auto new_time_step = env.step(rlenvscpp::envs::gymnasium::CliffWorldActionsEnum::UP);
 
     std::cout<<new_time_step<<std::endl;
 

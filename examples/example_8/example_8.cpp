@@ -12,8 +12,8 @@
 
 int main(){
 
-	using namespace rlenvs_cpp::envs::gymnasium;
-	using rlenvs_cpp::uint_t;
+	using namespace rlenvscpp::envs::gymnasium;
+	using rlenvscpp::uint_t;
 	
 	const std::string url = "http://0.0.0.0:8001/api";
     

@@ -5,7 +5,7 @@
 #include "rlenvs/rlenvscpp_config.h"
 #include "rlenvs/extern/nlohmann/json/json.hpp"
 
-namespace rlenvs_cpp{
+namespace rlenvscpp{
 namespace envs{
 namespace gymnasium{
 	

@@ -15,11 +15,11 @@
 
 namespace example_4{
 
-using rlenvs_cpp::uint_t;
+using rlenvscpp::uint_t;
 const std::string SERVER_URL = "http://0.0.0.0:8001/api";
 const uint_t MAX_TRAJECTORY_SIZE = 10;
 
-typedef rlenvs_cpp::envs::gym_pybullet_drones::QuadcopterSimEnv env_type;
+typedef rlenvscpp::envs::gym_pybullet_drones::QuadcopterSimEnv env_type;
 
 
 auto random_action_selector = [](auto /*state*/){

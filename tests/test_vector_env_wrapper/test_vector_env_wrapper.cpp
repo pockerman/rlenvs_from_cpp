@@ -21,11 +21,11 @@
 
 namespace{
 
-using rlenvs_cpp::uint_t;
-using rlenvs_cpp::real_t;
-using rlenvs_cpp::gymfcpp::CartPole;
-using rlenvs_cpp::SerialVectorEnvWrapper;
-using rlenvs_cpp::SerialVectorEnvWrapperConfig;
+using rlenvscpp::uint_t;
+using rlenvscpp::real_t;
+using rlenvscpp::gymfcpp::CartPole;
+using rlenvscpp::SerialVectorEnvWrapper;
+using rlenvscpp::SerialVectorEnvWrapperConfig;
 
 }
 

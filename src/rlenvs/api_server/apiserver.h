@@ -13,7 +13,7 @@
  */
 
 
-namespace rlenvs_cpp{
+namespace rlenvscpp{
 
 class ApiServerWrapper
 {

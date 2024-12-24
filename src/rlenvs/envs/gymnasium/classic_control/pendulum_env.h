@@ -90,7 +90,7 @@
 #include <tuple>
 #include <any>
 
-namespace rlenvs_cpp{
+namespace rlenvscpp{
 
 /// Forward declaration
 template<typename StateTp> class TimeStep;

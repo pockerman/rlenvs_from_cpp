@@ -21,7 +21,7 @@
 #include <stdexcept>
 	
 
-namespace rlenvs_cpp{
+namespace rlenvscpp{
 namespace envs{
 namespace gymnasium {
 	

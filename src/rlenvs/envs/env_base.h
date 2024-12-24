@@ -12,7 +12,7 @@
 #include <any>
 #include <string>
 
-namespace rlenvs_cpp{
+namespace rlenvscpp{
 namespace envs{
 
 
@@ -122,7 +122,7 @@ protected:
     /**
      * @brief Constructor
      */
-    EnvBase(const std::string& url, const std::string& name=INVALID_STR);
+    EnvBase(const std::string& url, const std::string& name=rlenvscpp::consts::INVALID_STR);
 
     /**
      * @brief Helper function to set the version. To be called only when the make is called

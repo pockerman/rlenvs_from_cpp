@@ -35,7 +35,7 @@
 /// Different namespace so that we differentiate
 /// from OpenAI-Gym environment
 ///
-namespace rlenvs_cpp{
+namespace rlenvscpp{
 
 // still we may want to use some utilities
 //using namespace gymfcpp;
@@ -495,16 +495,16 @@ Gridworld<side_size>::action_from_int(uint_t aidx){
 
     switch(aidx){
         case 0:
-           return rlenvs_cpp::envs::grid_world::GridWorldActionType::UP;
+           return rlenvscpp::envs::grid_world::GridWorldActionType::UP;
         case 1:
-            return rlenvs_cpp::envs::grid_world::GridWorldActionType::DOWN;
+            return rlenvscpp::envs::grid_world::GridWorldActionType::DOWN;
         case 2:
-            return rlenvs_cpp::envs::grid_world::GridWorldActionType::LEFT;
+            return rlenvscpp::envs::grid_world::GridWorldActionType::LEFT;
         case 3:
-            return rlenvs_cpp::envs::grid_world::GridWorldActionType::RIGHT;
+            return rlenvscpp::envs::grid_world::GridWorldActionType::RIGHT;
     }
 
-    return rlenvs_cpp::envs::grid_world::GridWorldActionType::INVALID_TYPE;
+    return rlenvscpp::envs::grid_world::GridWorldActionType::INVALID_TYPE;
 
 }
 
@@ -512,7 +512,7 @@ Gridworld<side_size>::action_from_int(uint_t aidx){
 template<uint_t side_size>
 Gridworld<side_size>::Gridworld()
     :
-      version_(INVALID_STR),
+      version_(rlenvscpp::consts::INVALID_STR),
       init_mode_(GridWorldInitType::INVALID_TYPE),
       randomize_state_(false),
       seed_(0),

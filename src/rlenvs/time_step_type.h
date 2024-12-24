@@ -6,7 +6,7 @@
 #include <string>
 #include <vector>
 
-namespace rlenvs_cpp
+namespace rlenvscpp
 {
 
 ///
