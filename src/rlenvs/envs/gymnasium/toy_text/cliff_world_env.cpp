@@ -8,6 +8,7 @@
 
 #include <iostream>
 #include <any>
+#include <memory>
 
 
 namespace rlenvscpp{
@@ -15,26 +16,6 @@ namespace envs {
 namespace gymnasium{
 
 const std::string CliffWorld::name = "CliffWalking";
-
-
-CliffWorldActionsEnum
-CliffWorld::action_from_int(uint_t aidx){
-
-    if(aidx==0)
-        return CliffWorldActionsEnum::UP;
-
-    if(aidx==1)
-        return CliffWorldActionsEnum::RIGHT;
-
-    if(aidx==2)
-        return CliffWorldActionsEnum::DOWN;
-
-    if(aidx==3)
-        return CliffWorldActionsEnum::LEFT;
-
-    return CliffWorldActionsEnum::INVALID_ACTION;
-}
-
 
 
 CliffWorld::dynamics_t
@@ -75,7 +56,20 @@ CliffWorld::create_time_step_from_response_(const http::Response& response)const
 
 CliffWorld::CliffWorld(const std::string& api_base_url)
     :
-ToyTextEnvBase<CliffWorldData::time_step_type>(api_base_url + "/gymnasium/cliff-walking-env"),
+ToyTextEnvBase<TimeStep<uint_t>, 
+			   DiscreteEnv<37, 4>>(0, "CliffWalking", 
+			                      api_base_url,
+								  "/gymnasium/cliff-walking-env"),
+max_episode_steps_(200)
+{}
+
+CliffWorld::CliffWorld(const std::string& api_base_url, 
+	                   const uint_t cidx)
+:
+ToyTextEnvBase<TimeStep<uint_t>, 
+			   DiscreteEnv<37, 4>>(cidx, "CliffWalking", 
+			                      api_base_url,
+								  "/gymnasium/cliff-walking-env"),
 max_episode_steps_(200)
 {}
 
@@ -87,7 +81,6 @@ CliffWorld::make(const std::string& version,
     if(this->is_created()){
         return;
     }
-	
 	
 	auto max_episode_steps_itr = options.find("max_episode_steps");
     if( max_episode_steps_itr != options.end()){
@@ -101,6 +94,7 @@ CliffWorld::make(const std::string& version,
     json j;
     j["version"] = version;
 	j["max_episode_steps"] = max_episode_steps_;
+	j["cidx"] = this -> cidx();
     auto body = j.dump();
 
     const auto response = request.send("POST", body);
@@ -109,16 +103,16 @@ CliffWorld::make(const std::string& version,
         throw std::runtime_error("Environment server failed to create Environment");
     }
 
-    this->set_version(version);
-    this->make_created();
+    this->set_version_(version);
+    this->make_created_();
 
 }
 
 CliffWorld::time_step_type
-CliffWorld::step(CliffWorldActionsEnum action){
+CliffWorld::step(const action_type& action){
 
 #ifdef RLENVSCPP_DEBUG
-     assert(this->is_created_ && "Environment has not been created");
+     assert(this->is_created() && "Environment has not been created");
 #endif
 
      if(this->get_current_time_step_().last()){
@@ -128,8 +122,13 @@ CliffWorld::step(CliffWorldActionsEnum action){
     const auto request_url = std::string(this->get_url()) + "/step";
     http::Request request{request_url};
 
-    auto body = std::to_string(action);
-    const auto response = request.send("POST", body);
+    auto copy_idx = this -> cidx();
+   
+	using json = nlohmann::json;
+    json j;
+	j["cidx"] = copy_idx;
+	j["action"] = action;
+    const auto response = request.send("POST", j.dump());
 
     if(response.status.code != 202){
         throw std::runtime_error("Environment server failed to step environment");
@@ -140,15 +139,13 @@ CliffWorld::step(CliffWorldActionsEnum action){
 
 }
 
-CliffWorld::time_step_type
-CliffWorld::step(uint_t action){
-
-#ifdef RLENVSCPP_DEBUG
-     assert(this->is_created_ && "Environment has not been created");
-#endif
-
-     auto action_enum = CliffWorld::action_from_int(action);
-     return step(action_enum);
+std::unique_ptr<CliffWorld::base_type> 
+CliffWorld::make_copy(uint_t cidx)const{
+	
+	auto api_base_url = this -> get_api_url();
+	return std::make_unique<CliffWorld>(api_base_url,
+								        cidx);
+												   
 }
 
 }

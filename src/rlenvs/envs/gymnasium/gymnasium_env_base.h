@@ -30,31 +30,42 @@ namespace rlenvscpp{
 namespace envs{
 namespace gymnasium {
 
-template<typename TimeStepType, typename StateSpaceType, typename ActionSpaceType>
-class GymnasiumEnvBase: public EnvBase<TimeStepType, StateSpaceType, ActionSpaceType>, 
+template<typename TimeStepType, typename SpaceType>
+class GymnasiumEnvBase: public EnvBase<TimeStepType, SpaceType>, 
                         public with_rest_api_mixin<TimeStepType>{
 public:
+	
+	
+	///
+	/// \brief The base_type
+	///
+	typedef EnvBase<TimeStepType, SpaceType> base_type;
 
     ///
 	/// \brief The time step type we return every time a step in the
 	/// environment is performed
 	///
-    typedef TimeStepType time_step_type;
+    typedef typename base_type::time_step_type time_step_type;
 	
 	///
 	/// \brief The type describing the state space for the environment
 	///
-	typedef StateSpaceType state_space_type;
+	typedef typename base_type::state_space_type state_space_type;
 	
 	///
 	/// \brief The type of the action space for the environment
 	///
-	typedef ActionSpaceType action_space_type;
+	typedef typename base_type::action_space_type action_space_type;
 
     ///
 	/// \brief The type of the action to be undertaken in the environment
 	///
-    typedef typename action_space_type action_type;
+    typedef typename base_type::action_type action_type;
+	
+	///
+	/// \brief Expose the various reset methods we use from base class
+	///
+	using base_type::reset;
 
     ///
     /// \brief ~GymnasiumEnvBase. Destructor.
@@ -70,6 +81,12 @@ public:
     /// \brief close the environment
     ///
     virtual void close() override;
+	
+	/// 
+	/// \brief Reset the environment
+	///
+    virtual time_step_type reset(uint_t seed,
+                                 const std::unordered_map<std::string, std::any>& options)override;
 
 
 protected:
@@ -81,27 +98,32 @@ protected:
 	                 const std::string& name, 
 					 const std::string& api_url,
 					 const std::string& resource_path);
+					 
+	///
+    /// \brief build the time step from the server response
+    ///
+    virtual time_step_type create_time_step_from_response_(const http::Response& response)const=0;
 
 };
 
-template<typename TimeStepType, typename StateSpaceType, typename ActionSpaceType>
+template<typename TimeStepType, typename SpaceType>
 GymnasiumEnvBase<TimeStepType, 
-                 StateSpaceType, 
-				 ActionSpaceType>::GymnasiumEnvBase(const uint_t cidx, const std::string& name, 
-												    const std::string& api_url, const std::string& resource_path)
+                 SpaceType>::GymnasiumEnvBase(const uint_t cidx, const std::string& name, 
+											  const std::string& api_url, 
+											  const std::string& resource_path)
 :
-EnvBase<TimeStepType, StateSpaceType, ActionSpaceType>(cidx, name),
+EnvBase<TimeStepType, SpaceType>(cidx, name),
 with_rest_api_mixin<TimeStepType>(api_url, resource_path)
 {}
 
-template<typename TimeStepType, typename StateSpaceType, typename ActionSpaceType>
-GymnasiumEnvBase<TimeStepType, StateSpaceType, ActionSpaceType>::~GymnasiumEnvBase(){
+template<typename TimeStepType, typename SpaceType>
+GymnasiumEnvBase<TimeStepType, SpaceType>::~GymnasiumEnvBase(){
     close();
 }
 
-template<typename TimeStepType, typename StateSpaceType, typename ActionSpaceType>
+template<typename TimeStepType, typename SpaceType>
 bool
-GymnasiumEnvBase<TimeStepType, StateSpaceType, ActionSpaceType>::is_alive()const{
+GymnasiumEnvBase<TimeStepType, SpaceType>::is_alive()const{
 	
 	
 	auto url_ = this->get_url();
@@ -119,11 +141,11 @@ GymnasiumEnvBase<TimeStepType, StateSpaceType, ActionSpaceType>::is_alive()const
 
 }
 
-template<typename TimeStepType, typename StateSpaceType, typename ActionSpaceType>
+template<typename TimeStepType, typename SpaceType>
 void
-GymnasiumEnvBase<TimeStepType, StateSpaceType, ActionSpaceType>::close(){
+GymnasiumEnvBase<TimeStepType, SpaceType>::close(){
 
-     if(!is_created_){
+     if(!this->is_created()){
         return;
     }
 
@@ -132,28 +154,31 @@ GymnasiumEnvBase<TimeStepType, StateSpaceType, ActionSpaceType>::close(){
     json j;
 	j["cidx"] = copy_idx;
 	
-    http::Request request{url_ + "/close"};
+	
+	auto url = this -> get_url();
+	
+    http::Request request{url + "/close"};
     const auto response = request.send("POST");
-    is_created_ = false;
+    this -> invalidate_is_created_flag_();
 
 }
 
-
-template<typename TimeStepType, typename StateSpaceType, typename ActionSpaceType>
-typename GymnasiumEnvBase<TimeStepType, StateSpaceType, ActionSpaceType>::time_step_type
-GymnasiumEnvBase<TimeStepType, StateSpaceType, ActionSpaceType>::reset(uint_t seed,
+template<typename TimeStepType, typename SpaceType>
+typename GymnasiumEnvBase<TimeStepType, SpaceType>::time_step_type
+GymnasiumEnvBase<TimeStepType, SpaceType>::reset(uint_t seed,
                                       const std::unordered_map<std::string, std::any>& /*options*/){
 
-    if(!is_created_){
+    if(!this->is_created()){
 #ifdef RLENVSCPP_DEBUG
-     assert(this->is_created_ && "Environment has not been created");
+     assert(this->is_created() && "Environment has not been created");
 #endif
      return time_step_type();
     }
 	
 	auto copy_idx = this -> cidx();
 	
-    const auto request_url = url_ + "/reset";
+	auto url = this -> get_url();
+    const auto request_url = url + "/reset";
     http::Request request{request_url};
 
 
@@ -169,8 +194,8 @@ GymnasiumEnvBase<TimeStepType, StateSpaceType, ActionSpaceType>::reset(uint_t se
         throw std::runtime_error("Environment server failed to reset environment");
     }
 
-    current_state_ = this->create_time_step_from_response_(response);
-    return current_state_;
+    this->create_time_step_from_response_(response);
+    return this -> get_current_time_step_();
 
 }
 

@@ -4,7 +4,7 @@
 #include "rlenvs/extern/HTTPRequest.hpp"
 #include <string>
 
-namespace rlenvs_cpp{
+namespace rlenvscpp{
 namespace envs{
 	
 	
@@ -14,6 +14,7 @@ namespace envs{
 template<typename TimeStepType>
 class with_rest_api_mixin
 {
+public:
 	
 	typedef TimeStepType time_step_type;
 	

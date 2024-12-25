@@ -1,6 +1,6 @@
 #include "rlenvs/envs/gymnasium/toy_text/black_jack_env.h"
-#include "rlenvs/extern/nlohmann/json/json.hpp"
 #include "rlenvs/rlenvscpp_config.h"
+#include "rlenvs/extern/nlohmann/json/json.hpp"
 
 #ifdef RLENVSCPP_DEBUG
 #include <cassert>
@@ -8,31 +8,13 @@
 
 #include <iostream>
 #include <typeinfo>
+#include <memory>
 
 namespace rlenvscpp{
 namespace envs{
-namespace gymnasium
-{
+namespace gymnasium{
 
 const std::string BlackJack::name = "BlackJack";
-
-
-BlackJackActionsEnum
-BlackJack::action_from_int(uint_t aidx){
-
-    switch(aidx){
-
-       case 0:
-           return BlackJackActionsEnum::STICK;
-       case 1:
-           return BlackJackActionsEnum::HIT;
-       default:
-           return BlackJackActionsEnum::INVALID_ACTION;
-   }
-
-
-}
-
 
 BlackJack::dynamics_t
 BlackJack::build_dynamics_from_response_(const http::Response& response)const{
@@ -54,16 +36,30 @@ BlackJack::create_time_step_from_response_(const http::Response& response)const{
     auto info = j["time_step"]["info"];
 
     std::vector<std::tuple<uint_t, uint_t, uint_t> > state(1, observation);
-    return BlackJack::time_step_type(step_type, reward, state, discount,
-                                     std::unordered_map<std::string, std::any>());
+    return BlackJack::time_step_type(
+	                                 //step_type, reward, 
+	                                 //state, discount
+                                     //std::unordered_map<std::string, std::any>()
+									 );
 }
 
 BlackJack::BlackJack(const std::string& api_base_url)
     :
-   ToyTextEnvBase<BlackJackData::time_step_type>(api_base_url + "/gymnasium/black-jack-env")
+ToyTextEnvBase<TimeStep<uint_t>, 
+			      DiscreteEnv<48, 2>>(0, "BlackJack",
+			                       api_base_url,
+                                   "/gymnasium/black-jack-env")
 {}
 
-
+BlackJack::BlackJack(const std::string& api_base_url, 
+	                 const uint_t cidx)
+					 :
+ToyTextEnvBase<TimeStep<uint_t>, 
+			      DiscreteEnv<48, 2>>(cidx, "BlackJack",
+			                          api_base_url,
+                                      "/gymnasium/black-jack-env")
+{}
+					 
 
 void
 BlackJack::make(const std::string& version,
@@ -91,6 +87,7 @@ BlackJack::make(const std::string& version,
     j["version"] = version;
     j["natural"]  = is_natural_;
     j["sab"] = is_sab_;
+	j["cidx"] = this -> cidx();
 
     auto body = j.dump();
     const auto response = request.send("POST", body);
@@ -99,16 +96,16 @@ BlackJack::make(const std::string& version,
         throw std::runtime_error("Environment server failed to create Environment");
     }
 
-    this->set_version(version);
-    this->make_created();
+    this->set_version_(version);
+    this->make_created_();
 
 }
 
 BlackJack::time_step_type
-BlackJack::step(BlackJackActionsEnum action){
+BlackJack::step(const action_type& action){
 
 #ifdef RLENVSCPP_DEBUG
-     assert(this->is_created_ && "Environment has not been created");
+     assert(this->is_created() && "Environment has not been created");
 #endif
 
     if(this->get_current_time_step_().last()){
@@ -119,8 +116,11 @@ BlackJack::step(BlackJackActionsEnum action){
 
     http::Request request{request_url};
 
-    auto body = std::to_string(action);
-    const auto response = request.send("POST", body);
+    using json = nlohmann::json;
+    json j;
+	j["cidx"] = this -> cidx();
+	j["action"] = action;
+    const auto response = request.send("POST", j.dump());
 
     if(response.status.code != 202){
         throw std::runtime_error("Environment server failed to step environment");
@@ -131,12 +131,26 @@ BlackJack::step(BlackJackActionsEnum action){
 }
 
 
-BlackJack::time_step_type
-BlackJack::step(uint_t action){
-
-   auto blackjack_action = BlackJack::action_from_int(action);
-   return step(blackjack_action);
+std::unique_ptr<BlackJack::base_type> 
+BlackJack::make_copy(uint_t cidx)const{
+	
+	auto api_base_url = this -> get_api_url();
+	
+	auto ptr = std::make_unique<BlackJack>(api_base_url,
+										   cidx);
+										   
+	if(this->is_natural_){
+		ptr -> make_natural();
+	}
+	
+	if(this -> is_sab_){
+		ptr -> make_sab();
+	}
+	
+	return ptr;
+												   
 }
+
 }
 }
 }

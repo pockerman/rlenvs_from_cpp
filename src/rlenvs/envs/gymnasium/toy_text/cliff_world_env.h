@@ -36,66 +36,25 @@
  */
 
 #include "rlenvs/rlenvs_types_v2.h"
-#include "rlenvs/discrete_space.h"
 #include "rlenvs/time_step.h"
 #include "rlenvs/extern/HTTPRequest.hpp"
-#include "rlenvs/extern/enum.h"
 #include "rlenvs/envs/gymnasium/toy_text/toy_text_base.h"
+#include "rlenvs/envs/space_type.h" 
 
 #include <string>
 #include <tuple>
 #include <any>
 #include <unordered_map>
+#include <memory>
 
 namespace rlenvscpp{
 namespace envs {
 namespace gymnasium {
 
-
-BETTER_ENUM(CliffWorldActionsEnum, int, UP=0, RIGHT=1, DOWN=2, LEFT=3, INVALID_ACTION=4);
-
-/**
-  * @brief The CliffWorldData struct
-  * Information  for the data comes from:
-  * https://github.com/Farama-Foundation/Gymnasium/blob/main/gymnasium/envs/toy_text/cliffwalking.py
-  *
-  */
-struct CliffWorldData
-{
-    ///
-    /// \brief action_space_t. The type of the action space
-    ///
-    typedef DiscreteSpace<4> action_space_type;
-
-    ///
-    /// \brief action_t
-    ///
-    typedef action_space_type::item_t action_type;
-
-    ///
-    /// \brief state_space_type
-    ///
-    typedef DiscreteSpace<37> state_space_type;
-
-    ///
-    /// \brief state_type
-    ///
-    typedef typename state_space_type::item_t state_type;
-
-
-
-    ///
-    /// \brief time_step_t. The type of the time step
-    ///
-    typedef TimeStep<state_type> time_step_type;
-
-};
-
-
 ///
 /// \brief The CliffWorld class
 ///
-class CliffWorld final: public ToyTextEnvBase<CliffWorldData::time_step_type>
+class CliffWorld final: public ToyTextEnvBase<TimeStep<uint_t>, DiscreteEnv<37, 4>>
 {
 
 public:
@@ -110,47 +69,43 @@ public:
     ///
     typedef std::vector<std::tuple<real_t, uint_t, real_t, bool>> dynamics_type;
 
-    ///
-    /// \brief env_data_t
-    ///
-    typedef CliffWorldData  env_data_type;
+	///
+	/// \brief The base type
+	///
+	typedef typename ToyTextEnvBase<TimeStep<uint_t>, 
+									DiscreteEnv<37, 4>>::base_type base_type;
+	
+	///
+	/// \brief The time step type we return every time a step in the
+	/// environment is performed
+	///
+    typedef typename base_type::time_step_type time_step_type;
+	
+	///
+	/// \brief The type describing the state space for the environment
+	///
+	typedef typename base_type::state_space_type state_space_type;
+	
+	///
+	/// \brief The type of the action space for the environment
+	///
+	typedef typename base_type::action_space_type action_space_type;
 
     ///
-    /// \brief action_space_t. The type of the action space
-    ///
-    typedef CliffWorldData::action_space_type action_space_type;
-
-    ///
-    /// \brief action_t
-    ///
-    typedef CliffWorldData::action_type action_type;
-
-    ///
-    /// \brief state_space_t
-    ///
-    typedef CliffWorldData::state_space_type state_space_type;
-
-    ///
-    /// \brief state_t
-    ///
-    typedef CliffWorldData::state_type state_type;
-
-    ///
-    /// \brief time_step_t. The type of the time step
-    ///
-    typedef CliffWorldData::time_step_type time_step_type;
-
-
-    /**
-     * @brief Convert the action index to a valid FrozenLakeActionsEnum
-     *
-     * */
-    static CliffWorldActionsEnum action_from_int(uint_t aidx);
-
+	/// \brief The type of the action to be undertaken in the environment
+	///
+    typedef typename base_type::action_type action_type;
+	
     ///
     /// \brief CliffWorld
     ///
     CliffWorld(const std::string& api_base_url);
+	
+	///
+	/// \brief Constructor
+	///
+	CliffWorld(const std::string& api_base_url, 
+	           const uint_t cidx);
 
     ///
     /// \brief ~CliffWorld. Destructor
@@ -180,14 +135,13 @@ public:
     /// \param action
     /// \return
     ///
-    time_step_type step(CliffWorldActionsEnum action);
-
-
-    /**
-     * @brief Step in the environment following the given action
-     *
-     * */
-    time_step_type step(uint_t action);
+    time_step_type step(const action_type& action) override final;
+	
+	///
+	/// \brief Create a new copy of the environment with the given
+	/// copy index
+	///
+	virtual std::unique_ptr<base_type> make_copy(uint_t cidx)const override final;
 
 
 protected:

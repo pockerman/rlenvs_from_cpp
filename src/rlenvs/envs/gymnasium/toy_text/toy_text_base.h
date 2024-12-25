@@ -5,7 +5,6 @@
 #include "rlenvs/extern/HTTPRequest.hpp"
 #include "rlenvs/rlenvscpp_config.h"
 #include "rlenvs/envs/gymnasium/gymnasium_env_base.h"
-#include "rlenvs/discrete_space.h"
 
 #include <string>
 #include <vector>
@@ -27,32 +26,37 @@ namespace gymnasium {
 /// for toy environments from Gymnasium. These environments
 /// have a discrete action space
 
-template<typename TimeStepType, typename StateSpaceType, uint_t space_dim>
-class ToyTextEnvBase: public GymnasiumEnvBase<TimeStepType, StateSpaceType, DiscreteSpace<space_dim>>{
+template<typename TimeStepType, typename SpaceType>
+class ToyTextEnvBase: public GymnasiumEnvBase<TimeStepType, SpaceType>{
 public:
+	
+	
+	///
+	/// \brief The base_type
+	///
+	typedef typename GymnasiumEnvBase<TimeStepType, SpaceType>::base_type base_type;
 
     ///
 	/// \brief The time step type we return every time a step in the
 	/// environment is performed
 	///
-    typedef TimeStepType time_step_type;
+    typedef typename base_type::time_step_type time_step_type;
 	
 	///
 	/// \brief The type describing the state space for the environment
 	///
-	typedef StateSpaceType state_space_type;
+	typedef typename base_type::state_space_type state_space_type;
 	
 	///
 	/// \brief The type of the action space for the environment
 	///
-	typedef DiscreteSpace<space_dim> action_space_type;
+	typedef typename base_type::action_space_type action_space_type;
 
     ///
 	/// \brief The type of the action to be undertaken in the environment
 	///
     typedef typename action_space_type::space_item_type action_type;
 	
-
     ///
     /// \brief dynamics_t
     ///
@@ -90,27 +94,25 @@ protected:
     ///
     virtual dynamics_t build_dynamics_from_response_(const http::Response& response)const=0;
 
-    ///
-    /// \brief build the time step from the server response
-    ///
-    virtual time_step_type create_time_step_from_response_(const http::Response& response)const=0;
-
 };
 
-template<typename TimeStepType>
-ToyTextEnvBase<TimeStepType>::ToyTextEnvBase(const uint_t cidx, const std::string& name, 
-                                             const std::string& api_url, const std::string& resource_path)
+template<typename TimeStepType, typename SpaceType>
+ToyTextEnvBase<TimeStepType, 
+               SpaceType>::ToyTextEnvBase(const uint_t cidx, 
+												 const std::string& name, 
+                                                 const std::string& api_url, 
+												 const std::string& resource_path)
 :
-GymnasiumEnvBase<TimeStepType>(cidx, name, api_url, resource_path)
+GymnasiumEnvBase<TimeStepType, SpaceType>(cidx, name, api_url, resource_path)
 {}
 
 
-template<typename TimeStepType>
-typename ToyTextEnvBase<TimeStepType>::dynamics_t
-ToyTextEnvBase<TimeStepType>::p(uint_t sidx, uint_t aidx)const{
+template<typename TimeStepType, typename SpaceType>
+typename ToyTextEnvBase<TimeStepType, SpaceType>::dynamics_t
+ToyTextEnvBase<TimeStepType, SpaceType>::p(uint_t sidx, uint_t aidx)const{
 
 #ifdef RLENVSCPP_DEBUG
-    assert(this->is_created_ && "Environment has not been created");
+    assert(this->is_created() && "Environment has not been created");
 #endif
 
     const std::string url(this->get_url());

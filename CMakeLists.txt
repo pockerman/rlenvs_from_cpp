@@ -92,15 +92,15 @@ INCLUDE_DIRECTORIES(src/)
 
 FILE(GLOB SRCS src/rlenvs/*.cpp
                src/rlenvs/api_server/*.cpp
-               src/rlenvs/detail/*.cpp
+               #src/rlenvs/detail/*.cpp
                src/rlenvs/envs/gymnasium/*.cpp
                src/rlenvs/envs/gymnasium/toy_text/*.cpp
-               src/rlenvs/envs/gymnasium/classic_control/*.cpp
-               src/rlenvs/envs/gymnasium/classic_control/vector/*.cpp
-               src/rlenvs/envs/gdrl/*.cpp
-               src/rlenvs/envs/gym_pybullet_drones/*.cpp
-               src/rlenvs/envs/grid_world/*.cpp
-			   src/rlenvs/envs/connect2/*.cpp
+               #src/rlenvs/envs/gymnasium/classic_control/*.cpp
+               #src/rlenvs/envs/gymnasium/classic_control/vector/*.cpp
+               #src/rlenvs/envs/gdrl/*.cpp
+               #src/rlenvs/envs/gym_pybullet_drones/*.cpp
+               #src/rlenvs/envs/grid_world/*.cpp
+			   #src/rlenvs/envs/connect2/*.cpp
 			   src/rlenvs/dynamics/*.cpp
 			   src/rlenvs/utils/*.cpp
    )

@@ -40,7 +40,8 @@ void test_frozen_lake(){
     std::cout<<time_step<<std::endl;
 
     // take an action in the environment
-    auto new_time_step = env.step(rlenvscpp::envs::gymnasium::FrozenLakeActionsEnum::RIGHT);
+	// 2 = RIGHT
+    auto new_time_step = env.step(2);
 
     std::cout<<new_time_step<<std::endl;
 
@@ -93,7 +94,8 @@ void test_taxi(){
     std::cout<<time_step<<std::endl;
 
     // take an action in the environment
-    auto new_time_step = env.step(rlenvscpp::envs::gymnasium::TaxiActionsEnum::RIGHT);
+	// move RIGHT
+    auto new_time_step = env.step(2);
 
     std::cout<<new_time_step<<std::endl;
 
@@ -131,8 +133,11 @@ void test_black_jack(){
     auto state = env.reset();
 
     std::cout<<"Environment step..."<<std::endl;
-    env.step(rlenvscpp::envs::gymnasium::BlackJackActionsEnum::HIT);
-    env.step(rlenvscpp::envs::gymnasium::BlackJackActionsEnum::STICK);
+	
+	// 0 = HIT
+	// 1 = STICK
+    env.step(0);
+    env.step(1);
 
     // synchronize the environment
     env.sync(std::unordered_map<std::string, std::any>());
@@ -170,7 +175,8 @@ void test_cliff_world(){
     std::cout<<time_step<<std::endl;
 
     // take an action in the environment
-    auto new_time_step = env.step(rlenvscpp::envs::gymnasium::CliffWorldActionsEnum::UP);
+	// 0 = UP
+    auto new_time_step = env.step(0);
 
     std::cout<<new_time_step<<std::endl;
 

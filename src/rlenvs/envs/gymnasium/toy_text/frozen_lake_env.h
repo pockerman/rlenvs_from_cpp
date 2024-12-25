@@ -59,8 +59,9 @@
 #include "rlenvs/discrete_space.h"
 #include "rlenvs/time_step.h"
 #include "rlenvs/extern/HTTPRequest.hpp"
-#include "rlenvs/extern/enum.h"
+
 #include "rlenvs/envs/gymnasium/toy_text/toy_text_base.h"
+#include "rlenvs/envs/space_type.h"
 
 #include <string>
 #include <vector>
@@ -74,73 +75,37 @@ namespace envs{
 namespace gymnasium {
 
 template<uint_t side_size>
-struct discrete_state_space_frozen_lake;
+struct frozenlake_state_size;
 
 
 template<>
-struct discrete_state_space_frozen_lake<4>
+struct frozenlake_state_size<4>
 {
-
-    ///
-    /// \brief item_t
-    ///
-    typedef uint_t item_type;
-
-
-    ///
+	///
     /// \brief size
     ///
     static constexpr uint_t size = 16;
 
-    ///
-    /// \brief sample
-    /// \return
-    ///
-    static item_type sample(){return DiscreteSpace<16>::sample();}
-
-    ///
-    /// \brief
-    ///
-    static item_type sample(uint_t seed){return DiscreteSpace<16>::sample(seed);}
-
 };
 
+
 template<>
-struct discrete_state_space_frozen_lake<8>
+struct frozenlake_state_size<8>
 {
-    ///
-    /// \brief item_t
-    ///
-    typedef uint_t item_type;
-
-
-    ///
+	///
     /// \brief size
     ///
     static constexpr uint_t size = 64;
 
-    ///
-    /// \brief sample
-    /// \return
-    ///
-    static item_type sample(){return DiscreteSpace<64>::sample();}
-
-    ///
-    /// \brief
-    ///
-    static item_type sample(uint_t seed){return DiscreteSpace<64>::sample(seed);}
-
 };
-
 
 ///
 /// \brief The FrozenLake class. Wrapper to Gymnasium FrozenLake
 /// environment
 ///
 template<uint_t side_size>
-class FrozenLake final: public ToyTextEnvBase<TimeStep<typename discrete_state_space_frozen_lake<side_size>::state_type>,
-                                              discrete_state_space_frozen_lake<side_size>, 
-											  4 >
+class FrozenLake final: public ToyTextEnvBase<TimeStep<uint_t>,
+                                              DiscreteEnv<frozenlake_state_size<side_size>::size, 4>>
 {
 public:
 	
@@ -155,42 +120,42 @@ public:
     typedef std::vector<std::tuple<real_t, uint_t, real_t, bool>> dynamics_t;
 
 
-	typedef ToyTextEnvBase<TimeStep<typename discrete_state_space_frozen_lake<side_size>::state_type>,
-                                              discrete_state_space_frozen_lake<side_size>, 
-											  4 > base_class_type;
+	///
+	/// \brief The base type
+	///
+	typedef typename ToyTextEnvBase<TimeStep<uint_t>,
+									DiscreteEnv<frozenlake_state_size<side_size>::size, 4>>::base_type base_type;
 	
 	///
 	/// \brief The time step type we return every time a step in the
 	/// environment is performed
 	///
-    typedef typename base_class_type::time_step_type time_step_type;
+    typedef typename base_type::time_step_type time_step_type;
 	
 	///
 	/// \brief The type describing the state space for the environment
 	///
-	typedef typename base_class_type::state_space_type state_space_type;
+	typedef typename base_type::state_space_type state_space_type;
 	
 	///
 	/// \brief The type of the action space for the environment
 	///
-	typedef typename base_class_type::action_space_type action_space_type;
+	typedef typename base_type::action_space_type action_space_type;
 
     ///
 	/// \brief The type of the action to be undertaken in the environment
 	///
-    typedef typename base_class_type::action_type action_type;
+    typedef typename base_type::action_type action_type;
 	
     ///
     /// \brief Constructor.
     ///
     FrozenLake(const std::string& api_base_url);
 	
-	
 	///
 	/// \brief Constructor
 	///
 	FrozenLake(const std::string& api_base_url, 
-	           const std::string& version, 
 	           const uint_t cidx, bool slippery);
 
     ///
@@ -214,16 +179,12 @@ public:
 	/// \brief Create a new copy of the environment with the given
 	/// copy index
 	///
-	virtual std::unique_ptr<EnvBase<time_step_type, 
-	                                state_space_type 
-									action_space_type>> make_copy(uint_t cidx)const override final;
+	virtual std::unique_ptr<base_type> make_copy(uint_t cidx)const override final;
 
     ///
     /// \brief n_states. Returns the number of states
     ///
     uint_t n_states()const noexcept{ return side_size == 4 ? 16 : 64; }
-
-    
 
     ///
     /// \brief map_type

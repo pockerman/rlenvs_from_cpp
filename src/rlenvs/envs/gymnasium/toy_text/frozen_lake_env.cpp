@@ -8,6 +8,8 @@
 #include <cassert>
 #endif
 
+#include <memory>
+
 namespace rlenvscpp{
 namespace envs{
 namespace gymnasium{
@@ -18,17 +20,18 @@ const std::string FrozenLake<side_size>::name = "FrozenLake";
 template<uint_t side_size>
 FrozenLake<side_size>::FrozenLake(const std::string& api_base_url)
 :
-ToyTextEnvBase<typename FrozenLakeData<side_size>::time_step_type>(0, "FrozenLake",
+ToyTextEnvBase<TimeStep<uint_t>,
+			   DiscreteEnv<frozenlake_state_size<side_size>::size, 4>>(0, "FrozenLake",
                                                                     api_base_url,"/gymnasium/frozen-lake-env"),
 is_slippery_(true)
 {}
  
 template<uint_t side_size>
 FrozenLake<side_size>::FrozenLake(const std::string& api_base_url, 
-                                  const std::string& version, 
 		                          const uint_t cidx, bool slippery)
 		   :
-ToyTextEnvBase<typename FrozenLakeData<side_size>::time_step_type>(cidx, "FrozenLake",
+ToyTextEnvBase<TimeStep<uint_t>,
+			   DiscreteEnv<frozenlake_state_size<side_size>::size, 4>>(cidx, "FrozenLake",
                                                                    api_base_url, "/gymnasium/frozen-lake-env"),
 is_slippery_(slippery)
 {}			
@@ -80,6 +83,7 @@ FrozenLake<side_size>::make(const std::string& version,
         is_slippery_ = std::any_cast<bool>(slip_itr->second);
     }
 	
+	auto copy_idx = this -> cidx();
     const auto request_url = std::string(this->get_url()) + "/make";
     http::Request request{request_url};
 
@@ -88,6 +92,7 @@ FrozenLake<side_size>::make(const std::string& version,
     j["version"] = version;
     j["map_name"] = map_type();
     j["is_slippery"]  = is_slippery_;
+	j["cidx"] = copy_idx;
 
     auto body = j.dump();
     const auto response = request.send("POST", body);
@@ -105,7 +110,7 @@ typename FrozenLake<side_size>::time_step_type
 FrozenLake<side_size>::step(const action_type& action){
 
 #ifdef RLENVSCPP_DEBUG
-     assert(this->is_created_ && "Environment has not been created");
+     assert(this->is_created() && "Environment has not been created");
 #endif
 
      if(this->get_current_time_step_().last()){
@@ -135,16 +140,13 @@ FrozenLake<side_size>::step(const action_type& action){
 }
 
 template<uint_t side_size>
-std::unique_ptr<EnvBase<typename FrozenLake<side_size>::time_step_type, 
-						typename FrozenLake<side_size>::state_space_type 
-						typename FrozenLake<side_size>::action_space_type>> 
+std::unique_ptr<typename FrozenLake<side_size>::base_type> 
 FrozenLake<side_size>::make_copy(uint_t cidx)const{
 	
-	auto api_url = this -> get_api_url();
+	auto api_base_url = this -> get_api_url();
 	auto version = this -> version();
 	auto slippery = this -> is_slippery();
 	return std::make_unique<FrozenLake<side_size>>(api_base_url,
-	                                               version,
 												   cidx,
 												   slippery);
 												   

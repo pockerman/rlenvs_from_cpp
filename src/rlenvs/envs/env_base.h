@@ -6,12 +6,15 @@
 
 #include "rlenvs/rlenvs_consts.h"
 #include "rlenvs/envs/synchronized_env_mixin.h"
+#include "rlenvs/rlenvs_consts.h"
+
 #include <boost/noncopyable.hpp>
 
 #include <unordered_map>
 #include <any>
 #include <string>
 #include <memory>
+#include <type_traits>
 
 namespace rlenvscpp{
 namespace envs{
@@ -20,10 +23,15 @@ namespace envs{
 ///
 /// \ brief Base class for environments.
 ///
-template<typename TimeStepType, typename StateSpaceType, typename ActionSpaceType>
-class EnvBase: private boost::noncopyable, public ActionSpaceType, public synchronized_env_mixin
+template<typename TimeStepType, typename SpaceType>
+class EnvBase: private boost::noncopyable, public SpaceType, public synchronized_env_mixin
 {
 public:
+	
+	static_assert(std::is_default_constructible<TimeStepType>::value && "TimeStepType should be default constructible");
+	static_assert(std::is_default_constructible<SpaceType>::value && "SpaceType should be default constructible");
+	
+	static const uint_t DEFAULT_ENV_SEED = 42;
 
 	///
 	/// \brief The time step type we return every time a step in the
@@ -34,17 +42,23 @@ public:
 	///
 	/// \brief The type describing the state space for the environment
 	///
-	typedef StateSpaceType state_space_type;
+	typedef typename SpaceType::state_space state_space_type;
+	
+	///
+	/// \brief The type of the state
+	///
+	typedef typename SpaceType::state_type state_type;
+	
 	
 	///
 	/// \brief The type of the action space for the environment
 	///
-	typedef ActionSpaceType action_space_type;
+	typedef typename SpaceType::action_space action_space_type;
 
     ///
 	/// \brief The type of the action to be undertaken in the environment
 	///
-    typedef typename action_space_type action_type;
+    typedef typename SpaceType::action_type action_type;
 
     ///
 	/// \brief dctor
@@ -61,6 +75,13 @@ public:
 	/// \brief close the environment
 	///
     virtual void close()=0;
+	
+	
+	///
+	 /// \brief Reset the environment always using the same seed
+	 ///
+    time_step_type reset(){
+        return reset(DEFAULT_ENV_SEED, std::unordered_map<std::string, std::any>());}
 
     /// 
 	/// \brief Reset the environment
@@ -68,12 +89,6 @@ public:
     virtual time_step_type reset(uint_t seed,
                                  const std::unordered_map<std::string, std::any>& options)=0;
 								 
-	 ///
-	 /// \brief Reset the environment always using the same seed
-	 ///
-    time_step_type reset(const std::unordered_map<std::string, std::any>& options = std::unordered_map<std::string, std::any>()){
-        return reset(DEFAULT_ENV_SEED, options);}
-		
     ///
 	/// \brief step in the environment by performing the given action
     /// \param action The action to execute in the environment 
@@ -84,7 +99,7 @@ public:
 	/// \brief Create a new copy of the environment with the given
 	/// copy index
 	///
-	virtual std::unique_ptr<EnvBase<time_step_type, StateSpaceType ActionSpaceType>> make_copy(uint_t cidx)const=0;
+	virtual std::unique_ptr<EnvBase<time_step_type, SpaceType>> make_copy(uint_t cidx)const=0;
 	
     ///
 	/// \brief is_created Returns true is make has been called successfully
@@ -108,11 +123,11 @@ public:
 
 protected:
 
-
     ///
 	/// \brief Constructor
 	///
-    explicit EnvBase(const uint_t cidx=0, const std::string& name=INVALID_STR);
+    explicit EnvBase(const uint_t cidx=0, 
+	                 const std::string& name=rlenvscpp::consts::INVALID_STR);
 
 
     ///
@@ -145,10 +160,10 @@ private:
 };
 
 
-template<typename TimeStepType, typename StateSpaceType, typename ActionSpaceType>
-EnvBase<TimeStepType, StateSpaceType, ActionSpaceType>::EnvBase(const uint_t cidx, const std::string& name)
+template<typename TimeStepType, typename SpaceType>
+EnvBase<TimeStepType, SpaceType>::EnvBase(const uint_t cidx, const std::string& name)
 :
-ActionSpaceType(),
+SpaceType(),
 synchronized_env_mixin(),
 is_created_(false),
 cidx_(cidx),

@@ -4,119 +4,77 @@
 /**
  *  BlackJack environment
  *  https://github.com/Farama-Foundation/Gymnasium/blob/main/gymnasium/envs/toy_text/blackjack.py
- *
- *
- *
- *
  */
 
 #include "rlenvs/rlenvs_types_v2.h"
 #include "rlenvs/time_step.h"
-#include "rlenvs/discrete_space.h"
 #include "rlenvs/extern/HTTPRequest.hpp"
 #include "rlenvs/envs/gymnasium/toy_text/toy_text_base.h"
+#include "rlenvs/envs/space_type.h"
 
 #include <string>
 #include <vector>
 #include <tuple>
 #include <any>
 #include <unordered_map>
+#include <memory>
 
 namespace rlenvscpp{
 namespace envs{
 namespace gymnasium {
 
-
-BETTER_ENUM(BlackJackActionsEnum, int, STICK=0, HIT=1, INVALID_ACTION=2);
-
-///
-/// \brief The CliffWorldData struct
-///
-struct BlackJackData
-{
-    ///
-    /// \brief action_space_t. The type of the action space
-    ///
-    typedef DiscreteSpace<2> action_space_type;
-
-    ///
-    /// \brief action_t
-    ///
-    typedef action_space_type::item_t action_type;
-
-    ///
-    /// \brief state_space_type
-    ///
-    typedef DiscreteSpace<48> state_space_type;
-
-    ///
-    /// \brief state_type
-    ///
-    typedef std::vector<std::tuple<uint_t, uint_t, uint_t> > state_type;
-
-
-    ///
-    /// \brief time_step_t. The type of the time step
-    ///
-    typedef TimeStep<state_type> time_step_type;
-
-};
-
 ///
 /// \brief The BlackJack class. Wrapper to the Blackjack
 /// OpenAI-Gym environment.
 ///
-class BlackJack final:  public ToyTextEnvBase<BlackJackData::time_step_type>
+class BlackJack final: public ToyTextEnvBase<TimeStep<uint_t>, 
+											 DiscreteEnv<48, 2>>
 {
 
 public:
-
 
     ///
     /// \brief name
     ///
     static  const std::string name;
 
-     /**
-     * @brief Convert the action index to a valid FrozenLakeActionsEnum
-     *
-     * */
-    static BlackJackActionsEnum action_from_int(uint_t aidx);
+    ///
+	/// \brief The base type
+	///
+	typedef typename ToyTextEnvBase<TimeStep<uint_t>, 
+									DiscreteEnv<48, 2>>::base_type base_type;
+	
+	///
+	/// \brief The time step type we return every time a step in the
+	/// environment is performed
+	///
+    typedef typename base_type::time_step_type time_step_type;
+	
+	///
+	/// \brief The type describing the state space for the environment
+	///
+	typedef typename base_type::state_space_type state_space_type;
+	
+	///
+	/// \brief The type of the action space for the environment
+	///
+	typedef typename base_type::action_space_type action_space_type;
 
     ///
-    /// \brief env_data_t
-    ///
-    typedef BlackJackData  env_data_type;
-
-    ///
-    /// \brief action_space_t. The type of the action space
-    ///
-    typedef env_data_type::action_space_type action_space_type;
-
-    ///
-    /// \brief action_t
-    ///
-    typedef env_data_type::action_type action_type;
-
-    ///
-    /// \brief state_space_t
-    ///
-    typedef env_data_type::state_space_type state_space_type;
-
-    ///
-    /// \brief state_t
-    ///
-    typedef env_data_type::state_type state_type;
-
-    ///
-    /// \brief time_step_t. The type of the time step
-    ///
-    typedef env_data_type::time_step_type time_step_type;
+	/// \brief The type of the action to be undertaken in the environment
+	///
+    typedef typename base_type::action_type action_type;
 
     ///
     /// \brief BlackJack. Constructor.
     ///
     BlackJack(const std::string& api_base_url);
+	
+	///
+	/// \brief Constructor
+	///
+	BlackJack(const std::string& api_base_url, 
+	           const uint_t cidx);
 
     ///
     /// \brief ~BlackJack. Destructor
@@ -146,13 +104,13 @@ public:
     /// \param action
     /// \return
     ///
-    time_step_type step(BlackJackActionsEnum action);
-
-    /**
-     * @brief Step in the environment following the given action
-     *
-     * */
-    time_step_type step(uint_t action);
+    time_step_type step(const action_type& action)override final;
+	
+	///
+	/// \brief Create a new copy of the environment with the given
+	/// copy index
+	///
+	virtual std::unique_ptr<base_type> make_copy(uint_t cidx)const override final;
 
     ///
     ///

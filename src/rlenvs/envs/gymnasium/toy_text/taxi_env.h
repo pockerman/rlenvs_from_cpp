@@ -4,69 +4,25 @@
 #include "rlenvs/rlenvscpp_config.h"
 #include "rlenvs/rlenvs_types_v2.h"
 #include "rlenvs/envs/gymnasium/toy_text/toy_text_base.h"
-#include "rlenvs/discrete_space.h"
-#include "rlenvs/continuous_space.h"
 #include "rlenvs/time_step.h"
 #include "rlenvs/extern/HTTPRequest.hpp"
-#include "rlenvs/extern/enum.h"
+#include "rlenvs/envs/space_type.h"
 
 #include <map>
 #include <string>
 #include <any>
 #include <unordered_map>
+#include <memory>
 
 
 namespace rlenvscpp{
 namespace envs {
 namespace gymnasium{
 
-BETTER_ENUM(TaxiActionsEnum, uint_t, DOWN=0, UP=1, RIGHT=2,
-            LEFT=3, PICK_PASSENGER=4, DROP_PASSENGER=5, INVALID_ACTION=6);
-
-///
-/// \brief The TaxiData struct. Wrapper for the environment data
-///
-struct TaxiData
-{
-    ///
-    /// \brief action_space_t. The type of the action space
-    ///
-    typedef DiscreteSpace<6> action_space_type;
-
-    ///
-    /// \brief action_t
-    ///
-    typedef action_space_type::item_t action_type;
-
-    ///
-    /// \brief state_space_t
-    ///
-    typedef ContinuousSpace<4> state_space_type;
-
-    ///
-    /// \brief state_t
-    ///
-    typedef uint_t state_type;
-
-    
-
-    ///
-    /// \brief time_step_t. The type of the time step
-    ///
-    typedef TimeStep<state_type> time_step_type;
-
-};
-
-namespace{
-	
-	
-}
-
-
 ///
 /// \brief The Taxi class
 ///
-class Taxi final: public  ToyTextEnvBase<TimeStep<uint_t>, ContinuousSpace<4>, DiscreteSpace<6>>
+class Taxi final: public  ToyTextEnvBase<TimeStep<uint_t>, DiscreteEnv<500, 6>>
 {
 public:
 	
@@ -76,39 +32,42 @@ public:
     static  const std::string name;
 	
     ///
-    /// \brief env_data_t
-    ///
-    typedef TaxiData  env_data_type;
+	/// \brief The base type
+	///
+	typedef typename ToyTextEnvBase<TimeStep<uint_t>,
+									DiscreteEnv<500, 6>>::base_type base_type;
+	
+	///
+	/// \brief The time step type we return every time a step in the
+	/// environment is performed
+	///
+    typedef typename base_type::time_step_type time_step_type;
+	
+	///
+	/// \brief The type describing the state space for the environment
+	///
+	typedef typename base_type::state_space_type state_space_type;
+	
+	///
+	/// \brief The type of the action space for the environment
+	///
+	typedef typename base_type::action_space_type action_space_type;
 
     ///
-    /// \brief action_space_t. The type of the action space
-    ///
-    typedef TaxiData::action_space_type action_space_type;
-
-    ///
-    /// \brief action_t
-    ///
-    typedef TaxiData::action_type action_type;
-
-    ///
-    /// \brief state_space_t
-    ///
-    typedef TaxiData::state_space_type state_space_type;
-
-    ///
-    /// \brief state_t
-    ///
-    typedef TaxiData::state_type state_type;
-
-    ///
-    /// \brief time_step_t. The type of the time step
-    ///
-    typedef TaxiData::time_step_type time_step_type;
-
+	/// \brief The type of the action to be undertaken in the environment
+	///
+    typedef typename base_type::action_type action_type;
+	
     ///
     /// \brief Taxi
     ///
     Taxi(const std::string& api_base_url);
+	
+	///
+	/// \brief Constructor
+	///
+	Taxi(const std::string& api_base_url, 
+		 const uint_t cidx);
 
 
     ///
@@ -123,25 +82,22 @@ public:
     virtual void make(const std::string& version,
                       const std::unordered_map<std::string, std::any>& /*options*/) override final;
 
-    
-
     ///
     /// \brief Number of states. Hardcoded from here:
     /// https://github.com/Farama-Foundation/Gymnasium/blob/6baf8708bfb08e37ce3027b529193169eaa230fd/gymnasium/envs/toy_text/taxi.py#L165C9-L165C19
     ///
-    uint_t n_states()const noexcept{return 500;}
+    uint_t n_states()const noexcept{return state_space_type::size;}
 
     ///
     /// \brief step
     ///
-    time_step_type step(TaxiActionsEnum action);
+    virtual time_step_type step(const action_type& action) override final;
 
     ///
-    /// \brief sample
-    /// \return
-    ///
-    action_type sample_action()const noexcept{return action_space_type::sample();}
-
+	/// \brief Create a new copy of the environment with the given
+	/// copy index
+	///
+	virtual std::unique_ptr<base_type> make_copy(uint_t cidx)const override final;
 protected:
 
      ///

@@ -8,6 +8,8 @@
 #include <iostream>
 #endif
 
+#include <memory>
+
 namespace rlenvscpp{
 namespace envs{
 namespace gymnasium{
@@ -17,8 +19,18 @@ const std::string Taxi::name = "Taxi";
 
 Taxi::Taxi(const std::string& api_base_url)
     :
-     ToyTextEnvBase<TaxiData::time_step_type>(api_base_url + "/gymnasium/taxi-env")
+     ToyTextEnvBase<TimeStep<uint_t>, DiscreteEnv<500, 6>>(0, "Taxi", 
+	                                                       api_base_url, "/gymnasium/taxi-env")
 {}
+
+
+Taxi::Taxi(const std::string& api_base_url, 
+		   const uint_t cidx)
+		   :
+ToyTextEnvBase<TimeStep<uint_t>, DiscreteEnv<500, 6>>(cidx, "Taxi",
+													  api_base_url, 
+													  "/gymnasium/frozen-lake-env")
+{}	
 
 Taxi::dynamics_t
 Taxi::build_dynamics_from_response_(const http::Response& response)const{
@@ -60,11 +72,12 @@ Taxi::make(const std::string& version,
     const auto request_url = std::string(this->get_url()) + "/make";
     http::Request request{request_url};
 
-    //auto body = "\""+version+"\"";
+	auto copy_idx = this -> cidx();
 	
 	using json = nlohmann::json;
     json j;
     j["version"] = version;
+	j["cidx"] = copy_idx;
 	auto body = j.dump();
 	
     const auto response = request.send("POST", body);
@@ -73,15 +86,15 @@ Taxi::make(const std::string& version,
         throw std::runtime_error("Environment server failed to create Environment");
     }
 
-    this->make_created();
+    this->make_created_();
 }
 
 
 Taxi::time_step_type
-Taxi::step(TaxiActionsEnum action){
+Taxi::step(const action_type& action){
 
 #ifdef RLENVSCPP_DEBUG
-     assert(this->is_created_ && "Environment has not been created");
+     assert(this->is_created() && "Environment has not been created");
 #endif
 
      if(this->get_current_time_step_().last()){
@@ -91,9 +104,14 @@ Taxi::step(TaxiActionsEnum action){
     const auto request_url = std::string(this->get_url()) + "/step";
     http::Request request{request_url};
 
-    auto body = std::to_string(action);
+	auto copy_idx = this -> cidx();
+   
+	using json = nlohmann::json;
+    json j;
+	j["cidx"] = copy_idx;
+	j["action"] = action;
 
-    const auto response = request.send("POST", body);
+    const auto response = request.send("POST", j.dump());
 
      if(response.status.code != 202){
         throw std::runtime_error("Environment server failed to step environment");
@@ -101,6 +119,17 @@ Taxi::step(TaxiActionsEnum action){
 
     this->get_current_time_step_() = this->create_time_step_from_response_(response);
     return this->get_current_time_step_();
+}
+
+
+
+std::unique_ptr<Taxi::base_type> 
+Taxi::make_copy(uint_t cidx)const{
+	
+	auto api_base_url = this -> get_api_url();
+	return std::make_unique<Taxi>(api_base_url,
+								  cidx);
+												   
 }
 
 }
