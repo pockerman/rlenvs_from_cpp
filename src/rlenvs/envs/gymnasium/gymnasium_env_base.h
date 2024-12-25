@@ -1,6 +1,3 @@
-// SPDX-FileCopyrightText: 2024 <copyright holder> <email>
-// SPDX-License-Identifier: Apache-2.0
-
 #ifndef GYMNASIUM_ENV_BASE_H
 #define GYMNASIUM_ENV_BASE_H
 
