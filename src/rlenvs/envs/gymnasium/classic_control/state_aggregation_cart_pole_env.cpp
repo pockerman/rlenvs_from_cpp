@@ -2,7 +2,7 @@
 #include "rlenvs/time_step_type.h"
 #include "rlenvs/time_step.h"
 
-namespace rlenvs_cpp{
+namespace rlenvscpp{
 namespace envs{
 namespace gymnasium{
 

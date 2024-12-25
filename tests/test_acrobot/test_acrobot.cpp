@@ -8,23 +8,22 @@
 
 namespace{
 
-using rlenvs_cpp::uint_t;
-using rlenvs_cpp::real_t;
-
+using namespace rlenvscpp;
+using rlenvscpp::envs::gymnasium::Acrobot;
 const std::string SERVER_URL = "http://0.0.0.0:8001/api";
 
 }
 
 TEST(TestAcrobot, TestConstructor) {
 
-    rlenvs_cpp::envs::gymnasium::Acrobot env(SERVER_URL);
+    Acrobot env(SERVER_URL);
     ASSERT_EQ(env.n_actions(), static_cast<uint_t>(3));
 }
 
 
 
 TEST(TestAcrobot, Test_Make){
-    rlenvs_cpp::envs::gymnasium::Acrobot env(SERVER_URL);
+    Acrobot env(SERVER_URL);
 
     std::unordered_map<std::string, std::any> options;
     env.make("v1", options);
@@ -33,7 +32,7 @@ TEST(TestAcrobot, Test_Make){
 
 TEST(TestAcrobot, Test_Reset){
 
-    rlenvs_cpp::envs::gymnasium::Acrobot env(SERVER_URL);
+    Acrobot env(SERVER_URL);
 
     std::unordered_map<std::string, std::any> options;
     env.make("v1", options);
@@ -46,7 +45,7 @@ TEST(TestAcrobot, Test_Reset){
 TEST(TestAcrobot, Test_Step)
 {
 
-    rlenvs_cpp::envs::gymnasium::Acrobot env(SERVER_URL);
+    Acrobot env(SERVER_URL);
 
     std::unordered_map<std::string, std::any> options;
     env.make("v1", options);

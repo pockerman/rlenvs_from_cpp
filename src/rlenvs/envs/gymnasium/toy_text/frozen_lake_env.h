@@ -69,7 +69,7 @@
 #include <unordered_map>
 #include <memory>
 
-namespace rlenvs_cpp{
+namespace rlenvscpp{
 namespace envs{
 namespace gymnasium {
 

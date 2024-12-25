@@ -13,9 +13,9 @@
 
 int main(){
 
-	using namespace rlenvs_cpp::utils::io;
-	using namespace rlenvs_cpp::envs::connect2;
-	using rlenvs_cpp::uint_t;
+	using namespace rlenvscpp::utils::io;
+	using namespace rlenvscpp::envs::connect2;
+	using rlenvscpp::uint_t;
 	
 	Connect2 env;
 	

@@ -8,8 +8,8 @@
 
 namespace{
 
-using rlenvs_cpp::uint_t;
-using rlenvs_cpp::real_t;
+using rlenvscpp::uint_t;
+using rlenvscpp::real_t;
 
 const std::string SERVER_URL = "http://0.0.0.0:8001/api";
 
@@ -17,7 +17,7 @@ const std::string SERVER_URL = "http://0.0.0.0:8001/api";
 
 TEST(TestFrozenLake, TestConstructor4x4) {
 
-    rlenvs_cpp::envs::gymnasium::FrozenLake<4> env(SERVER_URL);
+    rlenvscpp::envs::gymnasium::FrozenLake<4> env(SERVER_URL);
 
     ASSERT_EQ(env.n_states(), static_cast<uint_t>(16));
     ASSERT_EQ(env.n_actions(), static_cast<uint_t>(4));
@@ -27,14 +27,14 @@ TEST(TestFrozenLake, TestConstructor4x4) {
 
 TEST(TestFrozenLake, TestConstructor8x8) {
 
-    rlenvs_cpp::envs::gymnasium::FrozenLake<8> env(SERVER_URL);
+    rlenvscpp::envs::gymnasium::FrozenLake<8> env(SERVER_URL);
     ASSERT_EQ(env.n_states(), static_cast<uint_t>(64));
     ASSERT_EQ(env.n_actions(), static_cast<uint_t>(4));
     ASSERT_EQ(env.map_type(),"8x8");
 }
 
 TEST(TestFrozenLake, Test_Make){
-    rlenvs_cpp::envs::gymnasium::FrozenLake<8> env(SERVER_URL);
+    rlenvscpp::envs::gymnasium::FrozenLake<8> env(SERVER_URL);
 
     std::unordered_map<std::string, std::any> options;
     env.make("v1", options);
@@ -43,7 +43,7 @@ TEST(TestFrozenLake, Test_Make){
 
 TEST(TestFrozenLake, Test_Reset){
 
-    rlenvs_cpp::envs::gymnasium::FrozenLake<8> env(SERVER_URL);
+    rlenvscpp::envs::gymnasium::FrozenLake<8> env(SERVER_URL);
 
     std::unordered_map<std::string, std::any> options;
     env.make("v1", options);
@@ -56,7 +56,7 @@ TEST(TestFrozenLake, Test_Reset){
 TEST(TestFrozenLake, Test_Step)
 {
 
-    rlenvs_cpp::envs::gymnasium::FrozenLake<8> env(SERVER_URL);
+    rlenvscpp::envs::gymnasium::FrozenLake<8> env(SERVER_URL);
 
     std::unordered_map<std::string, std::any> options;
     env.make("v1", options);
@@ -70,7 +70,7 @@ TEST(TestFrozenLake, Test_Step)
 
 TEST(TestFrozenLake, Test_Get_Dynamics){
 
-    rlenvs_cpp::envs::gymnasium::FrozenLake<8> env(SERVER_URL);
+    rlenvscpp::envs::gymnasium::FrozenLake<8> env(SERVER_URL);
 
     std::unordered_map<std::string, std::any> options;
     env.make("v1", options);

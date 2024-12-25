@@ -12,7 +12,7 @@
 #include <unordered_map>
 #include <ostream>
 
-namespace rlenvs_cpp{
+namespace rlenvscpp{
 
 
 ///
@@ -282,7 +282,7 @@ std::ostream& operator<<(std::ostream& out, const VectorTimeStep<StateTp>& step)
 	std::vector<std::string> step_to_str(types.size());
 	
 	for(uint_t i =0; i<step_to_str.size(); ++i){
-		step_to_str[i] = rlenvs_cpp::to_string(types[i]);
+		step_to_str[i] = rlenvscpp::to_string(types[i]);
 	}
 	
 	j["step_types"] = step_to_str;

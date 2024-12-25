@@ -5,7 +5,7 @@
 
 #include <random>
 
-namespace rlenvs_cpp {
+namespace rlenvscpp {
 
 template<uint_t SpaceSize>
 struct DiscreteSpace

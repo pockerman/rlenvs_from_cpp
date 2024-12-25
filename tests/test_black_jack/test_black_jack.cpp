@@ -9,9 +9,9 @@
 namespace{
 
 const std::string SERVER_URL = "http://0.0.0.0:8001/api";
-using rlenvs_cpp::uint_t;
-using rlenvs_cpp::real_t;
-using rlenvs_cpp::envs::gymnasium::BlackJack;
+using rlenvscpp::uint_t;
+using rlenvscpp::real_t;
+using rlenvscpp::envs::gymnasium::BlackJack;
 
 }
 
@@ -64,7 +64,7 @@ TEST(TestBlackJack, Test_Step)
 
     ASSERT_TRUE(state.first());
 
-    auto step_result = env.step(rlenvs_cpp::envs::gymnasium::BlackJackActionsEnum::STICK);
+    auto step_result = env.step(rlenvscpp::envs::gymnasium::BlackJackActionsEnum::STICK);
 
     // step may finish the game so not sure
     // if the time step will MID

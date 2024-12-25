@@ -6,7 +6,7 @@
 
 #include <vector>
 
-namespace rlenvs_cpp
+namespace rlenvscpp
 {
 	
 template<uint_t SpaceSize, typename ItemType>

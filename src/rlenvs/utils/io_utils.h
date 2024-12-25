@@ -4,7 +4,7 @@
 #include <ostream>
 #include <vector>
 
-namespace rlenvs_cpp{
+namespace rlenvscpp{
 namespace utils{
 namespace io{
 	

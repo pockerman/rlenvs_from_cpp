@@ -6,7 +6,7 @@ int main(){
 
     const std::string SERVER_URL = "http://0.0.0.0:8001/api";
 
-    rlenvs_cpp::ApiServerWrapper server_wrapper(SERVER_URL);
+    rlenvscpp::ApiServerWrapper server_wrapper(SERVER_URL);
 
     auto has_gym = server_wrapper.has_gymnasium();
     std::cout<<"Has environment server Gymnasium? "<<has_gym<<std::endl;

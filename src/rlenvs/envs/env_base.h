@@ -13,7 +13,7 @@
 #include <string>
 #include <memory>
 
-namespace rlenvs_cpp{
+namespace rlenvscpp{
 namespace envs{
 
 
@@ -108,10 +108,12 @@ public:
 
 protected:
 
+
     ///
 	/// \brief Constructor
 	///
     explicit EnvBase(const uint_t cidx=0, const std::string& name=INVALID_STR);
+
 
     ///
 	/// \brief Helper function to set the version. To be called only when the make is called

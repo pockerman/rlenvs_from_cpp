@@ -12,7 +12,7 @@
 #include <vector>
 #include <ostream>
 
-namespace rlenvs_cpp {
+namespace rlenvscpp {
 
 
 ///
@@ -289,7 +289,7 @@ template<typename StateTp>
 inline
 std::ostream& operator<<(std::ostream& out, const TimeStep<StateTp>& step){
 
-    out<<"Step type....."<<rlenvs_cpp::to_string(step.type())<<std::endl;
+    out<<"Step type....."<<rlenvscpp::to_string(step.type())<<std::endl;
     out<<"Reward........"<<step.reward()<<std::endl;
     out<<"Observation..."<<step.observation()<<std::endl;
     out<<"Discount..... "<<step.discount()<<std::endl;
@@ -301,26 +301,14 @@ template<typename T>
 std::ostream& operator<<(std::ostream& out,
                          const TimeStep<std::vector<T>>& step){
 
-    out<<"Step type....."<<rlenvs_cpp::to_string(step.type())<<std::endl;
+    out<<"Step type....."<<rlenvscpp::to_string(step.type())<<std::endl;
     out<<"Reward........"<<step.reward()<<std::endl;
 
     auto obs = step.observation();
 
 	out<<"Observation...";
-	rlenvs_cpp::utils::io::print_vector(out, obs);
-
-    /*if(obs.empty()){
-        out<<"Observation... []"<<std::endl;
-    }
-    else{
-        auto obs_str = std::to_string(obs[0]);
-        for(uint_t i=1; i<obs.size(); ++i){
-           obs_str += ",";
-           obs_str += obs[i];
-        }
-        out<<"Observation..."<<obs_str<<std::endl;
-    }*/
-
+	rlenvscpp::utils::io::print_vector(out, obs);
+	
     out<<"Discount..... "<<step.discount()<<std::endl;
     return out;
 }

@@ -3,7 +3,7 @@
 #include <algorithm>
 #include <iterator>
 
-namespace rlenvs_cpp
+namespace rlenvscpp
 {
 
 TimeStepTp time_step_type_from_int(int type){

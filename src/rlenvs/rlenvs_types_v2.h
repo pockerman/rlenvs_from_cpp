@@ -2,6 +2,8 @@
 #define RLENVS_TYPES_V2_H
 
 #include "rlenvs/rlenvscpp_config.h"
+#include <eigen3/Eigen/Core>
+#include <eigen3/Eigen/Dense>
 
 #ifdef USE_PYTORCH
 #include <torch/torch.h>
@@ -11,18 +13,47 @@
 #include <cstddef>
 
 
-namespace rlenvs_cpp {
 
+namespace rlenvscpp {
 
 ///
 /// \brief real_t
 ///
 typedef double real_t;
 
+
+///
+/// \brief float
+///
+typedef float float_t;
+
+///
+/// \brief integer type
+///
+typedef int int_t;
+
 ///
 /// \brief uint_t
 ///
 typedef std::size_t uint_t;
+
+
+template<typename T>
+using DynMat = Eigen::MatrixX<T>;
+
+
+template<typename T>
+using DynVec = Eigen::RowVectorX<T>;
+
+///
+///
+///
+using FloatVec = DynVec<float_t>;
+
+///
+///
+///
+using RealVec = DynVec<real_t>;
 
 ///
 /// \brief invalid_uint

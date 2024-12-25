@@ -2,7 +2,7 @@
 #include <algorithm>
 #include <iterator>
 
-namespace rlenvs_cpp{
+namespace rlenvscpp{
 namespace envs{
 namespace gymnasium{
 	

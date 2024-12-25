@@ -15,7 +15,7 @@
 #include <any>
 #include <string>
 
-namespace rlenvs_cpp{
+namespace rlenvscpp{
 namespace envs{
 namespace gym_pybullet_drones{
 
