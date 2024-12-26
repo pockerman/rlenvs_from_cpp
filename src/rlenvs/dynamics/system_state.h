@@ -123,8 +123,13 @@ public:
     /// \brief Set the values of state variables
     /// container must be of size dim.
     ///
-    template<typename Container>
-    void set(const Container& container);
+    void add(const DynVec<real_t>& container);
+	
+	///
+    /// \brief Set the values of state variables
+    /// container must be of size dim.
+    ///
+	void add(const std::vector<real_t>& container);
 
     ///
     /// \brief Returns the size of the system
@@ -195,14 +200,6 @@ public:
     /// \brief Return the state as string
     ///
     const std::string as_string()const;
-
-    ///
-    /// \brief increment the analogous entries of the
-    /// state with the entries in the container
-    /// The container must have same size as the state
-    ///
-    template<typename Container>
-    void add(const Container& container);
 
     ///
     /// \brief Scale the values of the state
@@ -579,9 +576,23 @@ SysState<dim>::as_string()const{
 }
 
 template<int dim>
-template<typename Container>
 void
-SysState<dim>::add(const Container& container){
+SysState<dim>::add(const DynVec<real_t>& container){
+    if(container.size() != dim){
+        throw std::logic_error("Invalid container size for update. "+
+                               std::to_string(container.size())+
+                               " should be"+
+                               std::to_string(dim));
+    }
+
+    for(uint_t i=0; i<dim; ++i){
+        values_[i].second += container[i];
+    }
+}
+
+template<int dim>
+void
+SysState<dim>::add(const std::vector<real_t>& container){
     if(container.size() != dim){
         throw std::logic_error("Invalid container size for update. "+
                                std::to_string(container.size())+
