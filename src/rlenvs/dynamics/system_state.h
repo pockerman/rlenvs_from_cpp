@@ -205,6 +205,12 @@ public:
     /// \brief Scale the values of the state
     ///
     void scale(real_t val);
+	
+	///
+	/// \brief Set the values
+	///
+	template<typename Container>
+    void set(const Container& container);
 
 private:
 

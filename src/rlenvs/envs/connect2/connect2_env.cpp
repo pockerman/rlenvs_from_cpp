@@ -6,6 +6,7 @@
 #include <unordered_map>
 #include <stdexcept>
 #include <any>
+#include <memory>
 	
 
 namespace rlenvscpp{
@@ -14,18 +15,20 @@ namespace connect2{
 	
 const std::string Connect2::name = "Connect2";
 
-namespace{
+/*namespace{
  static const std::vector<int> valid_moves = {0, 1, 2, 3};
  bool validate_move(const uint_t move_id){
 	 return std::find(valid_moves.begin(), valid_moves.end(), move_id) != valid_moves.end();
  } 
  
-}
+}*/
 
-Connect2::Connect2()
+Connect2::Connect2(uint_t cidx)
 :
-is_created_(false),
-version_("v1"),
+//EnvBase<TimeStep<std::vector<uint_t>>,
+//		ContinousStateDiscreteActionEnv<53, 4, uint_t > >(cidx, "Connect2"),
+EnvBase<TimeStep<std::vector<uint_t>>,
+		DiscreteVectorStateDiscreteActionEnv<53, 4, uint_t > >(cidx, "Connect2"),
 discount_(1.0),
 board_()
 {}
@@ -36,21 +39,24 @@ Connect2::make(const std::string& /*version*/,
                const std::unordered_map<std::string, std::any>& /*options*/){
 				   
 	board_.resize(4, 0);
-	is_created_ = true;				   
+	this -> set_version_("v1");
+	this -> make_created_();				   
 
 }
 
 Connect2::time_step_type 
-Connect2::step(action_type action){
+Connect2::step(const action_type& action){
 	return move(player_id_1_, action);
 	
 }
 
 Connect2::time_step_type 
-Connect2::reset(){
-	board_ = std::vector(4, 0);
+Connect2::reset(uint_t /*seed*/,
+				const std::unordered_map<std::string, std::any>& /*options*/){
+	board_ = std::vector<uint_t>(4, 0);
 	is_finished_ = false;
-	return time_step_type(TimeStepTp::FIRST, 0.0, board_, discount_);
+	this -> get_current_time_step_() = Connect2::time_step_type(TimeStepTp::FIRST, 0.0, board_, discount_);
+	return 	this -> get_current_time_step_();			
 }
 
 bool 
@@ -68,10 +74,10 @@ Connect2::is_win(uint_t player)const noexcept{
 	return player_sum == win_val_;
 }
 
-std::vector<int> 
+std::vector<uint_t> 
 Connect2::get_valid_moves()const{
 	
-	std::vector<int> val_moves_;
+	std::vector<uint_t> val_moves_;
 	val_moves_.reserve(4);
 	
 	for(uint_t i=0; i<board_.size(); ++i){
@@ -97,12 +103,11 @@ Connect2::has_legal_moves()const noexcept{
 
 
 Connect2::time_step_type 
-Connect2::move(const uint_t pid, action_type action){
+Connect2::move(const uint_t pid, const action_type& action){
 	
 	
 	if(pid != 1 && pid != 2){
 		throw std::logic_error("Invalid player id: " + std::to_string(pid));
-		
 	}
 	
 	if(action >= board_.size()){
@@ -161,6 +166,12 @@ Connect2::move(const uint_t pid, action_type action){
 	
 	throw std::logic_error("Move: " + std::to_string(action) + " is invalid");
 	
+}
+
+std::unique_ptr<Connect2::base_type> 
+Connect2::make_copy(uint_t cidx)const{
+	auto ptr = std::make_unique<Connect2>(cidx);
+	return ptr;
 }
 		
 }

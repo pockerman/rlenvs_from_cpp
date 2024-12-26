@@ -60,6 +60,11 @@ public:
     typedef typename base_type::action_type action_type;
 	
 	///
+	/// \brief The type of the action to be undertaken in the environment
+	///
+    typedef typename base_type::state_type state_type;
+	
+	///
 	/// \brief Expose the various reset methods we use from base class
 	///
 	using base_type::reset;

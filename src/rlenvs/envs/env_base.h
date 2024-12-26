@@ -49,7 +49,6 @@ public:
 	///
 	typedef typename SpaceType::state_type state_type;
 	
-	
 	///
 	/// \brief The type of the action space for the environment
 	///
@@ -76,20 +75,13 @@ public:
 	///
     virtual void close()=0;
 	
-	
-	///
-	 /// \brief Reset the environment always using the same seed
-	 ///
-    time_step_type reset(){
-        return reset(DEFAULT_ENV_SEED, std::unordered_map<std::string, std::any>());}
-
-    /// 
+	/// 
 	/// \brief Reset the environment
 	///
     virtual time_step_type reset(uint_t seed,
                                  const std::unordered_map<std::string, std::any>& options)=0;
 								 
-    ///
+	///
 	/// \brief step in the environment by performing the given action
     /// \param action The action to execute in the environment 
 	/// \return The time step 
@@ -101,6 +93,13 @@ public:
 	///
 	virtual std::unique_ptr<EnvBase<time_step_type, SpaceType>> make_copy(uint_t cidx)const=0;
 	
+	
+	///
+	 /// \brief Reset the environment always using the same seed
+	 ///
+    time_step_type reset(){
+        return reset(DEFAULT_ENV_SEED, std::unordered_map<std::string, std::any>());}
+
     ///
 	/// \brief is_created Returns true is make has been called successfully
 	///
@@ -148,9 +147,24 @@ protected:
 	
 private:
 
+	///
+	///
+	///
     bool is_created_;
+	
+	///
+	///
+	///
     uint_t cidx_;
+	
+	///
+	/// \brief Version of the environment
+	///
     std::string version_;
+	
+	///
+	/// \brief Name of the environment
+	///
     const std::string name_;
 	
 	///

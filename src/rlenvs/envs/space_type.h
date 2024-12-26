@@ -4,6 +4,7 @@
 #include "rlenvs/rlenvs_types_v2.h"
 #include <random>
 #include <vector>
+#include <type_traits>
 
 namespace rlenvscpp {
 namespace envs{
@@ -80,13 +81,24 @@ DiscreteSpace<SpaceSize>::sample(uint_t seed, uint_t size){
     return vals_;
 }
 
-template<uint_t SpaceSize, typename ItemType>
-struct ContinuousSpace;
+template<uint_t SpaceSize, typename ItemType = std::vector<real_t>>
+struct ContinuousSpace{
+	
+	///
+    /// \brief item_t
+    ///
+    typedef std::vector<real_t> space_item_type;
+
+    ///
+    /// \brief size. The number of members in the space
+    ///
+    static constexpr uint_t size = SpaceSize;
+};
 
 ///
 /// \brief The ContinuousSpace class.
 ///
-template<uint_t SpaceSize>
+/*template<uint_t SpaceSize>
 struct ContinuousSpace<SpaceSize, std::vector<real_t> >
 {
     ///
@@ -100,6 +112,8 @@ struct ContinuousSpace<SpaceSize, std::vector<real_t> >
     static constexpr uint_t size = SpaceSize;
 
 };
+
+*/
 
 template<>
 struct ContinuousSpace<1, Null>
@@ -115,6 +129,24 @@ struct ContinuousSpace<1, Null>
     ///
     static constexpr uint_t size = 1;
 
+};
+
+
+template<uint_t SpaceSize, typename T=uint_t>
+struct DiscreteVectorSpace
+{
+	static_assert(std::is_integral_v<T> == true && "Integral type is expected");
+	
+	///
+    /// \brief item_t
+    ///
+    typedef std::vector<T> space_item_type;
+	
+	
+	///
+    /// \brief size. The number of members in the space
+    ///
+    static constexpr uint_t size = SpaceSize;
 };
 
 
@@ -296,6 +328,42 @@ struct ContinousEnv{
     ///
     static constexpr uint_t ACTION_SPACE_SIZE = ActionSpaceSize;
 	
+};
+
+template<uint_t StateSpaceSize, 
+		 uint_t ActionSpaceSize,
+		 typename StateSpaceItemType = uint_t>
+struct DiscreteVectorStateDiscreteActionEnv
+{
+	///
+    /// \brief the state space type
+    ///
+    typedef DiscreteVectorSpace<StateSpaceSize, StateSpaceItemType> state_space;
+	
+	///
+	/// \brief the State type
+	///
+	typedef typename state_space::space_item_type state_type;
+	
+	///
+    /// \brief state space size
+    ///
+    static constexpr uint_t STATE_SPACE_SIZE = StateSpaceSize;
+	
+	///
+    /// \brief the action space type
+    ///
+    typedef DiscreteSpace<ActionSpaceSize> action_space;
+	
+	///
+	/// \brief the Action type
+	///
+	typedef typename action_space::space_item_type action_type;
+	
+	///
+    /// \brief state space size
+    ///
+    static constexpr uint_t ACTION_SPACE_SIZE = ActionSpaceSize;
 };
 	
 }

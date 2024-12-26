@@ -39,11 +39,9 @@
 
 #include "rlenvs/rlenvscpp_config.h"
 #include "rlenvs/rlenvs_types_v2.h"
-#include "rlenvs/discrete_space.h"
-#include "rlenvs/continuous_space.h"
 #include "rlenvs/time_step.h"
 #include "rlenvs/envs/gymnasium/gymnasium_env_base.h"
-#include "rlenvs/extern/enum.h"
+#include "rlenvs/envs/space_type.h"
 #include "rlenvs/extern/HTTPRequest.hpp"
 
 
@@ -51,6 +49,7 @@
 #include <vector>
 #include <tuple>
 #include <any>
+#include <memory>
 
 namespace rlenvscpp{
 
@@ -60,53 +59,11 @@ template<typename StateTp> class TimeStep;
 namespace envs{
 namespace gymnasium{
 
-BETTER_ENUM(CartPoleActionsEnum, int, LEFT=0, RIGHT=1, INVALID_ACTION=2);
-
-///
-/// \brief The CartPoleData struct. Wraps various data
-/// related to the configuration of the CartPole environment.
-///
-struct CartPoleData
-{
-
-    ///
-    /// \brief action_space_t. The type of the action space
-    ///
-    typedef DiscreteSpace<2> action_space_type;
-
-    ///
-    /// \brief action_t
-    ///
-    typedef action_space_type::item_t action_type;
-
-    ///
-    /// \brief state_space_type (cart_position, cart_velocity, pole angle, pole angular velocity)
-    ///
-    typedef ContinuousSpace<4> state_space_type;
-
-    ///
-    /// \brief state_type
-    ///
-    typedef state_space_type::item_t state_type;
-
-    
-
-    ///
-    /// \brief time_step_t. The type of the time step
-    ///
-    typedef TimeStep<state_type> time_step_type;
-
-    ///
-    ///
-    ///
-    CartPoleData()=default;
-
-};
-
 ///
 /// \brief The CartPole class Interface for CartPole environment
 ///
-class CartPole final: public GymnasiumEnvBase<CartPoleData::time_step_type>
+class CartPole final: public GymnasiumEnvBase<TimeStep<std::vector<real_t> >,
+                                              ContinousStateDiscreteActionEnv<4, 2, std::vector<real_t> > >
 {
 
 public:
@@ -115,83 +72,78 @@ public:
     /// \brief name
     ///
     static const std::string name;
+	
+	///
+	/// \brief Base class type
+	///
+	typedef GymnasiumEnvBase<TimeStep<std::vector<real_t> >,
+							 ContinousStateDiscreteActionEnv<4, 2, std::vector<real_t>>>::base_type base_type;
 
     ///
-    /// \brief env_data_t
-    ///
-    typedef CartPoleData  env_data_type;
+	/// \brief The time step type we return every time a step in the
+	/// environment is performed
+	///
+    typedef typename base_type::time_step_type time_step_type;
+	
+	///
+	/// \brief The type describing the state space for the environment
+	///
+	typedef typename base_type::state_space_type state_space_type;
+	
+	///
+	/// \brief The type of the action space for the environment
+	///
+	typedef typename base_type::action_space_type action_space_type;
 
     ///
-    /// \brief action_space_t. The type of the action space
-    ///
-    typedef CartPoleData::action_space_type action_space_type;
-
-    ///
-    /// \brief action_t
-    ///
-    typedef CartPoleData::action_type action_type;
-
-    ///
-    /// \brief state_space_t
-    ///
-    typedef CartPoleData::state_space_type state_space_type;
-
-    ///
-    /// \brief state_t
-    ///
-    typedef CartPoleData::state_type state_type;
-
-    ///
-    /// \brief time_step_t. The type of the time step
-    ///
-    typedef CartPoleData::time_step_type time_step_type;
-
-
-    /**
-     * @brief Convert the action index to a valid FrozenLakeActionsEnum
-     *
-     * */
-    static CartPoleActionsEnum action_from_int(uint_t aidx);
-
+	/// \brief The type of the action to be undertaken in the environment
+	///
+    typedef typename base_type::action_type action_type;
+	
+	///
+	/// \brief The type of the state
+	///
+	typedef typename base_type::state_type state_type;
+	
     ///
     /// \brief CartPole. Constructor
     ///
     CartPole(const std::string& api_base_url );
+	
+	///
+    /// \brief CartPole. Constructor
+    ///
+    CartPole(const std::string& api_base_url, 
+		     const uint_t cidx);
 
     ///
     /// \brief ~CartPole. Destructor
     ///
-    ~CartPole()=default;
+    ~CartPole();
 
     ///
     /// \brief make. Build the environment
     ///
-    void make(const std::string& version,
-              const std::unordered_map<std::string, std::any>& /*options*/=std::unordered_map<std::string, std::any>()) override final;
-
-    ///
-    /// \brief n_actions. Returns the number of actions
-    ///
-    uint_t n_actions()const noexcept{return action_space_type::size;}
+    virtual void make(const std::string& version,
+                      const std::unordered_map<std::string, std::any>& /*options*/
+					  =std::unordered_map<std::string, std::any>()) override final;
 
     ///
     /// \brief step. Step in the environment following the given action
     ///
-    time_step_type step(const CartPoleActionsEnum action);
+    virtual time_step_type step(const action_type& action)override final;
 
 
-    /**
-     * @brief step. Step in the environment following the given action
-     *
-     * */
-    time_step_type step(uint_t action);
-
-    /**
-     * @brief Synchronize the environment
-     *
-     */
-    void sync(const std::unordered_map<std::string, std::any>& /*options*/=std::unordered_map<std::string, std::any>()){}
-
+	///
+	/// \brief Create a new copy of the environment with the given
+	/// copy index
+	///
+	virtual std::unique_ptr<base_type> make_copy(uint_t cidx)const override final;
+	
+	///
+    /// \brief n_actions. Returns the number of actions
+    ///
+    uint_t n_actions()const noexcept{return action_space_type::size;}
 
 
 protected:
@@ -203,6 +155,9 @@ protected:
 
 };
 
+inline
+CartPole::~CartPole()
+{}
 
 
 }

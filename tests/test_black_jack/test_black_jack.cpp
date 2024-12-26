@@ -64,11 +64,8 @@ TEST(TestBlackJack, Test_Step)
 
     ASSERT_TRUE(state.first());
 
-    auto step_result = env.step(rlenvscpp::envs::gymnasium::BlackJackActionsEnum::STICK);
-
-    // step may finish the game so not sure
-    // if the time step will MID
-    //ASSERT_TRUE(step_result.mid());
+	// 0 = STICK
+    auto step_result = env.step(0);
 
 }
 
