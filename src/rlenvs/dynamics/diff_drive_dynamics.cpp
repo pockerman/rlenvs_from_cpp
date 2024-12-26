@@ -20,7 +20,7 @@ DiffDriveDynamics::integrate_state_v1(const SysState<3>& state, real_t tol, real
     if(std::fabs(w) < tol){
 
         /// assume zero angular velocity
-       auto distance = 0.5*v*dt;
+       auto distance = 0.5 * v * dt;
        auto xincrement = (distance + errors[0])*std::cos(values[2]  + errors[1]);
        auto yincrement = (distance + errors[0])*std::sin(values[2]  + errors[1]);
 
@@ -29,7 +29,7 @@ DiffDriveDynamics::integrate_state_v1(const SysState<3>& state, real_t tol, real
     }
     else{
 
-        other[2] += w*dt + errors[1];
+        other[2] += w * dt + errors[1];
 
         /// clip the value
         if(std::fabs(state[2]) > rlenvscpp::consts::maths::PI){
@@ -215,7 +215,7 @@ DiffDriveDynamics::initialize_matrices(const DiffDriveDynamics::input_type& inpu
   set_matrix_update_flag(true);
 
   if(!this->has_matrix("F")){
-    matrix_type F = matrix_type::Zero(3, 2); //(3,3, 0.0);
+    matrix_type F = matrix_type::Zero(3, 3); //(3,3, 0.0);
     this->set_matrix("F", F);
   }
 
@@ -235,8 +235,8 @@ DiffDriveDynamics::update_matrices(const DiffDriveDynamics::input_type& input){
    auto v = rlenvscpp::utils::template resolve<real_t>("v", input);
    auto errors = rlenvscpp::utils::template resolve<std::array<real_t, 2>>("errors", input);
 
-   auto distance = 0.5*v*get_time_step();
-   auto orientation = w*get_time_step();
+   auto distance = 0.5 * v * get_time_step();
+   auto orientation = w * get_time_step();
    auto values = this->state_.get_values();
   
    if(std::fabs(w) < tol_){
