@@ -3,8 +3,8 @@
 
 #include "rlenvs/rlenvscpp_config.h"
 #include "rlenvs/rlenvs_types_v2.h"
-#include "rlenvs/time_step.h"
-#include "rlenvs/envs/space_type.h"
+#include "rlenvs/envs/time_step.h"
+#include "rlenvs/envs/env_types.h"
 #include "rlenvs/envs/env_base.h"
 
 #include <boost/noncopyable.hpp>
@@ -23,7 +23,7 @@ namespace connect2{
 /// a move then the position corresponding to this move 
 ///	
 class Connect2 final: public EnvBase<TimeStep<std::vector<uint_t>>,
-									 DiscreteVectorStateDiscreteActionEnv<53, 4, uint_t > >
+									 DiscreteVectorStateDiscreteActionEnv<53, 0, 4, uint_t > >
 {
 	
 public:
@@ -37,7 +37,7 @@ public:
 	/// \brief The base type
 	///
 	typedef EnvBase<TimeStep<std::vector<uint_t> >,
-							 DiscreteVectorStateDiscreteActionEnv<53, 4, uint_t > > base_type;
+							 DiscreteVectorStateDiscreteActionEnv<53, 0, 4, uint_t > > base_type;
 							 
 	
 	///
@@ -68,14 +68,12 @@ public:
 	///
 	/// \brief Expose the various reset methods we use from base class
 	///
-	using EnvBase<TimeStep<std::vector<uint_t> >,
-				  DiscreteVectorStateDiscreteActionEnv<53, 4, uint_t > >::reset;
+	using base_type::reset;
 	
 	///
     /// \brief Constructor
     ///
-    explicit Connect2(uint_t cidx);
-
+    Connect2();
 
     ///
     /// \brief make. Builds the environment. Optionally we can choose if the
@@ -140,6 +138,11 @@ public:
 	std::vector<uint_t> get_valid_moves()const;
 
 private:
+	
+	///
+    /// \brief Constructor
+    ///
+    explicit Connect2(uint_t cidx);
 	
 	///
 	/// \brief The discount factor

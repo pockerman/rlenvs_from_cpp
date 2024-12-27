@@ -3,7 +3,7 @@
 
 
 #include "rlenvs/rlenvs_types_v2.h"
-#include "rlenvs/time_step_type.h"
+#include "rlenvs/envs/time_step_type.h"
 #include "rlenvs/extern/nlohmann/json/json.hpp"
 
 #include <vector>
@@ -65,11 +65,9 @@ public:
     ///
     VectorTimeStep(const VectorTimeStep& other);
 
-    /**
-     * @brief Assignment operator
-     *
-     *
-     * */
+    ///
+	/// \brief Assignment operator
+	///
     VectorTimeStep& operator=(const VectorTimeStep& other);
 
     ///
@@ -85,7 +83,6 @@ public:
     ///
     VectorTimeStep& operator=(VectorTimeStep&& other)noexcept;
 
-    
     ///
     /// \brief type
     /// \return

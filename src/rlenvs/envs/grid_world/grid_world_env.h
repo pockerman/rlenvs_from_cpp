@@ -1,5 +1,3 @@
-// SPDX-FileCopyrightText: 2024 <copyright holder> <email>
-// SPDX-License-Identifier: Apache-2.0
 #ifndef GRID_WORLD_ENV_H
 #define GRID_WORLD_ENV_H
 
@@ -13,102 +11,44 @@
 #include "rlenvs/rlenvscpp_config.h"
 #include "rlenvs/rlenvs_types_v2.h"
 #include "rlenvs/rlenvs_consts.h"
-#include "rlenvs/discrete_space.h"
-#include "rlenvs/time_step.h"
-#include "rlenvs/envs/synchronized_env_mixin.h"
-#include "rlenvs/extern/enum.h"
+#include "rlenvs/envs/time_step.h"
+#include "rlenvs/envs/env_base.h"
+#include "rlenvs/envs/space_type.h"
 
 #ifdef RLENVSCPP_DEBUG
 #include <cassert>
 #endif
 
-#include <boost/noncopyable.hpp>
 #include <vector>
 #include <string>
 #include <utility>
 #include <unordered_map>
 #include <map>
 #include <any>
-#include <iostream>
 
-///
-/// Different namespace so that we differentiate
-/// from OpenAI-Gym environment
-///
+#include <memory>
+
 namespace rlenvscpp{
-
-// still we may want to use some utilities
-//using namespace gymfcpp;
-
 namespace envs{
 namespace grid_world{
 
-///
-/// \brief The enum describing how to initialize the world
-///
-BETTER_ENUM(GridWorldInitType, int, STATIC=0, RANDOM=1, PLAYER=2, INVALID_TYPE=4);
 
-/**
- * @brief Enumeration describing the action type
- */
-BETTER_ENUM(GridWorldActionType, int, UP=0, DOWN=1, LEFT=2, RIGHT=3, INVALID_TYPE=4);
-
-
-
-
-///
-/// \brief to_string.  Returns the RenderModeType to its stringrepresentation
-/// \param type The RenderModeType to convert
-/// \return std::string
-inline
-std::string to_string(GridWorldInitType type){return type._to_string();}
-
-
-GridWorldInitType
-from_string(const std::string& gw_init_type);
+enum class GridWorldInitType: int {STATIC=0, RANDOM=1, PLAYER=2, INVALID_TYPE};
+enum class GridWorldActionType: uint_t {UP=0, DOWN=1, LEFT=2, RIGHT=3, INVALID_TYPE};
 
 
 namespace detail{
 
-
-    /**
-     *
-     * @brief Models a position on the board
-     */
+    ///
+	/// \brief Models a position on the board
     typedef std::pair<int,  int> board_position;
 
-    /**
-     * @brief Array specifying the state of the board
-     */
-    typedef std::vector<std::vector<std::vector<real_t>>> board_state_type;
-
-
-    /**
-     * @brief Test if two positions are equal
-     */
-    bool operator==(const board_position& p1, const board_position& p2);
-	
-	/**
-     * @brief Test if two positions are equal
-     */
-    bool operator!=(const board_position& p1, const board_position& p2);
-
-    /**
-     * @brief Add two positions and return their result
-     */
-    board_position operator+(const board_position& p1, const board_position& p2);
-
-    /**
-     * @brief Returns the max component of a position
-     */
-    uint_t max(const board_position& p);
-
-    /**
-     * @brief Returns the min component of a position
-     */
-    uint_t min(const board_position& p);
-
     ///
+	/// \brief Array specifying the state of the board
+	///
+    typedef std::vector<std::vector<std::vector<real_t>>> board_state_type;
+	
+	///
     /// \brief The BoardComponentType enum
     ///
     enum board_component_type{PLAYER=0, GOAL=1, PIT=2, WALL=3};
@@ -117,6 +57,32 @@ namespace detail{
     /// \brief The MoveType enum
     ///
     enum board_move_type{VALID=0, INVALID=1, LOST_GAME=2};
+
+    ///
+	/// \brief Test if two positions are equal
+	///
+    bool operator==(const board_position& p1, const board_position& p2);
+	
+	///
+	/// \brief Test if two positions are equal
+	///
+    bool operator!=(const board_position& p1, const board_position& p2);
+
+    ///
+	/// \brief Add two positions and return their result
+	///
+    board_position operator+(const board_position& p1, const board_position& p2);
+
+    /// 
+	/// \brief Returns the max component of a position
+	/// 
+    uint_t max(const board_position& p);
+
+    /// 
+	/// \brief Returns the min component of a position
+	///
+    uint_t min(const board_position& p);
+
 
     ///
     /// \brief The BoardPiece struct
@@ -137,8 +103,6 @@ namespace detail{
         ///
         board_position pos;
 		
-		
-
         ///
         /// \brief BoardPiece
         /// \param name_
@@ -202,15 +166,15 @@ namespace detail{
         std::map<board_component_type, board_piece> components;
         std::map<std::string, board_mask> masks;
 
-        /**
-         * @brief initialize the board
-         */
+        ///
+		/// \brief initialize the board
+		///
         board_state_type init_board(uint_t board_s,
                                     GridWorldInitType init_type);
 
-        /**
-         * @brief Execute the action on the board
-         */
+        ///
+		/// \brief Execute the action on the board
+		///
         board_state_type step(GridWorldActionType action);
 
         ///
@@ -226,10 +190,10 @@ namespace detail{
         ///
         board_state_type get_state()const;
 
-        /**
-         * @brief Get the reward the board currently returns depending
-         * on the position of the player
-         */
+        ///
+		/// \brief Get the reward the board currently returns depending
+		///on the position of the player
+		///
         real_t get_reward()const;
 
         ///
@@ -252,12 +216,12 @@ namespace detail{
         ///
         void build_player_mode(uint_t seed);
 
-        /**
-         * @brief check if the given move is valid and
-         * change the position of the player if the move
-         * either causes the game to be lost (PIT) or is a valid
-         * move i.e. not stepping into the WALL or out of the board
-         */
+        ///
+        /// \brief check if the given move is valid and
+        /// change the position of the player if the move
+        /// either causes the game to be lost (PIT) or is a valid
+        /// move i.e. not stepping into the WALL or out of the board
+        /// 
         void check_and_move(uint_t row, uint_t col);
 
         ///
@@ -268,8 +232,36 @@ namespace detail{
         ///
         board_move_type validate_move(board_component_type piece, board_position pos)const;
     };
-
-
+	
+	template<uint_t size_size>
+	struct GridWorldEnv
+	{
+		
+		typedef detail::board state_space;
+		
+		typedef detail::board_state_type state_type;
+		
+		///
+		/// \brief state space size
+		///
+		static constexpr uint_t STATE_SPACE_SIZE = size_size * size_size;
+		
+		///
+        /// \brief the action space type
+        ///
+		typedef ScalarDiscreteSpace<0, 4> action_space;
+	
+		///
+		/// \brief the Action type
+		///
+		typedef typename action_space::space_item_type action_type;
+	
+	
+		///
+		/// \brief action space size
+		///
+		static constexpr uint_t ACTION_SPACE_SIZE = action_space::size;
+	};
 }
 
 
@@ -284,7 +276,8 @@ namespace detail{
 /// Random initialization means that all the objects are placed randomly
 ///
 template<uint_t side_size_>
-class Gridworld final: private boost::noncopyable, protected synchronized_env_mixin
+class Gridworld final: public EnvBase<TimeStep<detail::board_state_type>,
+                                      detail::GridWorldEnv<side_size_>> 
 {
 public:
 
@@ -304,81 +297,90 @@ public:
     /// \brief side_size
     ///
     static const uint_t side_size;
+	
+	
+	///
+	/// \brief The base_type
+	///
+	typedef EnvBase<TimeStep<detail::board_state_type>,
+					detail::GridWorldEnv<side_size_>> base_type;
 
-    /**
-     * @brief Convert the action index to a valid FrozenLakeActionsEnum
-     *
-     * */
-    static GridWorldActionType action_from_int(uint_t aidx);
+    ///
+	/// \brief The time step type we return every time a step in the
+	/// environment is performed
+	///
+    typedef typename base_type::time_step_type time_step_type;
+	
+	///
+	/// \brief The type describing the state space for the environment
+	///
+	typedef typename base_type::state_space_type state_space_type;
+	
+	///
+	/// \brief The type of the action space for the environment
+	///
+	typedef typename base_type::action_space_type action_space_type;
 
-    /**
-     * @brief The type of the action space
-     */
-    typedef DiscreteSpace<side_size_> action_space_type;
-
-    /**
-     * @brief The state space type. The state space
-     *
-     *
-     */
-    typedef DiscreteSpace<side_size_ * side_size_> state_space_type;
-
-    /**
-     * @brief The action type
-     *
-     */
-    typedef typename action_space_type::item_t action_type;
-
-     /**
-     * @brief The state_type
-     *
-     */
-    typedef detail::board_state_type state_type;
-
-    /**
-     * @brief The type of the time step
-     *
-     */
-    typedef TimeStep<state_type> time_step_type;
-
+    ///
+	/// \brief The type of the action to be undertaken in the environment
+	///
+    typedef typename base_type::action_type action_type;
+	
+	///
+	/// \brief The type of the action to be undertaken in the environment
+	///
+    typedef typename base_type::state_type state_type;
+	
+	///
+	/// \brief Expose the various reset methods we use from base class
+	///
+	using base_type::reset;
 
     ///
     /// \brief Constructor
     ///
     Gridworld();
 
-    /*
-     * Expose functionality
-     *
-     */
-    using synchronized_env_mixin::sync;
-
-    ///
-    /// \brief version
-    /// \return
-    ///
-    std::string version()const noexcept{return version_;}
-
-    ///
-    /// \brief init_type
-    /// \return
-    ///
-    GridWorldInitType init_type()const noexcept{return init_mode_;}
-
-    ///
-    /// \brief is_created
-    /// \return
-    ///
-    bool is_created()const noexcept{return is_created_;}
-
     ///
     /// \brief make. Builds the environment. Optionally we can choose if the
     /// environment will be slippery
     ///
-    void make(const std::string& version,
-              const std::unordered_map<std::string, std::any>& options);
+    virtual void make(const std::string& version,
+                      const std::unordered_map<std::string, std::any>& options) override final;
+					  
+					  
+	/// 
+	/// \brief Reset the environment
+	///
+    virtual time_step_type reset(uint_t /*seed*/,
+                                 const std::unordered_map<std::string, std::any>& /*options*/)override final;
+					  
+					  
+	///
+	/// \brief Create a new copy of the environment with the given
+	/// copy index
+	///
+	virtual std::unique_ptr<base_type> make_copy(uint_t cidx)const override final;
 
     ///
+    /// \brief step
+    /// \param action
+    /// \return
+    ///
+    virtual time_step_type step(const action_type& action) override final;
+
+    ///
+    /// \brief close
+    ///
+    virtual void close()override final;
+
+    ///
+    /// \brief has_random_state
+    /// \return
+    ///
+    bool has_random_state()const noexcept{return randomize_state_;}
+	
+	///
     /// \brief n_states. Returns the number of states
     ///
     uint_t n_states()const noexcept{ return side_size_ * side_size_; }
@@ -387,35 +389,6 @@ public:
     /// \brief n_actions. Returns the number of actions
     ///
     uint_t n_actions()const noexcept{return action_space_type::size;}
-
-    ///
-    /// \brief step
-    /// \param action
-    /// \return
-    ///
-    time_step_type step(action_type action);
-
-    /**
-     * @brief Step in the environment
-     *
-     */
-    time_step_type step(GridWorldActionType action);
-
-    ///
-    /// \brief close
-    ///
-    void close();
-
-    ///
-    /// \brief reset the environment
-    ///
-    time_step_type reset();
-
-    ///
-    /// \brief has_random_state
-    /// \return
-    ///
-    bool has_random_state()const noexcept{return randomize_state_;}
 
     ///
     /// \brief seed
@@ -429,19 +402,26 @@ public:
     ///
     real_t noise_factor()const noexcept{return noise_factor_;}
 
-    /**
-     * @brief Returns true if the PLAYER position is the same
-     * as the PIT position
-     *
-     */
+    ///
+	/// \brief Returns true if the PLAYER position is the same
+	///as the PIT position
+	///
     bool is_game_lost()const;
+	
+	///
+    /// \brief init_type
+    /// \return
+    ///
+    GridWorldInitType init_type()const noexcept{return init_mode_;}
+	
+protected:
+	
+	///
+    /// \brief CartPole. Constructor
+    ///
+    explicit Gridworld(const uint_t cidx);
 
 private:
-
-    ///
-    /// \brief version_
-    ///
-    std::string version_;
 
     ///
     /// \brief init_mode_
@@ -464,17 +444,6 @@ private:
     real_t noise_factor_;
 
     ///
-    /// \brief is_created_
-    ///
-    bool is_created_;
-
-
-    ///
-    /// \brief current_state
-    ///
-    time_step_type current_state_;
-
-    ///
     /// \brief board_
     ///
     detail::board board_;
@@ -490,35 +459,25 @@ template<uint_t side_size_>
 const uint_t Gridworld<side_size_>:: n_components = 4;
 
 template<uint_t side_size>
-GridWorldActionType
-Gridworld<side_size>::action_from_int(uint_t aidx){
-
-    switch(aidx){
-        case 0:
-           return rlenvscpp::envs::grid_world::GridWorldActionType::UP;
-        case 1:
-            return rlenvscpp::envs::grid_world::GridWorldActionType::DOWN;
-        case 2:
-            return rlenvscpp::envs::grid_world::GridWorldActionType::LEFT;
-        case 3:
-            return rlenvscpp::envs::grid_world::GridWorldActionType::RIGHT;
-    }
-
-    return rlenvscpp::envs::grid_world::GridWorldActionType::INVALID_TYPE;
-
-}
-
-
-template<uint_t side_size>
 Gridworld<side_size>::Gridworld()
     :
-      version_(rlenvscpp::consts::INVALID_STR),
-      init_mode_(GridWorldInitType::INVALID_TYPE),
-      randomize_state_(false),
-      seed_(0),
-      noise_factor_(0.0),
-      is_created_(false),
-      current_state_()
+EnvBase<TimeStep<detail::board_state_type>,
+		detail::GridWorldEnv<side_size>>(0, "Gridworld"),
+init_mode_(GridWorldInitType::INVALID_TYPE),
+randomize_state_(false),
+seed_(0),
+noise_factor_(0.0)
+{}
+
+template<uint_t side_size>
+Gridworld<side_size>::Gridworld(uint_t cidx)
+    :
+EnvBase<TimeStep<detail::board_state_type>,
+		detail::GridWorldEnv<side_size>>(cidx, "Gridworld"),
+init_mode_(GridWorldInitType::INVALID_TYPE),
+randomize_state_(false),
+seed_(0),
+noise_factor_(0.0)
 {}
 
 
@@ -527,7 +486,7 @@ void
 Gridworld<side_size>::make(const std::string& version,
                            const std::unordered_map<std::string, std::any>& options){
 
-    if(is_created()){
+    if(this -> is_created()){
         return;
     }
 
@@ -535,7 +494,7 @@ Gridworld<side_size>::make(const std::string& version,
     auto mode = options.find("mode");
 
     if(mode != options.end()){
-       init_mode_ = from_string(std::any_cast<std::string>(mode->second));
+       init_mode_ = std::any_cast<GridWorldInitType>(mode->second);
     }
     else{
        init_mode_ = GridWorldInitType::STATIC;
@@ -561,43 +520,51 @@ Gridworld<side_size>::make(const std::string& version,
 
     // set the version and set the board
     // to created
-    is_created_ = true;
-    version_ = version;
+	this->set_version_(version);
+    this->make_created_();
+}
+
+template<uint_t side_size>
+std::unique_ptr<typename Gridworld<side_size>::base_type> 
+Gridworld<side_size>::make_copy(uint_t cidx)const{
+	
+	auto ptr = std::unique_ptr<typename Gridworld<side_size>::base_type>(new Gridworld<side_size>(cidx));
+	std::unordered_map<std::string, std::any> ops;
+	ops["randomize_state"] = this -> has_random_state();
+	ops["noise_factor"] = this -> noise_factor_;
+	ops["seed"] = std::any(static_cast<uint_t>(this -> seed_));
+	auto version = this -> version();
+	ptr -> make(version, ops);
+	return ptr;
 }
 
 template<uint_t side_size>
 typename Gridworld<side_size>::time_step_type
-Gridworld<side_size>::step(action_type action){
-
-        auto action_enum = Gridworld<side_size>::action_from_int(action);
-        return step(action_enum);
-}
-
-
-template<uint_t side_size>
-typename Gridworld<side_size>::time_step_type
-Gridworld<side_size>::step(GridWorldActionType action){
-
-    auto obs = board_.step(action);
+Gridworld<side_size>::step(const action_type& action){
+	
+	auto obs = board_.step(static_cast<GridWorldActionType>(action));
     auto reward = board_.get_reward();
 
 	// if the reward is not -1.0 then either
 	// we reached the goal or we hit the PIT
 	// in any case the game is over
     auto step_type = reward != -1.0 ? TimeStepTp::LAST : TimeStepTp::MID;
-    current_state_ = time_step_type(step_type, reward, obs);
-    return current_state_;
+    
+	this->get_current_time_step_() = time_step_type(step_type, reward, obs);
+    return this->get_current_time_step_();
 }
+
 
 template<uint_t side_size>
 typename Gridworld<side_size>::time_step_type
-Gridworld<side_size>::reset(){
+Gridworld<side_size>::reset(uint_t /*seed*/,
+							const std::unordered_map<std::string, std::any>& /*options*/){
 
     // reinitialize the board
     auto obs = board_.init_board(side_size, init_mode_);
     auto reward = board_.get_reward();
-    current_state_ = time_step_type(TimeStepTp::FIRST, reward, obs);
-    return current_state_;
+    this->get_current_time_step_() = time_step_type(TimeStepTp::FIRST, reward, obs);
+    return this->get_current_time_step_();
 }
 
 template<uint_t side_size>

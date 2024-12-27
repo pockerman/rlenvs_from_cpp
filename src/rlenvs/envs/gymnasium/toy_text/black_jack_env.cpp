@@ -1,5 +1,6 @@
 #include "rlenvs/envs/gymnasium/toy_text/black_jack_env.h"
 #include "rlenvs/rlenvscpp_config.h"
+#include "rlenvs/envs/time_step_type.h"
 #include "rlenvs/extern/nlohmann/json/json.hpp"
 
 #ifdef RLENVSCPP_DEBUG
@@ -29,7 +30,7 @@ BlackJack::create_time_step_from_response_(const http::Response& response)const{
 
     json j = json::parse(str_response);
 
-    auto step_type = time_step_type_from_int(j["time_step"]["step_type"]);
+    auto step_type = TimeStepEnumUtils::time_step_type_from_int(static_cast<uint_t>(j["time_step"]["step_type"]));
     auto reward = j["time_step"]["reward"];
     auto discount = j["time_step"]["discount"];
     auto observation = j["time_step"]["observation"];
@@ -45,8 +46,7 @@ BlackJack::create_time_step_from_response_(const http::Response& response)const{
 
 BlackJack::BlackJack(const std::string& api_base_url)
     :
-ToyTextEnvBase<TimeStep<uint_t>, 
-			      DiscreteEnv<48, 2>>(0, "BlackJack",
+ToyTextEnvBase<TimeStep<uint_t>, 48, 2>(0, "BlackJack",
 			                       api_base_url,
                                    "/gymnasium/black-jack-env")
 {}
@@ -54,10 +54,9 @@ ToyTextEnvBase<TimeStep<uint_t>,
 BlackJack::BlackJack(const std::string& api_base_url, 
 	                 const uint_t cidx)
 					 :
-ToyTextEnvBase<TimeStep<uint_t>, 
-			      DiscreteEnv<48, 2>>(cidx, "BlackJack",
-			                          api_base_url,
-                                      "/gymnasium/black-jack-env")
+ToyTextEnvBase<TimeStep<uint_t>, 48, 2>(cidx, "BlackJack",
+			                            api_base_url,
+                                        "/gymnasium/black-jack-env")
 {}
 					 
 
@@ -136,17 +135,14 @@ BlackJack::make_copy(uint_t cidx)const{
 	
 	auto api_base_url = this -> get_api_url();
 	
-	auto ptr = std::make_unique<BlackJack>(api_base_url,
-										   cidx);
+	auto ptr = std::unique_ptr<BlackJack::base_type>(new BlackJack(api_base_url, cidx));
 										   
-	if(this->is_natural_){
-		ptr -> make_natural();
-	}
-	
-	if(this -> is_sab_){
-		ptr -> make_sab();
-	}
-	
+	std::unordered_map<std::string, std::any> ops;
+	ops["natural"] = this->is_natural();
+	ops["sab"] = this->is_sab();
+										   
+	auto version = this -> version();
+	ptr -> make(version, ops);
 	return ptr;
 												   
 }

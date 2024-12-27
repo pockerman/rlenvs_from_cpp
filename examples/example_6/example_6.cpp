@@ -28,7 +28,8 @@ int main(){
 	std::cout<<"Number of actions: "<<env.n_actions()<<std::endl;
 	
 	// make the environment
-	env.make("v1");
+	std::unordered_map<std::string, std::any> options;
+	env.make("v1", options);
 	
 	auto time_step = env.reset();
 	

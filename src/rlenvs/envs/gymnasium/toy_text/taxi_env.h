@@ -4,9 +4,10 @@
 #include "rlenvs/rlenvscpp_config.h"
 #include "rlenvs/rlenvs_types_v2.h"
 #include "rlenvs/envs/gymnasium/toy_text/toy_text_base.h"
-#include "rlenvs/time_step.h"
+#include "rlenvs/envs/time_step.h"
+//#include "rlenvs/envs/space_type.h"
 #include "rlenvs/extern/HTTPRequest.hpp"
-#include "rlenvs/envs/space_type.h"
+
 
 #include <map>
 #include <string>
@@ -22,7 +23,7 @@ namespace gymnasium{
 ///
 /// \brief The Taxi class
 ///
-class Taxi final: public  ToyTextEnvBase<TimeStep<uint_t>, DiscreteEnv<500, 6>>
+class Taxi final: public  ToyTextEnvBase<TimeStep<uint_t>, 500, 6>
 {
 public:
 	
@@ -34,8 +35,7 @@ public:
     ///
 	/// \brief The base type
 	///
-	typedef typename ToyTextEnvBase<TimeStep<uint_t>,
-									DiscreteEnv<500, 6>>::base_type base_type;
+	typedef typename ToyTextEnvBase<TimeStep<uint_t>, 500, 6>::base_type base_type;
 	
 	///
 	/// \brief The time step type we return every time a step in the
@@ -58,18 +58,16 @@ public:
 	///
     typedef typename base_type::action_type action_type;
 	
+	///
+	/// \brief The type of the action to be undertaken in the environment
+	///
+    typedef typename base_type::state_type state_type;
+	
     ///
     /// \brief Taxi
     ///
     Taxi(const std::string& api_base_url);
 	
-	///
-	/// \brief Constructor
-	///
-	Taxi(const std::string& api_base_url, 
-		 const uint_t cidx);
-
-
     ///
     /// \brief ~FrozenLake. Destructor.
     ///
@@ -81,14 +79,9 @@ public:
     ///
     virtual void make(const std::string& version,
                       const std::unordered_map<std::string, std::any>& /*options*/) override final;
-
-    ///
-    /// \brief Number of states. Hardcoded from here:
-    /// https://github.com/Farama-Foundation/Gymnasium/blob/6baf8708bfb08e37ce3027b529193169eaa230fd/gymnasium/envs/toy_text/taxi.py#L165C9-L165C19
-    ///
-    uint_t n_states()const noexcept{return state_space_type::size;}
-
-    ///
+					  
+	
+	///
     /// \brief step
     ///
     virtual time_step_type step(const action_type& action) override final;
@@ -98,7 +91,14 @@ public:
 	/// copy index
 	///
 	virtual std::unique_ptr<base_type> make_copy(uint_t cidx)const override final;
+
 protected:
+	
+	///
+	/// \brief Constructor
+	///
+	Taxi(const std::string& api_base_url, 
+		 const uint_t cidx);
 
      ///
     /// \brief build the dynamics from response

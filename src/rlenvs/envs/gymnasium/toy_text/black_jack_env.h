@@ -7,10 +7,9 @@
  */
 
 #include "rlenvs/rlenvs_types_v2.h"
-#include "rlenvs/time_step.h"
+#include "rlenvs/envs/time_step.h"
 #include "rlenvs/extern/HTTPRequest.hpp"
 #include "rlenvs/envs/gymnasium/toy_text/toy_text_base.h"
-#include "rlenvs/envs/space_type.h"
 
 #include <string>
 #include <vector>
@@ -27,8 +26,7 @@ namespace gymnasium {
 /// \brief The BlackJack class. Wrapper to the Blackjack
 /// OpenAI-Gym environment.
 ///
-class BlackJack final: public ToyTextEnvBase<TimeStep<uint_t>, 
-											 DiscreteEnv<48, 2>>
+class BlackJack final: public ToyTextEnvBase<TimeStep<uint_t>, 48, 2>
 {
 
 public:
@@ -41,8 +39,7 @@ public:
     ///
 	/// \brief The base type
 	///
-	typedef typename ToyTextEnvBase<TimeStep<uint_t>, 
-									DiscreteEnv<48, 2>>::base_type base_type;
+	typedef typename ToyTextEnvBase<TimeStep<uint_t>, 48, 2>::base_type base_type;
 	
 	///
 	/// \brief The time step type we return every time a step in the
@@ -64,18 +61,17 @@ public:
 	/// \brief The type of the action to be undertaken in the environment
 	///
     typedef typename base_type::action_type action_type;
+	
+	///
+	/// \brief The type of the action to be undertaken in the environment
+	///
+    typedef typename base_type::state_type state_type;
 
     ///
     /// \brief BlackJack. Constructor.
     ///
     BlackJack(const std::string& api_base_url);
 	
-	///
-	/// \brief Constructor
-	///
-	BlackJack(const std::string& api_base_url, 
-	           const uint_t cidx);
-
     ///
     /// \brief ~BlackJack. Destructor
     ///
@@ -89,22 +85,11 @@ public:
                       const std::unordered_map<std::string, std::any>& options) override final;
 
     ///
-    /// \brief n_states
-    ///
-    uint_t n_states()const{return state_space_type::size;}
-
-    ///
-    /// \brief n_actions
-    /// \return
-    ///
-    uint_t n_actions()const noexcept{return action_space_type::size; }
-
-    ///
     /// \brief step
     /// \param action
     /// \return
     ///
-    time_step_type step(const action_type& action)override final;
+    virtual time_step_type step(const action_type& action)override final;
 	
 	///
 	/// \brief Create a new copy of the environment with the given
@@ -124,6 +109,12 @@ public:
 
 
 protected:
+	
+	///
+	/// \brief Constructor
+	///
+	BlackJack(const std::string& api_base_url, 
+	           const uint_t cidx);
 
     ///
     /// \brief build the dynamics from response

@@ -57,11 +57,11 @@
 
 #include "rlenvs/rlenvs_types_v2.h"
 #include "rlenvs/discrete_space.h"
-#include "rlenvs/time_step.h"
+#include "rlenvs/envs/time_step.h"
 #include "rlenvs/extern/HTTPRequest.hpp"
 
 #include "rlenvs/envs/gymnasium/toy_text/toy_text_base.h"
-#include "rlenvs/envs/space_type.h"
+//#include "rlenvs/envs/space_type.h"
 
 #include <string>
 #include <vector>
@@ -105,7 +105,8 @@ struct frozenlake_state_size<8>
 ///
 template<uint_t side_size>
 class FrozenLake final: public ToyTextEnvBase<TimeStep<uint_t>,
-                                              DiscreteEnv<frozenlake_state_size<side_size>::size, 4>>
+                                              frozenlake_state_size<side_size>::size, 
+											  4>
 {
 public:
 	
@@ -124,7 +125,8 @@ public:
 	/// \brief The base type
 	///
 	typedef typename ToyTextEnvBase<TimeStep<uint_t>,
-									DiscreteEnv<frozenlake_state_size<side_size>::size, 4>>::base_type base_type;
+									frozenlake_state_size<side_size>::size, 
+									4>::base_type base_type;
 	
 	///
 	/// \brief The time step type we return every time a step in the
@@ -147,17 +149,16 @@ public:
 	///
     typedef typename base_type::action_type action_type;
 	
+	///
+	/// \brief The type of the action to be undertaken in the environment
+	///
+    typedef typename base_type::state_type state_type;
+	
     ///
     /// \brief Constructor.
     ///
     FrozenLake(const std::string& api_base_url);
 	
-	///
-	/// \brief Constructor
-	///
-	FrozenLake(const std::string& api_base_url, 
-	           const uint_t cidx, bool slippery);
-
     ///
     /// \brief ~FrozenLake. Destructor.
     ///
@@ -184,7 +185,7 @@ public:
     ///
     /// \brief n_states. Returns the number of states
     ///
-    uint_t n_states()const noexcept{ return side_size == 4 ? 16 : 64; }
+    //uint_t n_states()const noexcept{ return side_size == 4 ? 16 : 64; }
 
     ///
     /// \brief map_type
@@ -200,6 +201,12 @@ public:
 
 
 protected:
+	
+	///
+	/// \brief Constructor
+	///
+	FrozenLake(const std::string& api_base_url, 
+	           const uint_t cidx, bool slippery);
 
     ///
     /// \brief build the dynamics from response
@@ -218,11 +225,6 @@ private:
     ///
     bool is_slippery_;
 	
-	///
-	/// \brief The base url to access the REST API
-	///
-	const std::string api_base_url_;
-
 };
 
 }

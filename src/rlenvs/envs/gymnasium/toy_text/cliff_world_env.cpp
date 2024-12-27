@@ -1,5 +1,6 @@
 #include "rlenvs/envs/gymnasium/toy_text/cliff_world_env.h"
 #include "rlenvs/rlenvscpp_config.h"
+#include "rlenvs/envs/time_step_type.h"
 #include "rlenvs/extern/nlohmann/json/json.hpp"
 
 #ifdef RLENVSCPP_DEBUG
@@ -37,7 +38,7 @@ CliffWorld::create_time_step_from_response_(const http::Response& response)const
 
     json j = json::parse(str_response);
 
-    auto step_type = j["time_step"]["step_type"];
+    auto step_type = static_cast<uint_t>(j["time_step"]["step_type"]);
     auto reward = j["time_step"]["reward"];
     auto discount = j["time_step"]["discount"];
     auto observation = j["time_step"]["observation"];
@@ -47,7 +48,7 @@ CliffWorld::create_time_step_from_response_(const http::Response& response)const
 	info_["prob"] = std::any(static_cast<real_t>(info["prob"]));
 	
 	
-    return CliffWorld::time_step_type(time_step_type_from_int(step_type),
+    return CliffWorld::time_step_type(TimeStepEnumUtils::time_step_type_from_int(step_type),
                                                  reward, observation, discount,
 												 std::move(info_));
                                                 
@@ -56,20 +57,19 @@ CliffWorld::create_time_step_from_response_(const http::Response& response)const
 
 CliffWorld::CliffWorld(const std::string& api_base_url)
     :
-ToyTextEnvBase<TimeStep<uint_t>, 
-			   DiscreteEnv<37, 4>>(0, "CliffWalking", 
-			                      api_base_url,
-								  "/gymnasium/cliff-walking-env"),
+ToyTextEnvBase<TimeStep<uint_t>, 37, 4>(0, 
+                                        "CliffWalking", 
+			                            api_base_url,
+								        "/gymnasium/cliff-walking-env"),
 max_episode_steps_(200)
 {}
 
 CliffWorld::CliffWorld(const std::string& api_base_url, 
 	                   const uint_t cidx)
 :
-ToyTextEnvBase<TimeStep<uint_t>, 
-			   DiscreteEnv<37, 4>>(cidx, "CliffWalking", 
-			                      api_base_url,
-								  "/gymnasium/cliff-walking-env"),
+ToyTextEnvBase<TimeStep<uint_t>, 37, 4>(cidx, "CliffWalking", 
+			                            api_base_url,
+								        "/gymnasium/cliff-walking-env"),
 max_episode_steps_(200)
 {}
 
@@ -143,9 +143,11 @@ std::unique_ptr<CliffWorld::base_type>
 CliffWorld::make_copy(uint_t cidx)const{
 	
 	auto api_base_url = this -> get_api_url();
-	return std::make_unique<CliffWorld>(api_base_url,
-								        cidx);
-												   
+	auto ptr = std::unique_ptr<CliffWorld::base_type>(new CliffWorld(api_base_url,cidx));
+	std::unordered_map<std::string, std::any> ops;
+	auto version = this -> version();
+	ptr -> make(version, ops);
+	return ptr;
 }
 
 }

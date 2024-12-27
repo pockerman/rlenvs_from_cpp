@@ -1,6 +1,6 @@
 #include "rlenvs/envs/gymnasium/toy_text/frozen_lake_env.h"
 #include "rlenvs/rlenvscpp_config.h"
-#include "rlenvs/time_step_type.h"
+#include "rlenvs/envs/time_step_type.h"
 #include "rlenvs/extern/nlohmann/json/json.hpp"
 
 
@@ -21,8 +21,8 @@ template<uint_t side_size>
 FrozenLake<side_size>::FrozenLake(const std::string& api_base_url)
 :
 ToyTextEnvBase<TimeStep<uint_t>,
-			   DiscreteEnv<frozenlake_state_size<side_size>::size, 4>>(0, "FrozenLake",
-                                                                    api_base_url,"/gymnasium/frozen-lake-env"),
+			   frozenlake_state_size<side_size>::size, 
+			   4>(0, "FrozenLake", api_base_url,"/gymnasium/frozen-lake-env"),
 is_slippery_(true)
 {}
  
@@ -31,8 +31,8 @@ FrozenLake<side_size>::FrozenLake(const std::string& api_base_url,
 		                          const uint_t cidx, bool slippery)
 		   :
 ToyTextEnvBase<TimeStep<uint_t>,
-			   DiscreteEnv<frozenlake_state_size<side_size>::size, 4>>(cidx, "FrozenLake",
-                                                                   api_base_url, "/gymnasium/frozen-lake-env"),
+			   frozenlake_state_size<side_size>::size, 
+			   4>(cidx, "FrozenLake", api_base_url, "/gymnasium/frozen-lake-env"),
 is_slippery_(slippery)
 {}			
 			   
@@ -57,12 +57,12 @@ FrozenLake<side_size>::create_time_step_from_response_(const http::Response& res
 
     json j = json::parse(str_response);
 
-    auto step_type = j["time_step"]["step_type"];
+    auto step_type = static_cast<uint_t>(j["time_step"]["step_type"]);
     auto reward = j["time_step"]["reward"];
     auto discount = j["time_step"]["discount"];
     auto observation = j["time_step"]["observation"];
     auto info = j["time_step"]["info"];
-    return FrozenLake<side_size>::time_step_type(time_step_type_from_int(step_type),
+    return FrozenLake<side_size>::time_step_type(TimeStepEnumUtils::time_step_type_from_int(step_type),
                                                  reward, observation, discount,
                                                  std::unordered_map<std::string, std::any>());
 }
@@ -144,13 +144,18 @@ std::unique_ptr<typename FrozenLake<side_size>::base_type>
 FrozenLake<side_size>::make_copy(uint_t cidx)const{
 	
 	auto api_base_url = this -> get_api_url();
-	auto version = this -> version();
 	auto slippery = this -> is_slippery();
-	return std::make_unique<FrozenLake<side_size>>(api_base_url,
-												   cidx,
-												   slippery);
-												   
 	
+	auto ptr = std::unique_ptr<FrozenLake<side_size>>(new FrozenLake(api_base_url,
+												                     cidx,
+																	 slippery));
+	
+	std::unordered_map<std::string, std::any> ops;
+	ops["is_slippery"] = this -> is_slippery();
+	auto version = this -> version();
+	ptr -> make(version, ops);
+	return ptr;
+												
 }
 
 template class FrozenLake<4>;

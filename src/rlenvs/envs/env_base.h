@@ -148,12 +148,12 @@ protected:
 private:
 
 	///
-	///
+	/// \brief Flag indicating if the environment has been created
 	///
     bool is_created_;
 	
 	///
-	///
+	/// The copy idx
 	///
     uint_t cidx_;
 	

@@ -1,4 +1,4 @@
-#include "rlenvs/time_step_type.h"
+#include "rlenvs/envs/time_step_type.h"
 
 #include <algorithm>
 #include <iterator>
@@ -6,9 +6,9 @@
 namespace rlenvscpp
 {
 
-TimeStepTp time_step_type_from_int(int type){
+/*TimeStepTp time_step_type_from_int(int type){
    return TimeStepEnumUtils::time_step_type_from_int(type);
-}
+}*/
 
 
 
@@ -29,6 +29,32 @@ TimeStepEnumUtils::time_step_type_from_int(uint_t type){
 
     return TimeStepTp::INVALID_TYPE;
 }
+
+TimeStepTp 
+TimeStepEnumUtils::time_step_type_from_int(int type){
+	
+	return TimeStepEnumUtils::time_step_type_from_int(static_cast<uint_t>(type));
+}
+
+std::string 
+TimeStepEnumUtils::to_string(TimeStepTp type){
+	
+	if(type == TimeStepTp::FIRST){
+
+        return "FIRST";
+    }
+    else if(type == TimeStepTp::MID){
+        return "MID";
+    }
+    else if(type == TimeStepTp::LAST){
+
+        return "LAST";
+    }
+
+    return "INVALID_TYPE";
+	
+}
+
 std::vector<TimeStepTp> 
 TimeStepEnumUtils::time_step_type_from_int(const std::vector<uint_t>& types){
 	

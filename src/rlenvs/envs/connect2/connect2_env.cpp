@@ -1,5 +1,5 @@
 #include "rlenvs/envs/connect2/connect2_env.h"
-#include "rlenvs/time_step_type.h"
+#include "rlenvs/envs/time_step.h"
 
 
 #include <algorithm>
@@ -15,20 +15,18 @@ namespace connect2{
 	
 const std::string Connect2::name = "Connect2";
 
-/*namespace{
- static const std::vector<int> valid_moves = {0, 1, 2, 3};
- bool validate_move(const uint_t move_id){
-	 return std::find(valid_moves.begin(), valid_moves.end(), move_id) != valid_moves.end();
- } 
- 
-}*/
+Connect2::Connect2()
+:
+EnvBase<TimeStep<std::vector<uint_t>>,
+		DiscreteVectorStateDiscreteActionEnv<53, 0, 4, uint_t > >(0, "Connect2"),
+discount_(1.0),
+board_()
+{}
 
 Connect2::Connect2(uint_t cidx)
 :
-//EnvBase<TimeStep<std::vector<uint_t>>,
-//		ContinousStateDiscreteActionEnv<53, 4, uint_t > >(cidx, "Connect2"),
 EnvBase<TimeStep<std::vector<uint_t>>,
-		DiscreteVectorStateDiscreteActionEnv<53, 4, uint_t > >(cidx, "Connect2"),
+		DiscreteVectorStateDiscreteActionEnv<53, 0, 4, uint_t > >(cidx, "Connect2"),
 discount_(1.0),
 board_()
 {}
@@ -170,7 +168,10 @@ Connect2::move(const uint_t pid, const action_type& action){
 
 std::unique_ptr<Connect2::base_type> 
 Connect2::make_copy(uint_t cidx)const{
-	auto ptr = std::make_unique<Connect2>(cidx);
+	auto ptr = std::unique_ptr<Connect2::base_type>( new Connect2(cidx));
+	std::unordered_map<std::string, std::any> ops;
+	auto ver = this -> version();
+	ptr -> make(ver, ops);
 	return ptr;
 }
 		

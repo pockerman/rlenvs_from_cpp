@@ -1,6 +1,7 @@
 #include "rlenvs/rlenvscpp_config.h"
 #include "rlenvs/envs/gymnasium/classic_control/mountain_car_env.h"
-#include "rlenvs/time_step.h"
+#include "rlenvs/envs/time_step.h"
+#include "rlenvs/envs/time_step_type.h"
 #include "rlenvs/extern/nlohmann/json/json.hpp"
 #include "rlenvs/extern/HTTPRequest.hpp"
 
@@ -29,12 +30,12 @@ MountainCar::create_time_step_from_response_(const http::Response& response)cons
 
     json j = json::parse(str_response);
 
-    auto step_type = j["time_step"]["step_type"];
+    auto step_type = static_cast<uint_t>(j["time_step"]["step_type"]);
     auto reward = j["time_step"]["reward"];
     auto discount = j["time_step"]["discount"];
     auto observation = j["time_step"]["observation"];
     auto info = j["time_step"]["info"];
-    return MountainCar::time_step_type(time_step_type_from_int(step_type),
+    return MountainCar::time_step_type(TimeStepEnumUtils::time_step_type_from_int(step_type),
                                                  reward, observation, discount,
                                                  std::unordered_map<std::string, std::any>());
 }
@@ -42,13 +43,27 @@ MountainCar::create_time_step_from_response_(const http::Response& response)cons
 
 MountainCar::MountainCar(const std::string& api_base_url)
     :
-      GymnasiumEnvBase<MountainCarData::time_step_type>(api_base_url + "/gymnasium/mountain-car-env")
+GymnasiumEnvBase<TimeStep<std::vector<real_t>>, 
+				 ContinuousVectorStateDiscreteActionEnv<3, 2, 0, real_t >
+												 >(0, "MountainCar",
+												   api_base_url,
+												   "/gymnasium/mountain-car-env")
 {}
 
 
+MountainCar::MountainCar(const std::string& api_base_url, 
+				         const uint_t cidx)
+:
+GymnasiumEnvBase<TimeStep<std::vector<real_t>>, 
+				 ContinuousVectorStateDiscreteActionEnv<3, 2, 0, real_t >
+												 >(cidx, "MountainCar",
+												   api_base_url,
+												   "/gymnasium/mountain-car-env")
+{}
+
 void
 MountainCar::make(const std::string& version,
-              const std::unordered_map<std::string, std::any>& /*options*/){
+                  const std::unordered_map<std::string, std::any>& /*options*/){
 
     if(this->is_created()){
         return;
@@ -60,24 +75,24 @@ MountainCar::make(const std::string& version,
     using json = nlohmann::json;
     json j;
     j["version"] = version;
+	j["cidx"] = this -> cidx();
 
-    auto body = j.dump();
-    const auto response = request.send("POST", body);
+    const auto response = request.send("POST", j.dump());
 
     if(response.status.code != 201){
         throw std::runtime_error("Environment server failed to create Environment");
     }
 
-    this->set_version(version);
-    this->make_created();
+    this->set_version_(version);
+    this->make_created_();
 
 }
 
 MountainCar::time_step_type
-MountainCar::step(MountainCarActionsEnum action){
+MountainCar::step(const action_type& action){
 
 #ifdef RLENVSCPP_DEBUG
-     assert(this->is_created_ && "Environment has not been created");
+     assert(this->is_created() && "Environment has not been created");
 #endif
 
      if(this->get_current_time_step_().last()){
@@ -87,8 +102,11 @@ MountainCar::step(MountainCarActionsEnum action){
     const auto request_url = std::string(this->get_url()) + "/step";
     http::Request request{request_url};
 
-    auto body = std::to_string(action);
-    const auto response = request.send("POST", body);
+	using json = nlohmann::json;
+    json j;
+    j["action"] = action;
+	j["cidx"] = this -> cidx();
+    const auto response = request.send("POST", j.dump());
 
     if(response.status.code != 202){
         throw std::runtime_error("Environment server failed to step environment");
@@ -99,22 +117,17 @@ MountainCar::step(MountainCarActionsEnum action){
 
 }
 
-MountainCarActionsEnum
-MountainCar::sample_action()const{
 
-    auto action = sample_action_id();
 
-    if (action == 0){
-        return MountainCarActionsEnum::ACCELERATE_LEFT;
-    }
-    else if(action == 1){
-        return MountainCarActionsEnum::DO_NOT_ACCELERATE;
-    }
-    else if(action == 2){
-        return MountainCarActionsEnum::ACCELERATE_RIGHT;
-    }
-
-   throw std::runtime_error("Invalid action");
+std::unique_ptr<MountainCar::base_type> 
+MountainCar::make_copy(uint_t cidx)const{
+	auto api_base_url = this -> get_api_url();
+	auto ptr = std::unique_ptr<MountainCar::base_type>(new MountainCar(api_base_url, cidx));
+	
+	std::unordered_map<std::string, std::any> ops;
+	auto version = this -> version();
+	ptr -> make(version, ops);
+	return ptr;
 }
 
 }

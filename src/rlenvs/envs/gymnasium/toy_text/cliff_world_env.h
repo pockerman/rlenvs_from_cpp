@@ -36,7 +36,7 @@
  */
 
 #include "rlenvs/rlenvs_types_v2.h"
-#include "rlenvs/time_step.h"
+#include "rlenvs/envs/time_step.h"
 #include "rlenvs/extern/HTTPRequest.hpp"
 #include "rlenvs/envs/gymnasium/toy_text/toy_text_base.h"
 #include "rlenvs/envs/space_type.h" 
@@ -54,7 +54,7 @@ namespace gymnasium {
 ///
 /// \brief The CliffWorld class
 ///
-class CliffWorld final: public ToyTextEnvBase<TimeStep<uint_t>, DiscreteEnv<37, 4>>
+class CliffWorld final: public ToyTextEnvBase<TimeStep<uint_t>, 37, 4>
 {
 
 public:
@@ -72,8 +72,7 @@ public:
 	///
 	/// \brief The base type
 	///
-	typedef typename ToyTextEnvBase<TimeStep<uint_t>, 
-									DiscreteEnv<37, 4>>::base_type base_type;
+	typedef typename ToyTextEnvBase<TimeStep<uint_t>, 37, 4>::base_type base_type;
 	
 	///
 	/// \brief The time step type we return every time a step in the
@@ -96,17 +95,17 @@ public:
 	///
     typedef typename base_type::action_type action_type;
 	
+	///
+	/// \brief The type of the action to be undertaken in the environment
+	///
+    typedef typename base_type::state_type state_type;
+	
     ///
     /// \brief CliffWorld
     ///
     CliffWorld(const std::string& api_base_url);
 	
-	///
-	/// \brief Constructor
-	///
-	CliffWorld(const std::string& api_base_url, 
-	           const uint_t cidx);
-
+	
     ///
     /// \brief ~CliffWorld. Destructor
     ///
@@ -122,20 +121,20 @@ public:
     ///
     /// \brief n_states
     ///
-    uint_t n_states()const{return state_space_type::size;}
+    //uint_t n_states()const{return state_space_type::size;}
 
     ///
     /// \brief n_actions
     /// \return
     ///
-    uint_t n_actions()const noexcept{return action_space_type::size; }
+    //uint_t n_actions()const noexcept{return action_space_type::size; }
 
     ///
     /// \brief step
     /// \param action
     /// \return
     ///
-    time_step_type step(const action_type& action) override final;
+    virtual time_step_type step(const action_type& action) override final;
 	
 	///
 	/// \brief Create a new copy of the environment with the given
@@ -145,6 +144,13 @@ public:
 
 
 protected:
+	
+	///
+	/// \brief Constructor
+	///
+	CliffWorld(const std::string& api_base_url, 
+	           const uint_t cidx);
+
 	
 	///
 	/// \brief Maximum episodes per step

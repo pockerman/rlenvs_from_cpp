@@ -39,9 +39,9 @@
 
 #include "rlenvs/rlenvscpp_config.h"
 #include "rlenvs/rlenvs_types_v2.h"
-#include "rlenvs/time_step.h"
+#include "rlenvs/envs/time_step.h"
 #include "rlenvs/envs/gymnasium/gymnasium_env_base.h"
-#include "rlenvs/envs/space_type.h"
+#include "rlenvs/envs/env_types.h"
 #include "rlenvs/extern/HTTPRequest.hpp"
 
 
@@ -63,7 +63,11 @@ namespace gymnasium{
 /// \brief The CartPole class Interface for CartPole environment
 ///
 class CartPole final: public GymnasiumEnvBase<TimeStep<std::vector<real_t> >,
-                                              ContinousStateDiscreteActionEnv<4, 2, std::vector<real_t> > >
+                                              ContinuousVectorStateDiscreteActionEnv<4, 
+											                                         2, 
+																					 0, 
+																					 real_t> 
+											  >
 {
 
 public:
@@ -77,7 +81,12 @@ public:
 	/// \brief Base class type
 	///
 	typedef GymnasiumEnvBase<TimeStep<std::vector<real_t> >,
-							 ContinousStateDiscreteActionEnv<4, 2, std::vector<real_t>>>::base_type base_type;
+							 ContinuousVectorStateDiscreteActionEnv< 4, // size of state
+							                                         2, // end of action space
+																	 0, // start of action space
+																	 real_t // type of state
+																	>
+																	>::base_type base_type;
 
     ///
 	/// \brief The time step type we return every time a step in the
@@ -110,23 +119,16 @@ public:
     ///
     CartPole(const std::string& api_base_url );
 	
-	///
-    /// \brief CartPole. Constructor
-    ///
-    CartPole(const std::string& api_base_url, 
-		     const uint_t cidx);
-
     ///
     /// \brief ~CartPole. Destructor
     ///
-    ~CartPole();
+    ~CartPole()=default;
 
     ///
     /// \brief make. Build the environment
     ///
     virtual void make(const std::string& version,
-                      const std::unordered_map<std::string, std::any>& /*options*/
-					  =std::unordered_map<std::string, std::any>()) override final;
+                      const std::unordered_map<std::string, std::any>&) override final;
 
     ///
     /// \brief step. Step in the environment following the given action
@@ -147,6 +149,12 @@ public:
 
 
 protected:
+	
+	///
+    /// \brief CartPole. Constructor
+    ///
+    CartPole(const std::string& api_base_url, 
+		     const uint_t cidx);
 
     ///
     /// \brief Handle the reset response from the environment server
@@ -155,9 +163,9 @@ protected:
 
 };
 
-inline
-CartPole::~CartPole()
-{}
+//inline
+//CartPole::~CartPole()
+//{}
 
 
 }

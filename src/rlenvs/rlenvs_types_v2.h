@@ -11,7 +11,7 @@
 
 #include <string>
 #include <cstddef>
-
+#include <vector>
 
 
 namespace rlenvscpp {
@@ -20,7 +20,6 @@ namespace rlenvscpp {
 /// \brief real_t
 ///
 typedef double real_t;
-
 
 ///
 /// \brief float
@@ -46,23 +45,55 @@ template<typename T>
 using DynVec = Eigen::RowVectorX<T>;
 
 ///
-///
+/// \brief single precision floating point vector 
 ///
 using FloatVec = DynVec<float_t>;
 
 ///
-///
+/// \brief double precision floating point vector
 ///
 using RealVec = DynVec<real_t>;
 
 ///
-/// \brief invalid_uint
+/// \brief single precision std::vector
 ///
-//constexpr uint_t INVALID_UINT = static_cast<uint_t>(-1);
+using STD_FloatVec = std::vector<float_t>;
+
+///
+/// \brief double precision std::vector
+///
+using STD_RealVec = std::vector<real_t>;
+
+
+///
+/// \brief A range of double precision floating point values
+///
+template<uint_t s, uint_t e>
+struct IntegralRange
+{
+	typedef uint_t value_type;
+	static constexpr uint_t S = s;
+	static constexpr uint_t E = e;
+	static constexpr uint_t size = e - s;
+};
+
+///
+/// \brief A range of double precision floating point values
+///
+template<real_t s, real_t e>
+struct RealRange
+{
+	typedef real_t value_type;
+	static constexpr real_t S = s;
+	static constexpr real_t E = e;
+	static constexpr real_t size = e - s;
+};
+
+
 
 
 #ifdef USE_PYTORCH
-typedef torch::Tensor torch_tensor_t;
+	typedef torch::Tensor torch_tensor_t;
 #endif
 
 ///

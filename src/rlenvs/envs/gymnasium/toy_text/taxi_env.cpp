@@ -1,5 +1,6 @@
 #include "rlenvs/envs/gymnasium/toy_text/taxi_env.h"
 #include "rlenvs/rlenvscpp_config.h"
+#include "rlenvs/envs/time_step_type.h"
 #include "rlenvs/extern/nlohmann/json/json.hpp"
 
 
@@ -19,17 +20,20 @@ const std::string Taxi::name = "Taxi";
 
 Taxi::Taxi(const std::string& api_base_url)
     :
-     ToyTextEnvBase<TimeStep<uint_t>, DiscreteEnv<500, 6>>(0, "Taxi", 
-	                                                       api_base_url, "/gymnasium/taxi-env")
+     ToyTextEnvBase<TimeStep<uint_t>, 500, 6>(0, 
+											  "Taxi", 
+	                                          api_base_url, 
+											  "/gymnasium/taxi-env")
 {}
 
 
 Taxi::Taxi(const std::string& api_base_url, 
 		   const uint_t cidx)
 		   :
-ToyTextEnvBase<TimeStep<uint_t>, DiscreteEnv<500, 6>>(cidx, "Taxi",
-													  api_base_url, 
-													  "/gymnasium/frozen-lake-env")
+ToyTextEnvBase<TimeStep<uint_t>, 500, 6>(cidx, 
+                                         "Taxi",
+										 api_base_url, 
+										 "/gymnasium/frozen-lake-env")
 {}	
 
 Taxi::dynamics_t
@@ -51,12 +55,12 @@ Taxi::create_time_step_from_response_(const http::Response& response)const{
 
     json j = json::parse(str_response);
 
-    auto step_type = j["time_step"]["step_type"];
+    auto step_type = static_cast<uint_t>(j["time_step"]["step_type"]);
     auto reward = j["time_step"]["reward"];
     auto discount = j["time_step"]["discount"];
     auto observation = j["time_step"]["observation"];
     auto info = j["time_step"]["info"];
-    return Taxi::time_step_type(time_step_type_from_int(step_type),
+    return Taxi::time_step_type(TimeStepEnumUtils::time_step_type_from_int(step_type),
                                 reward, observation, discount,
                                 std::unordered_map<std::string, std::any>());
 }
@@ -127,8 +131,12 @@ std::unique_ptr<Taxi::base_type>
 Taxi::make_copy(uint_t cidx)const{
 	
 	auto api_base_url = this -> get_api_url();
-	return std::make_unique<Taxi>(api_base_url,
-								  cidx);
+	auto ptr = std::unique_ptr<Taxi::base_type>(new Taxi(api_base_url, cidx));
+	
+	std::unordered_map<std::string, std::any> ops;
+	auto version = this -> version();
+	ptr -> make(version, ops);
+	return ptr;
 												   
 }
 
