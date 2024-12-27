@@ -21,7 +21,7 @@ void test_frozen_lake(){
 
     // make the environment
     std::unordered_map<std::string, std::any> options;
-    options.insert({"is_slippery", true});
+    options.insert({"is_slippery", false});
     env.make("v1", options);
 
     std::cout<<"Is environment created? "<<env.is_created()<<std::endl;
@@ -62,6 +62,14 @@ void test_frozen_lake(){
 
     // synchronize the environment
     env.sync(std::unordered_map<std::string, std::any>());
+	
+	auto copy_env_ptr = env.make_copy(1);
+	copy_env_ptr -> reset();
+	
+	std::cout<<"Org env cidx: "<<env.cidx()<<std::endl;
+	std::cout<<"Copy env cidx: "<<copy_env_ptr -> cidx()<<std::endl;
+	
+	copy_env_ptr -> close();
 
     // close the environment
     env.close();
@@ -82,7 +90,8 @@ void test_taxi(){
     std::cout<<"Is environment alive? "<<env.is_alive()<<std::endl;
     std::cout<<"Number of valid actions? "<<env.n_actions()<<std::endl;
     std::cout<<"Number of states? "<<env.n_states()<<std::endl;
-
+	
+	
     // reset the environment
     auto time_step = env.reset(42, std::unordered_map<std::string, std::any>());
 
@@ -113,7 +122,8 @@ void test_taxi(){
         std::cout<<std::get<2>(item)<<std::endl;
         std::cout<<std::get<3>(item)<<std::endl;
     }
-
+	
+	
     // close the environment
     env.close();
 
@@ -212,14 +222,14 @@ int main(){
     std::cout<<"Testing FrozenLake..."<<std::endl;
     example_1::test_frozen_lake();
     std::cout<<"===================="<<std::endl;
-    std::cout<<"Testing Taxi..."<<std::endl;
-    example_1::test_taxi();
-    std::cout<<"===================="<<std::endl;
-    std::cout<<"Testing BlackJack..."<<std::endl;
-    example_1::test_black_jack();
-    std::cout<<"===================="<<std::endl;
-    std::cout<<"Testing CliffWorld..."<<std::endl;
-    example_1::test_cliff_world();
-    std::cout<<"===================="<<std::endl;
+    //std::cout<<"Testing Taxi..."<<std::endl;
+    //example_1::test_taxi();
+    //std::cout<<"===================="<<std::endl;
+    //std::cout<<"Testing BlackJack..."<<std::endl;
+    //example_1::test_black_jack();
+    //std::cout<<"===================="<<std::endl;
+    //std::cout<<"Testing CliffWorld..."<<std::endl;
+    //example_1::test_cliff_world();
+    //std::cout<<"===================="<<std::endl;
     return 0;
 }

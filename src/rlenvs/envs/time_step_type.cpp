@@ -2,15 +2,10 @@
 
 #include <algorithm>
 #include <iterator>
+#include <iostream>
 
 namespace rlenvscpp
 {
-
-/*TimeStepTp time_step_type_from_int(int type){
-   return TimeStepEnumUtils::time_step_type_from_int(type);
-}*/
-
-
 
 TimeStepTp 
 TimeStepEnumUtils::time_step_type_from_int(uint_t type){
@@ -39,20 +34,17 @@ TimeStepEnumUtils::time_step_type_from_int(int type){
 std::string 
 TimeStepEnumUtils::to_string(TimeStepTp type){
 	
-	if(type == TimeStepTp::FIRST){
-
-        return "FIRST";
-    }
-    else if(type == TimeStepTp::MID){
-        return "MID";
-    }
-    else if(type == TimeStepTp::LAST){
-
-        return "LAST";
-    }
-
-    return "INVALID_TYPE";
-	
+	switch(type)
+	{
+		case TimeStepTp::FIRST:
+			return "FIRST";
+		case TimeStepTp::MID:
+			return "MID";
+		case TimeStepTp::LAST:
+			return "LAST";
+		default :
+			return "INVALID_TYPE";
+	}
 }
 
 std::vector<TimeStepTp> 

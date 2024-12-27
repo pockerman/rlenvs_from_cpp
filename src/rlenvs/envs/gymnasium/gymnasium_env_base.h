@@ -151,15 +151,9 @@ GymnasiumEnvBase<TimeStepType, SpaceType>::close(){
         return;
     }
 
-	auto copy_idx = this -> cidx();
-	using json = nlohmann::json;
-    json j;
-	j["cidx"] = copy_idx;
-	
-	
 	auto url = this -> get_url();
 	
-    http::Request request{url + "/close"};
+    http::Request request{url + "/close?cidx="+std::to_string(this -> cidx())};
     const auto response = request.send("POST");
     this -> invalidate_is_created_flag_();
 
@@ -196,7 +190,7 @@ GymnasiumEnvBase<TimeStepType, SpaceType>::reset(uint_t seed,
         throw std::runtime_error("Environment server failed to reset environment");
     }
 
-    this->create_time_step_from_response_(response);
+    this -> get_current_time_step_() = this->create_time_step_from_response_(response);
     return this -> get_current_time_step_();
 
 }

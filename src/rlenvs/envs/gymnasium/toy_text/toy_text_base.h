@@ -131,7 +131,9 @@ ToyTextEnvBase<TimeStepType, state_end, action_end>::p(uint_t sidx, uint_t aidx)
 #endif
 
     const std::string url(this->get_url());
-    const auto request_url = url + "/dynamics?stateId="+std::to_string(sidx)+"&actionId="+std::to_string(aidx);
+    const auto request_url = url + "/dynamics?cidx="+std::to_string(this -> cidx())
+	                                                +"&stateId="+std::to_string(sidx)
+													+"&actionId="+std::to_string(aidx);
     http::Request request{request_url};
     const auto response = request.send("GET");
 

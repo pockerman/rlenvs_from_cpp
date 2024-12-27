@@ -8,6 +8,7 @@
 #include <cassert>
 #endif
 
+#include <iostream>
 #include <memory>
 
 namespace rlenvscpp{
@@ -58,13 +59,17 @@ FrozenLake<side_size>::create_time_step_from_response_(const http::Response& res
     json j = json::parse(str_response);
 
     auto step_type = j["time_step"]["step_type"].template get<uint_t>();
+	auto step_type_val = TimeStepEnumUtils::time_step_type_from_int(step_type);
     auto reward = j["time_step"]["reward"];
     auto discount = j["time_step"]["discount"];
     auto observation = j["time_step"]["observation"];
     auto info = j["time_step"]["info"];
-    return FrozenLake<side_size>::time_step_type(TimeStepEnumUtils::time_step_type_from_int(step_type),
+	
+	auto time_step = FrozenLake<side_size>::time_step_type(step_type_val,
                                                  reward, observation, discount,
                                                  std::unordered_map<std::string, std::any>());
+												 
+    return time_step;
 }
 
 template<uint_t side_size>
@@ -146,9 +151,9 @@ FrozenLake<side_size>::make_copy(uint_t cidx)const{
 	auto api_base_url = this -> get_api_url();
 	auto slippery = this -> is_slippery();
 	
-	auto ptr = std::unique_ptr<FrozenLake<side_size>>(new FrozenLake(api_base_url,
-												                     cidx,
-																	 slippery));
+	auto ptr = std::unique_ptr<typename FrozenLake<side_size>::base_type>(new FrozenLake(api_base_url,
+												                                         cidx,
+																	                     slippery));
 	
 	std::unordered_map<std::string, std::any> ops;
 	ops["is_slippery"] = this -> is_slippery();

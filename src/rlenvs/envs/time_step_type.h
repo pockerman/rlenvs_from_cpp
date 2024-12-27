@@ -13,7 +13,7 @@ namespace rlenvscpp
 ///
 
 //BETTER_ENUM(TimeStepTp, int, FIRST=0, MID, LAST, INVALID_TYPE);
-enum class TimeStepTp: int {FIRST=0, MID, LAST, INVALID_TYPE};
+enum class TimeStepTp: uint_t {FIRST=0, MID=1, LAST=2, INVALID_TYPE=3};
 
 ///
 /// \brief Utilities for TimeStepTp 
