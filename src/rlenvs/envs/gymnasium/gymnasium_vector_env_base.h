@@ -12,6 +12,7 @@
 #include "rlenvs/rlenvscpp_config.h"
 #include "rlenvs/envs/gymnasium/gymnasium_env_base.h"
 #include "rlenvs/rlenvs_types_v2.h"
+#include "rlenvs/envs/env_types.h"
 
 
 #ifdef RLENVSCPP_DEBUG
@@ -26,21 +27,47 @@ namespace envs{
 namespace gymnasium {
 	
 	
-template<typename VectorTimeStepType>
-class GymnasiumVecEnvBase: public GymnasiumEnvBase<VectorTimeStepType>
+template<typename VectorTimeStepType, typename SpaceType>
+class GymnasiumVecEnvBase: public GymnasiumEnvBase<VectorTimeStepType, SpaceType>
 {
 	
 public:
 	
+	///
+	/// \brief The base type
+	///
+	typedef GymnasiumEnvBase<VectorTimeStepType, SpaceType>::base_type base_type;
 	
 	///
-    /// \brief make. Builds the environment. Throws an exception
-	/// if the number of environments is not specified
+	/// \brief The time step type we return every time a step in the
+	/// environment is performed
+	///
+    typedef typename base_type::time_step_type time_step_type;
+	
+	///
+	/// \brief The type describing the state space for the environment
+	///
+	typedef typename base_type::state_space_type state_space_type;
+	
+	///
+	/// \brief The type of the action space for the environment
+	///
+	typedef typename base_type::action_space_type action_space_type;
+
     ///
-    virtual void make(const std::string& version,
-                      const std::unordered_map<std::string, std::any>& options) = 0;
-					  
-					  
+	/// \brief The type of the action to be undertaken in the environment
+	///
+    typedef typename base_type::action_type action_type;
+	
+	///
+	/// \brief The type of the state
+	///
+	typedef typename base_type::state_type state_type;
+	
+	virtual void make(const std::string& version,
+					  const std::unordered_map<std::string, std::any>& options)=0;
+	
+	
 	///
 	/// \brief Returns the number of environments
 	///
@@ -61,7 +88,10 @@ protected:
 	///
     /// \brief Constructor
     ///
-    GymnasiumVecEnvBase(const std::string& url);
+    GymnasiumVecEnvBase(const uint_t cidx,
+	                    const std::string& name, 
+					    const std::string& api_url,
+					    const std::string& resource_path);
 					  
 private:
 	
@@ -77,15 +107,18 @@ private:
 };
 
 
-template<typename VectoTimeStepType>
-GymnasiumVecEnvBase<VectoTimeStepType>::GymnasiumVecEnvBase(const std::string& url)
+template<typename VectorTimeStepType, typename SpaceType>
+GymnasiumVecEnvBase<VectorTimeStepType, SpaceType>::GymnasiumVecEnvBase(const uint_t cidx,
+															const std::string& name, 
+															const std::string& api_url,
+															const std::string& resource_path)
 :
-GymnasiumEnvBase<VectoTimeStepType>(url)
+GymnasiumEnvBase<VectorTimeStepType, SpaceType>(cidx, name, api_url, resource_path)
 {}
 
-template<typename VectoTimeStepType>
+template<typename VectorTimeStepType, typename SpaceType>
 void 
-GymnasiumVecEnvBase<VectoTimeStepType>::make(const std::string& version,
+GymnasiumVecEnvBase<VectorTimeStepType, SpaceType>::make(const std::string& version,
                                              const std::unordered_map<std::string, std::any>& options){
 
 	auto reset_if_any_done_itr = options.find("reset_if_any_done");

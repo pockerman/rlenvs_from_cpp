@@ -30,7 +30,7 @@ BlackJack::create_time_step_from_response_(const http::Response& response)const{
 
     json j = json::parse(str_response);
 
-    auto step_type = TimeStepEnumUtils::time_step_type_from_int(static_cast<uint_t>(j["time_step"]["step_type"]));
+    auto step_type = TimeStepEnumUtils::time_step_type_from_int(j["time_step"]["step_type"].template get<uint_t>());
     auto reward = j["time_step"]["reward"];
     auto discount = j["time_step"]["discount"];
     auto observation = j["time_step"]["observation"];

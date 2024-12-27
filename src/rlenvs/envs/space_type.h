@@ -10,41 +10,6 @@ namespace rlenvscpp {
 namespace envs{
 	
 ///
-/// \brief Utility class to represent an integral range
-///
-//template<typename T, T s, T e>
-// IntegralRange;
-
-///
-/// \brief Partial specialization for
-/// signed integers
-///
-/*template<int_t s, int_t e>
-struct IntegralRange<int_t, s, e>
-{
-
-	static constexpr int_t start = s;
-	static constexpr int_t end = e;
-	static constexpr int_t size = e - s;
-};
-
-///
-/// \brief Partial specialization for
-/// unsigned integers
-///
-template<uint_t s, uint_t e>
-struct IntegralRange<uint_t, s, e>
-{
-
-	static constexpr uint_t start = s;
-	static constexpr uint_t end = e;
-	static constexpr uint_t size = e - s;
-};
-*/
-
-
-
-///
 /// \brief A scalar discrete space can be used
 /// to denote a space that only has a single value
 /// at each time. For example consider the FrozenLake environment
