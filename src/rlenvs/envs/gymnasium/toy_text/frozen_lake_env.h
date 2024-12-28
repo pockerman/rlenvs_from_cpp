@@ -56,7 +56,6 @@
   * */
 
 #include "rlenvs/rlenvs_types_v2.h"
-#include "rlenvs/discrete_space.h"
 #include "rlenvs/envs/time_step.h"
 #include "rlenvs/extern/HTTPRequest.hpp"
 #include "rlenvs/envs/gymnasium/toy_text/toy_text_base.h"
