@@ -105,6 +105,16 @@ public:
     ///
     CliffWorld(const std::string& api_base_url);
 	
+	///
+	/// \brief Constructor
+	///
+	CliffWorld(const std::string& api_base_url, 
+	           const uint_t cidx);
+	
+	///
+	/// \brief copy constructor
+	///
+	CliffWorld(const CliffWorld& other);
 	
     ///
     /// \brief ~CliffWorld. Destructor
@@ -119,17 +129,6 @@ public:
                       const std::unordered_map<std::string, std::any>& options) override final;
 
     ///
-    /// \brief n_states
-    ///
-    //uint_t n_states()const{return state_space_type::size;}
-
-    ///
-    /// \brief n_actions
-    /// \return
-    ///
-    //uint_t n_actions()const noexcept{return action_space_type::size; }
-
-    ///
     /// \brief step
     /// \param action
     /// \return
@@ -140,17 +139,10 @@ public:
 	/// \brief Create a new copy of the environment with the given
 	/// copy index
 	///
-	virtual std::unique_ptr<base_type> make_copy(uint_t cidx)const override final;
+	CliffWorld make_copy(uint_t cidx)const;
 
 
 protected:
-	
-	///
-	/// \brief Constructor
-	///
-	CliffWorld(const std::string& api_base_url, 
-	           const uint_t cidx);
-
 	
 	///
 	/// \brief Maximum episodes per step

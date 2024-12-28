@@ -31,6 +31,14 @@ discount_(1.0),
 board_()
 {}
 
+Connect2::Connect2(const Connect2& other)
+:
+EnvBase<TimeStep<std::vector<uint_t>>,
+		DiscreteVectorStateDiscreteActionEnv<53, 0, 4, uint_t > >(other),
+discount_(1.0),
+board_(other.board_),
+is_finished_(other.is_finished_)
+{}
 
 void 
 Connect2::make(const std::string& /*version*/,
@@ -166,13 +174,13 @@ Connect2::move(const uint_t pid, const action_type& action){
 	
 }
 
-std::unique_ptr<Connect2::base_type> 
+Connect2 
 Connect2::make_copy(uint_t cidx)const{
-	auto ptr = std::unique_ptr<Connect2::base_type>( new Connect2(cidx));
+	Connect2 copy(cidx);
 	std::unordered_map<std::string, std::any> ops;
 	auto ver = this -> version();
-	ptr -> make(ver, ops);
-	return ptr;
+	copy.make(ver, ops);
+	return copy;
 }
 		
 }

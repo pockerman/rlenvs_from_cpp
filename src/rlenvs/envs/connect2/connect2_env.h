@@ -74,6 +74,16 @@ public:
     /// \brief Constructor
     ///
     Connect2();
+	
+	///
+    /// \brief Constructor
+    ///
+    explicit Connect2(uint_t cidx);
+	
+	///
+	///
+	///
+	Connect2(const Connect2& other);
 
     ///
     /// \brief make. Builds the environment. Optionally we can choose if the
@@ -105,7 +115,7 @@ public:
 	/// \brief Create a new copy of the environment with the given
 	/// copy index
 	///
-	virtual std::unique_ptr<base_type> make_copy(uint_t cidx)const override final;
+	Connect2 make_copy(uint_t cidx)const;
 
     ///
     /// \brief n_states. Returns the number of states
@@ -139,10 +149,7 @@ public:
 
 private:
 	
-	///
-    /// \brief Constructor
-    ///
-    explicit Connect2(uint_t cidx);
+	
 	
 	///
 	/// \brief The discount factor

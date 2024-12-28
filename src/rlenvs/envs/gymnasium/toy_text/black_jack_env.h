@@ -72,6 +72,17 @@ public:
     ///
     BlackJack(const std::string& api_base_url);
 	
+	///
+	/// \brief Constructor
+	///
+	BlackJack(const std::string& api_base_url, 
+	           const uint_t cidx);
+			   
+	///
+	///
+	///
+	BlackJack(const BlackJack& other);
+
     ///
     /// \brief ~BlackJack. Destructor
     ///
@@ -95,7 +106,7 @@ public:
 	/// \brief Create a new copy of the environment with the given
 	/// copy index
 	///
-	virtual std::unique_ptr<base_type> make_copy(uint_t cidx)const override final;
+	BlackJack make_copy(uint_t cidx)const;
 
     ///
     ///
@@ -110,12 +121,7 @@ public:
 
 protected:
 	
-	///
-	/// \brief Constructor
-	///
-	BlackJack(const std::string& api_base_url, 
-	           const uint_t cidx);
-
+	
     ///
     /// \brief build the dynamics from response
     ///

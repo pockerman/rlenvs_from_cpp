@@ -73,6 +73,11 @@ ToyTextEnvBase<TimeStep<uint_t>, 37, 4>(cidx, "CliffWalking",
 max_episode_steps_(200)
 {}
 
+CliffWorld::CliffWorld(const CliffWorld& other)
+:
+ToyTextEnvBase<TimeStep<uint_t>, 37, 4>(other),
+max_episode_steps_(other.max_episode_steps_)
+{}
 
 void
 CliffWorld::make(const std::string& version,
@@ -139,15 +144,15 @@ CliffWorld::step(const action_type& action){
 
 }
 
-std::unique_ptr<CliffWorld::base_type> 
+CliffWorld 
 CliffWorld::make_copy(uint_t cidx)const{
 	
 	auto api_base_url = this -> get_api_url();
-	auto ptr = std::unique_ptr<CliffWorld::base_type>(new CliffWorld(api_base_url,cidx));
+	CliffWorld copy(api_base_url,cidx);
 	std::unordered_map<std::string, std::any> ops;
 	auto version = this -> version();
-	ptr -> make(version, ops);
-	return ptr;
+	copy.make(version, ops);
+	return copy;
 }
 
 }

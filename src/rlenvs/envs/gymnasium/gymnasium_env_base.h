@@ -102,6 +102,11 @@ protected:
 					 const std::string& resource_path);
 					 
 	///
+	/// \brief Copy constructor
+	///
+	GymnasiumEnvBase(const GymnasiumEnvBase&);
+					 
+	///
     /// \brief build the time step from the server response
     ///
     virtual time_step_type create_time_step_from_response_(const http::Response& response)const=0;
@@ -117,6 +122,15 @@ GymnasiumEnvBase<TimeStepType,
 EnvBase<TimeStepType, SpaceType>(cidx, name),
 with_rest_api_mixin<TimeStepType>(api_url, resource_path)
 {}
+
+template<typename TimeStepType, typename SpaceType>
+GymnasiumEnvBase<TimeStepType, 
+                 SpaceType>::GymnasiumEnvBase(const GymnasiumEnvBase<TimeStepType, SpaceType>& other)
+				 :
+EnvBase<TimeStepType, SpaceType>(other),
+with_rest_api_mixin<TimeStepType>(other)
+{}
+			 
 
 template<typename TimeStepType, typename SpaceType>
 GymnasiumEnvBase<TimeStepType, SpaceType>::~GymnasiumEnvBase(){

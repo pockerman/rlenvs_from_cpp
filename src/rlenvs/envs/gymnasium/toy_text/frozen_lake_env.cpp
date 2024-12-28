@@ -35,7 +35,16 @@ ToyTextEnvBase<TimeStep<uint_t>,
 			   frozenlake_state_size<side_size>::size, 
 			   4>(cidx, "FrozenLake", api_base_url, "/gymnasium/frozen-lake-env"),
 is_slippery_(slippery)
-{}			
+{}
+
+template<uint_t side_size>
+FrozenLake<side_size>::FrozenLake(const FrozenLake<side_size>& other)
+:
+ToyTextEnvBase<TimeStep<uint_t>,
+			   frozenlake_state_size<side_size>::size, 
+			   4>(other),
+is_slippery_(other.is_slippery_)
+{}		
 			   
 template<uint_t side_size>
 typename FrozenLake<side_size>::dynamics_t
@@ -145,21 +154,19 @@ FrozenLake<side_size>::step(const action_type& action){
 }
 
 template<uint_t side_size>
-std::unique_ptr<typename FrozenLake<side_size>::base_type> 
+FrozenLake<side_size> 
 FrozenLake<side_size>::make_copy(uint_t cidx)const{
 	
 	auto api_base_url = this -> get_api_url();
 	auto slippery = this -> is_slippery();
-	
-	auto ptr = std::unique_ptr<typename FrozenLake<side_size>::base_type>(new FrozenLake(api_base_url,
-												                                         cidx,
-																	                     slippery));
+	FrozenLake<side_size> copy(api_base_url,
+							   cidx,slippery);
 	
 	std::unordered_map<std::string, std::any> ops;
 	ops["is_slippery"] = this -> is_slippery();
 	auto version = this -> version();
-	ptr -> make(version, ops);
-	return ptr;
+	copy.make(version, ops);
+	return copy;
 												
 }
 

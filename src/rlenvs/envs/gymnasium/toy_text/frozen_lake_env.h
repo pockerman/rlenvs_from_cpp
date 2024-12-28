@@ -59,9 +59,7 @@
 #include "rlenvs/discrete_space.h"
 #include "rlenvs/envs/time_step.h"
 #include "rlenvs/extern/HTTPRequest.hpp"
-
 #include "rlenvs/envs/gymnasium/toy_text/toy_text_base.h"
-//#include "rlenvs/envs/space_type.h"
 
 #include <string>
 #include <vector>
@@ -159,6 +157,17 @@ public:
     ///
     FrozenLake(const std::string& api_base_url);
 	
+	///
+	/// \brief Constructor
+	///
+	FrozenLake(const std::string& api_base_url, 
+	           const uint_t cidx, bool slippery);
+			   
+	///
+	/// \brief copy constructor
+	///
+	FrozenLake(const FrozenLake& other);
+	
     ///
     /// \brief ~FrozenLake. Destructor.
     ///
@@ -180,13 +189,9 @@ public:
 	/// \brief Create a new copy of the environment with the given
 	/// copy index
 	///
-	virtual std::unique_ptr<base_type> make_copy(uint_t cidx)const override final;
+	FrozenLake<side_size> make_copy(uint_t cidx)const;
 
-    ///
-    /// \brief n_states. Returns the number of states
-    ///
-    //uint_t n_states()const noexcept{ return side_size == 4 ? 16 : 64; }
-
+    
     ///
     /// \brief map_type
     /// \return
@@ -202,11 +207,7 @@ public:
 
 protected:
 	
-	///
-	/// \brief Constructor
-	///
-	FrozenLake(const std::string& api_base_url, 
-	           const uint_t cidx, bool slippery);
+	
 
     ///
     /// \brief build the dynamics from response

@@ -92,6 +92,8 @@ protected:
 	                    const std::string& name, 
 					    const std::string& api_url,
 					    const std::string& resource_path);
+						
+	GymnasiumVecEnvBase(const GymnasiumVecEnvBase& other);
 					  
 private:
 	
@@ -114,6 +116,15 @@ GymnasiumVecEnvBase<VectorTimeStepType, SpaceType>::GymnasiumVecEnvBase(const ui
 															const std::string& resource_path)
 :
 GymnasiumEnvBase<VectorTimeStepType, SpaceType>(cidx, name, api_url, resource_path)
+{}
+
+
+template<typename VectorTimeStepType, typename SpaceType>
+GymnasiumVecEnvBase<VectorTimeStepType, SpaceType>::GymnasiumVecEnvBase(const GymnasiumVecEnvBase<VectorTimeStepType, SpaceType>& other)
+:
+GymnasiumEnvBase<VectorTimeStepType, SpaceType>(other),
+n_envs_(other.n_envs_),
+reset_if_any_done_(other.reset_if_any_done_)
 {}
 
 template<typename VectorTimeStepType, typename SpaceType>

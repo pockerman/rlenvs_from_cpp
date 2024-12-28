@@ -52,6 +52,14 @@ GymnasiumVecEnvBase<VectorTimeStep<detail_::AcrobotVEnv::state_type>,
                                          "/gymnasium/acrobot-env/v")
 {}
 
+
+AcrobotV::AcrobotV(const AcrobotV& other)
+:
+GymnasiumVecEnvBase<VectorTimeStep<detail_::AcrobotVEnv::state_type>, 
+                    detail_::AcrobotVEnv>(other)
+{}
+
+
 void
 AcrobotV::make(const std::string& version,
               const std::unordered_map<std::string, std::any>& options){
@@ -114,17 +122,17 @@ AcrobotV::step(const action_type& action){
 }
 
 
-std::unique_ptr<AcrobotV::base_type> 
+AcrobotV
 AcrobotV::make_copy(uint_t cidx)const{
 	auto api_base_url = this -> get_api_url();
 	
-	auto ptr = std::unique_ptr<AcrobotV::base_type>(new AcrobotV(api_base_url, cidx));
+	AcrobotV copy(api_base_url, cidx);
 	
 	std::unordered_map<std::string, std::any> ops;
 	ops["num_envs"] = this -> get_n_envs();
 	auto version = this -> version();
-	ptr -> make(version, ops);
-	return ptr;
+	copy.make(version, ops);
+	return copy;
 }
 	
 }

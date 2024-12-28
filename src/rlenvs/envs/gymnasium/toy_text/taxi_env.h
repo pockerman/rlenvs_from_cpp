@@ -68,6 +68,17 @@ public:
     ///
     Taxi(const std::string& api_base_url);
 	
+	///
+	/// \brief Constructor
+	///
+	Taxi(const std::string& api_base_url, 
+		 const uint_t cidx);
+		 
+	///
+	/// \brief copy constructor
+	///
+	Taxi(const Taxi& other);
+	
     ///
     /// \brief ~FrozenLake. Destructor.
     ///
@@ -90,15 +101,11 @@ public:
 	/// \brief Create a new copy of the environment with the given
 	/// copy index
 	///
-	virtual std::unique_ptr<base_type> make_copy(uint_t cidx)const override final;
+	Taxi make_copy(uint_t cidx)const; 
 
 protected:
 	
-	///
-	/// \brief Constructor
-	///
-	Taxi(const std::string& api_base_url, 
-		 const uint_t cidx);
+	
 
      ///
     /// \brief build the dynamics from response

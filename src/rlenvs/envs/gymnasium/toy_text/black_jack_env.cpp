@@ -58,7 +58,13 @@ ToyTextEnvBase<TimeStep<uint_t>, 48, 2>(cidx, "BlackJack",
 			                            api_base_url,
                                         "/gymnasium/black-jack-env")
 {}
-					 
+	
+BlackJack::BlackJack(const BlackJack& other)
+					 :
+ToyTextEnvBase<TimeStep<uint_t>, 48, 2>(other),
+is_natural_(other.is_natural_),
+is_sab_(other.is_sab_)
+{}				 
 
 void
 BlackJack::make(const std::string& version,
@@ -130,20 +136,20 @@ BlackJack::step(const action_type& action){
 }
 
 
-std::unique_ptr<BlackJack::base_type> 
+BlackJack
 BlackJack::make_copy(uint_t cidx)const{
 	
 	auto api_base_url = this -> get_api_url();
 	
-	auto ptr = std::unique_ptr<BlackJack::base_type>(new BlackJack(api_base_url, cidx));
+	BlackJack copy(api_base_url, cidx);
 										   
 	std::unordered_map<std::string, std::any> ops;
 	ops["natural"] = this->is_natural();
 	ops["sab"] = this->is_sab();
 										   
 	auto version = this -> version();
-	ptr -> make(version, ops);
-	return ptr;
+	copy.make(version, ops);
+	return copy;
 												   
 }
 

@@ -45,14 +45,17 @@ struct ScalarDiscreteEnv{
     /// \brief sample
     /// \return
     ///
-    static action_type sample_action(){return action_space::sample();}
+    static action_type sample_action(){return action_space::sample(true);}
 
     ///
     /// \brief sample
     /// \param seed
     /// \return
     ///
-    //static action_type sample_action(uint_t seed){return action_space::sample();}
+    static action_type sample_action(uint_t seed){return action_space::sample(seed, true);}
+	
+	
+	static std::vector<action_type> sample_action(uint_t seed, uint_t size){return action_space::sample(seed, size, true);}
 };
 
 template<uint_t StateSpaceSize, 

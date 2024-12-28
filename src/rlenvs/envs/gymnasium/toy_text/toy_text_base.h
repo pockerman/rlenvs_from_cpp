@@ -103,6 +103,11 @@ protected:
 	               const std::string& name, 
 	               const std::string& api_url,
 				   const std::string& resource_path);
+				   
+	///
+	/// \brief Copy constructor
+	///
+	ToyTextEnvBase(const ToyTextEnvBase& other);
 
     ///
     /// \brief build the dynamics from response
@@ -119,6 +124,13 @@ ToyTextEnvBase<TimeStepType, state_end, action_end>::ToyTextEnvBase(const uint_t
 :
 GymnasiumEnvBase<TimeStepType, 
 				 ScalarDiscreteEnv<state_end, action_end>>(cidx, name, api_url, resource_path)
+{}
+
+template<typename TimeStepType, uint_t state_end,  uint_t action_end>
+ToyTextEnvBase<TimeStepType, state_end, action_end>::ToyTextEnvBase(const ToyTextEnvBase<TimeStepType, state_end, action_end>& other)
+:
+GymnasiumEnvBase<TimeStepType, 
+				 ScalarDiscreteEnv<state_end, action_end>>(other)
 {}
 
 

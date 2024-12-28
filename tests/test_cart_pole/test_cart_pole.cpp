@@ -27,8 +27,8 @@ TEST(TestCartPole, TestConstructor) {
 TEST(TestCartPole, Test_Make)
 {
     CartPole env(SERVER_URL);
-    auto copy_env_ptr = env.make_copy(static_cast<uint_t>(1));
-    ASSERT_TRUE(copy_env_ptr != nullptr);
+    auto copy_env = env.make_copy(static_cast<uint_t>(1));
+    ASSERT_TRUE(copy_env.is_created());
 }
 
 

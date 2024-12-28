@@ -281,7 +281,8 @@ class Gridworld final: public EnvBase<TimeStep<detail::board_state_type>,
 {
 public:
 
-    static_assert (side_size_ >= 4, "The side size should be greater than or equal to 4");
+    static_assert (side_size_ >= 4, 
+	               "The side size should be greater than or equal to 4");
 
     ///
     /// \brief name
@@ -297,7 +298,6 @@ public:
     /// \brief side_size
     ///
     static const uint_t side_size;
-	
 	
 	///
 	/// \brief The base_type
@@ -340,6 +340,16 @@ public:
     /// \brief Constructor
     ///
     Gridworld();
+	
+	///
+    /// \brief Gridworld. Constructor
+    ///
+    explicit Gridworld(const uint_t cidx);
+	
+	///
+    /// \brief Gridworld. Constructor
+    ///
+    Gridworld(const Gridworld& other);
 
     ///
     /// \brief make. Builds the environment. Optionally we can choose if the
@@ -360,7 +370,7 @@ public:
 	/// \brief Create a new copy of the environment with the given
 	/// copy index
 	///
-	virtual std::unique_ptr<base_type> make_copy(uint_t cidx)const override final;
+	Gridworld make_copy(uint_t cidx)const;
 
     ///
     /// \brief step
@@ -414,13 +424,6 @@ public:
     ///
     GridWorldInitType init_type()const noexcept{return init_mode_;}
 	
-protected:
-	
-	///
-    /// \brief CartPole. Constructor
-    ///
-    explicit Gridworld(const uint_t cidx);
-
 private:
 
     ///
@@ -458,22 +461,22 @@ const uint_t Gridworld<side_size_>::side_size = side_size_;
 template<uint_t side_size_>
 const uint_t Gridworld<side_size_>:: n_components = 4;
 
-template<uint_t side_size>
-Gridworld<side_size>::Gridworld()
+template<uint_t side_size_>
+Gridworld<side_size_>::Gridworld()
     :
 EnvBase<TimeStep<detail::board_state_type>,
-		detail::GridWorldEnv<side_size>>(0, "Gridworld"),
+		detail::GridWorldEnv<side_size_>>(0, "Gridworld"),
 init_mode_(GridWorldInitType::INVALID_TYPE),
 randomize_state_(false),
 seed_(0),
 noise_factor_(0.0)
 {}
 
-template<uint_t side_size>
-Gridworld<side_size>::Gridworld(uint_t cidx)
+template<uint_t side_size_>
+Gridworld<side_size_>::Gridworld(uint_t cidx)
     :
 EnvBase<TimeStep<detail::board_state_type>,
-		detail::GridWorldEnv<side_size>>(cidx, "Gridworld"),
+		detail::GridWorldEnv<side_size_>>(cidx, "Gridworld"),
 init_mode_(GridWorldInitType::INVALID_TYPE),
 randomize_state_(false),
 seed_(0),
@@ -481,9 +484,22 @@ noise_factor_(0.0)
 {}
 
 
-template<uint_t side_size>
+template<uint_t side_size_>
+Gridworld<side_size_>::Gridworld(const Gridworld<side_size_>& other)
+    :
+EnvBase<TimeStep<detail::board_state_type>,
+		detail::GridWorldEnv<side_size_>>(other),
+init_mode_(other.init_mode_),
+randomize_state_(other.randomize_state_),
+seed_(other.seed_),
+noise_factor_(other.noise_factor_),
+board_(other.board_)
+{}
+
+
+template<uint_t side_size_>
 void
-Gridworld<side_size>::make(const std::string& version,
+Gridworld<side_size_>::make(const std::string& version,
                            const std::unordered_map<std::string, std::any>& options){
 
     if(this -> is_created()){
@@ -516,7 +532,7 @@ Gridworld<side_size>::make(const std::string& version,
     }
 
     // initialize the board
-    board_.init_board(side_size, init_mode_);
+    board_.init_board(side_size_, init_mode_);
 
     // set the version and set the board
     // to created
@@ -524,23 +540,23 @@ Gridworld<side_size>::make(const std::string& version,
     this->make_created_();
 }
 
-template<uint_t side_size>
-std::unique_ptr<typename Gridworld<side_size>::base_type> 
-Gridworld<side_size>::make_copy(uint_t cidx)const{
+template<uint_t side_size_>
+Gridworld<side_size_> 
+Gridworld<side_size_>::make_copy(uint_t cidx)const{
 	
-	auto ptr = std::unique_ptr<typename Gridworld<side_size>::base_type>(new Gridworld<side_size>(cidx));
+	Gridworld<side_size_> copy(cidx);
 	std::unordered_map<std::string, std::any> ops;
 	ops["randomize_state"] = this -> has_random_state();
 	ops["noise_factor"] = this -> noise_factor_;
 	ops["seed"] = std::any(static_cast<uint_t>(this -> seed_));
 	auto version = this -> version();
-	ptr -> make(version, ops);
-	return ptr;
+	copy.make(version, ops);
+	return copy;
 }
 
-template<uint_t side_size>
-typename Gridworld<side_size>::time_step_type
-Gridworld<side_size>::step(const action_type& action){
+template<uint_t side_size_>
+typename Gridworld<side_size_>::time_step_type
+Gridworld<side_size_>::step(const action_type& action){
 	
 	auto obs = board_.step(static_cast<GridWorldActionType>(action));
     auto reward = board_.get_reward();
@@ -555,21 +571,21 @@ Gridworld<side_size>::step(const action_type& action){
 }
 
 
-template<uint_t side_size>
-typename Gridworld<side_size>::time_step_type
-Gridworld<side_size>::reset(uint_t /*seed*/,
+template<uint_t side_size_>
+typename Gridworld<side_size_>::time_step_type
+Gridworld<side_size_>::reset(uint_t /*seed*/,
 							const std::unordered_map<std::string, std::any>& /*options*/){
 
     // reinitialize the board
-    auto obs = board_.init_board(side_size, init_mode_);
+    auto obs = board_.init_board(side_size_, init_mode_);
     auto reward = board_.get_reward();
     this->get_current_time_step_() = time_step_type(TimeStepTp::FIRST, reward, obs);
     return this->get_current_time_step_();
 }
 
-template<uint_t side_size>
+template<uint_t side_size_>
 bool
-Gridworld<side_size>::is_game_lost()const{
+Gridworld<side_size_>::is_game_lost()const{
 
     auto player = board_.components.find(detail::board_component_type::PLAYER)->second.pos;
     auto pit_pos = board_.components.find(detail::board_component_type::PIT)->second.pos;
@@ -581,9 +597,9 @@ Gridworld<side_size>::is_game_lost()const{
     return false;
 }
 
-template<uint_t side_size>
+template<uint_t side_size_>
 void
-Gridworld<side_size>::close(){
+Gridworld<side_size_>::close(){
     board_.close();
 }
 

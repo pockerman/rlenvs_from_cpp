@@ -1,4 +1,5 @@
 import gymnasium as gym
+import sys
 from typing import Any
 from fastapi import APIRouter, Body, status
 from fastapi.responses import JSONResponse
@@ -19,7 +20,6 @@ envs = {
 @taxi_router.get("/is-alive")
 async def get_is_alive(cidx: int) -> JSONResponse:
     global envs
-
     if cidx in envs:
         env = envs[cidx]
 
@@ -31,7 +31,7 @@ async def get_is_alive(cidx: int) -> JSONResponse:
                                 content={"result": True})
     else:
         return JSONResponse(status_code=status.HTTP_400_BAD_REQUEST,
-                            content={"message": f"Environment {cidx} has not been created"})
+                            content={"message": f"Environment {ENV_NAME} and index {cidx} has not been created"})
 
 
 @taxi_router.post("/close")
@@ -55,6 +55,7 @@ async def make(version: str = Body(default="v3"),
                cidx: int = Body(...),
                max_episode_steps: int = Body(default=500)) -> JSONResponse:
     global envs
+    env_type = f"{ENV_NAME}-{version}"
 
     if cidx in envs:
         env = envs[cidx]
@@ -63,21 +64,26 @@ async def make(version: str = Body(default="v3"),
             envs[cidx].close()
 
         try:
-            env = gym.make(id=f"Taxi-{version}",
+            env = gym.make(id=env_type,
                            max_episode_steps=max_episode_steps)
             envs[cidx] = env
         except Exception as e:
+            exception = sys.exc_info()
+            logger.opt(exception=exception).info("Logging exception traceback")
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                                 detail=str(e))
     else:
         try:
-            env = gym.make(id=f"Taxi-{version}",
+            env = gym.make(id=env_type,
                            max_episode_steps=max_episode_steps)
             envs[cidx] = env
         except Exception as e:
+            exception = sys.exc_info()
+            logger.opt(exception=exception).info("Logging exception traceback")
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                                 detail=str(e))
 
+    logger.info(f'Created environment  {ENV_NAME} and index {cidx}')
     return JSONResponse(status_code=status.HTTP_201_CREATED,
                         content={"result": True})
 
@@ -91,7 +97,6 @@ async def reset(seed: int = Body(default=42),  cidx: int = Body(...),
     """
 
     global envs
-
     if cidx in envs:
         env = envs[cidx]
 
@@ -116,7 +121,6 @@ async def reset(seed: int = Body(default=42),  cidx: int = Body(...),
 @taxi_router.post("/step")
 async def step(action: int = Body(...), cidx: int = Body(...)) -> JSONResponse:
     global envs
-
     if cidx in envs:
         env = envs[cidx]
 
@@ -167,6 +171,6 @@ async def get_dynamics(cidx: int, stateId: int, actionId: int = None) -> JSONRes
 
 
 @taxi_router.post("/sync")
-async def sync(cidx: int, options: dict[str, Any] = Body(default={})) -> JSONResponse:
+async def sync(cidx: int = Body(...), options: dict[str, Any] = Body(default={})) -> JSONResponse:
     return JSONResponse(status_code=status.HTTP_202_ACCEPTED,
                         content={"message": "OK"})

@@ -51,6 +51,13 @@ GymnasiumEnvBase<TimeStep<std::vector<real_t> >,
 				  "/gymnasium/acrobot-env")
 {}
 
+Acrobot::Acrobot(const Acrobot& other)
+:
+GymnasiumEnvBase<TimeStep<std::vector<real_t> >,
+				 ContinuousVectorStateDiscreteActionEnv<6, 2, 0, real_t > 
+				>(other)
+{}
+
 void
 Acrobot::make(const std::string& version,
               const std::unordered_map<std::string, std::any>& /*options*/){
@@ -107,16 +114,16 @@ Acrobot::step(const action_type& action){
     return this->get_current_time_step_();
 }
 
-std::unique_ptr<Acrobot::base_type> 
+Acrobot 
 Acrobot::make_copy(uint_t cidx)const{
 	auto api_base_url = this -> get_api_url();
 	
-	auto ptr = std::unique_ptr<Acrobot::base_type>(new Acrobot(api_base_url, cidx));
+	Acrobot copy(api_base_url, cidx);
 	
 	std::unordered_map<std::string, std::any> ops;
 	auto version = this -> version();
-	ptr -> make(version, ops);
-	return ptr;
+	copy.make(version, ops);
+	return copy;
 }
 
 	

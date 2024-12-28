@@ -24,7 +24,7 @@ namespace envs{
 /// \ brief Base class for environments.
 ///
 template<typename TimeStepType, typename SpaceType>
-class EnvBase: private boost::noncopyable, public SpaceType, public synchronized_env_mixin
+class EnvBase: public SpaceType, public synchronized_env_mixin
 {
 public:
 	
@@ -88,15 +88,8 @@ public:
     virtual time_step_type step(const action_type& action)=0;
 	
 	///
-	/// \brief Create a new copy of the environment with the given
-	/// copy index
+	/// \brief Reset the environment always using the same seed
 	///
-	virtual std::unique_ptr<EnvBase<time_step_type, SpaceType>> make_copy(uint_t cidx)const=0;
-	
-	
-	///
-	 /// \brief Reset the environment always using the same seed
-	 ///
     time_step_type reset(){
         return reset(DEFAULT_ENV_SEED, std::unordered_map<std::string, std::any>());}
 
@@ -127,6 +120,11 @@ protected:
 	///
     explicit EnvBase(const uint_t cidx=0, 
 	                 const std::string& name=rlenvscpp::consts::INVALID_STR);
+					 
+	///
+	/// \brief Copy constructor
+	///
+	EnvBase(const EnvBase&);
 
 
     ///
@@ -183,6 +181,18 @@ is_created_(false),
 cidx_(cidx),
 version_(),
 name_(name),
+current_state_()
+{}
+
+template<typename TimeStepType, typename SpaceType>
+EnvBase<TimeStepType, SpaceType>::EnvBase(const EnvBase<TimeStepType, SpaceType>& other)
+:
+SpaceType(),
+synchronized_env_mixin(),
+is_created_(other.is_created_),
+cidx_(other.cidx_),
+version_(other.version_),
+name_(other.name_),
 current_state_()
 {}
 

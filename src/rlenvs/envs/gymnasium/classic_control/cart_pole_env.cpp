@@ -54,6 +54,12 @@ GymnasiumEnvBase<TimeStep<std::vector<real_t> >,
 																			            "/gymnasium/cart-pole-env")
 {}
 
+CartPole::CartPole(const CartPole& other)
+:
+GymnasiumEnvBase<TimeStep<std::vector<real_t> >,
+				 ContinuousVectorStateDiscreteActionEnv<4, 2, 0, real_t >>(other)
+{}
+
 void
 CartPole::make(const std::string& version,
               const std::unordered_map<std::string, std::any>& /*options*/){
@@ -111,15 +117,15 @@ CartPole::step(const action_type& action){
     return this->get_current_time_step_();
 }
 
-std::unique_ptr<CartPole::base_type> 
+CartPole 
 CartPole::make_copy(uint_t cidx)const{
 	auto api_base_url = this -> get_api_url();
 	
-	auto ptr = std::unique_ptr<CartPole::base_type>(new CartPole(api_base_url, cidx));
+	CartPole copy(api_base_url, cidx);
 	std::unordered_map<std::string, std::any> ops;
 	auto version = this -> version();
-	ptr -> make(version, ops);
-	return ptr;
+	copy.make(version, ops);
+	return copy;
 }
 
 

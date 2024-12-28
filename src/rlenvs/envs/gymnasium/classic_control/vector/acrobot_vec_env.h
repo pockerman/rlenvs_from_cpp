@@ -111,6 +111,17 @@ public:
     AcrobotV(const std::string& api_base_url);
 	
 	///
+    /// \brief CartPole. Constructor
+    ///
+    AcrobotV(const std::string& api_base_url, 
+		     const uint_t cidx);
+			 
+	///
+	/// \brief copy ctor
+	///
+	AcrobotV(const AcrobotV& other);
+	
+	///
     /// \brief ~Acrobot. Destructor
     ///
     ~AcrobotV()=default;
@@ -131,7 +142,7 @@ public:
 	/// \brief Create a new copy of the environment with the given
 	/// copy index
 	///
-	virtual std::unique_ptr<base_type> make_copy(uint_t cidx)const override final;
+	AcrobotV make_copy(uint_t cidx)const;
 
     ///
     /// \brief n_actions. Returns the number of actions
@@ -140,12 +151,6 @@ public:
 
 protected:
 	
-	///
-    /// \brief CartPole. Constructor
-    ///
-    AcrobotV(const std::string& api_base_url, 
-		     const uint_t cidx);
-
     ///
     /// \brief Handle the reset response from the environment server
     ///

@@ -57,6 +57,16 @@ GymnasiumEnvBase<TimeStep<std::vector<real_t>>,
 											   "/gymnasium/pendulum-env")
 {}
 
+Pendulum::Pendulum(const Pendulum& other)
+:
+GymnasiumEnvBase<TimeStep<std::vector<real_t>>, 
+				 ContinuousVectorStateContinuousScalarBoundedActionEnv<3, 
+																	   1, 
+											                           RealRange<-2.0, 2.0>, 
+																	   0, real_t>
+											 >(other)
+{}
+
 void
 Pendulum::make(const std::string& version,
               const std::unordered_map<std::string, std::any>& /*options*/){
@@ -114,15 +124,15 @@ Pendulum::step(const action_type& action){
 }
 
 
-std::unique_ptr<Pendulum::base_type> 
+Pendulum 
 Pendulum::make_copy(uint_t cidx)const{
 	auto api_base_url = this -> get_api_url();
 	
-	auto ptr = std::unique_ptr<Pendulum::base_type>(new Pendulum(api_base_url, cidx));
+	Pendulum copy(api_base_url, cidx);
 	std::unordered_map<std::string, std::any> ops;
 	auto version = this -> version();
-	ptr -> make(version, ops);
-	return ptr;
+	copy.make(version, ops);
+	return copy;
 }
 
 }

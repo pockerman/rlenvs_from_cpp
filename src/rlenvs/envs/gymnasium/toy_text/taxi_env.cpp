@@ -33,8 +33,12 @@ Taxi::Taxi(const std::string& api_base_url,
 ToyTextEnvBase<TimeStep<uint_t>, 500, 6>(cidx, 
                                          "Taxi",
 										 api_base_url, 
-										 "/gymnasium/frozen-lake-env")
-{}	
+										 "/gymnasium/taxi-env")
+{}
+Taxi::Taxi(const Taxi& other)
+:
+ToyTextEnvBase<TimeStep<uint_t>, 500, 6>(other)
+{}
 
 Taxi::dynamics_t
 Taxi::build_dynamics_from_response_(const http::Response& response)const{
@@ -74,6 +78,7 @@ Taxi::make(const std::string& version,
     }
 
     const auto request_url = std::string(this->get_url()) + "/make";
+
     http::Request request{request_url};
 
 	auto copy_idx = this -> cidx();
@@ -90,6 +95,7 @@ Taxi::make(const std::string& version,
         throw std::runtime_error("Environment server failed to create Environment");
     }
 
+	this->set_version_(version);
     this->make_created_();
 }
 
@@ -125,18 +131,18 @@ Taxi::step(const action_type& action){
     return this->get_current_time_step_();
 }
 
-
-
-std::unique_ptr<Taxi::base_type> 
+Taxi
 Taxi::make_copy(uint_t cidx)const{
 	
 	auto api_base_url = this -> get_api_url();
-	auto ptr = std::unique_ptr<Taxi::base_type>(new Taxi(api_base_url, cidx));
+	
+	Taxi copy(api_base_url, cidx);
 	
 	std::unordered_map<std::string, std::any> ops;
 	auto version = this -> version();
-	ptr -> make(version, ops);
-	return ptr;
+	
+	copy.make(version, ops);
+	return copy;
 												   
 }
 

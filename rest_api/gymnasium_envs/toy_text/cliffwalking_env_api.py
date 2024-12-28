@@ -1,5 +1,4 @@
 import gymnasium as gym
-from pydantic import BaseModel, Field
 from typing import Any
 from fastapi import APIRouter, Body, status
 from fastapi.responses import JSONResponse
@@ -32,7 +31,7 @@ async def get_is_alive(cidx: int) -> JSONResponse:
                                 content={"result": True})
     else:
         return JSONResponse(status_code=status.HTTP_400_BAD_REQUEST,
-                            content={"message": f"Environment {cidx} has not been created"})
+                            content={"message": f"Environment {ENV_NAME} and index {cidx} has not been created"})
 
 
 @cliff_walking_router.post("/close")
@@ -71,6 +70,14 @@ async def make(version: str = Body(default="v1"),
         except Exception as e:
             logger.error('Exception raised')
             logger.opt(exception=e).info("Logging exception traceback")
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                                detail=str(e))
+    else:
+        try:
+            env = gym.make(id=f"{ENV_NAME}-{version}",
+                           max_episode_steps=max_episode_steps)
+            envs[cidx] = env
+        except Exception as e:
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                                 detail=str(e))
 
@@ -166,6 +173,6 @@ async def get_dynamics(cidx: int, stateId: int, actionId: int = None) -> JSONRes
 
 
 @cliff_walking_router.post("/sync")
-async def sync(cidx: int, options: dict[str, Any] = Body(default={})) -> JSONResponse:
+async def sync(cidx: int = Body(...), options: dict[str, Any] = Body(default={})) -> JSONResponse:
     return JSONResponse(status_code=status.HTTP_202_ACCEPTED,
                         content={"message": "OK"})

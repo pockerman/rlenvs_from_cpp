@@ -38,47 +38,78 @@ struct ScalarDiscreteSpace{
     /// \brief sample
     /// \return
     ///
-    static space_item_type sample();
+    static space_item_type sample(bool use_end);
 
     ///
     /// \brief sample
     /// \param seed
     /// \return
     ///
-    //static space_item_type sample(uint_t seed);
+    static space_item_type sample(uint_t seed, bool use_end);
 	
 	///
     /// \brief sample
     /// \param seed
     /// \return
     ///
-    //static std::vector<space_item_type> sample(uint_t seed, uint_t size);
+    static std::vector<space_item_type> sample(uint_t seed, uint_t size, bool use_end);
 	
 };
 
 template<uint_t s, uint_t e>
 typename ScalarDiscreteSpace<s, e>::space_item_type
-ScalarDiscreteSpace<s, e>::sample(){
+ScalarDiscreteSpace<s, e>::sample(bool use_end){
 
-    std::uniform_int_distribution<> dist(ScalarDiscreteSpace<s, e>::limits::start, 
-	                                     ScalarDiscreteSpace<s, e>::limits::end);
+	auto E = IntegralRange<s, e>::E;
+	
+	if(!use_end){
+		E -= 1;
+	}
+	
+    std::uniform_int_distribution<> dist(IntegralRange<s, e>::S, E);
     std::random_device rd;
     std::mt19937 gen(rd());
     return dist(gen);
 }
 
-///
-/// \brief Partial specialization for integer types
-///
-//template<int_t s, int_t e>
-//using IntScalarDiscreteSpace  = _ScalarDiscreteSpace<int_t, s, e>;
+template<uint_t s, uint_t e>
+typename ScalarDiscreteSpace<s, e>::space_item_type
+ScalarDiscreteSpace<s, e>::sample(uint_t seed, bool use_end){
+	
+	auto E = IntegralRange<s, e>::E;
+	
+	if(!use_end){
+		E -= 1;
+	}
 
-///
-/// \brief Partial specialization for unsigned integer types
-/// This is the class mostly expected to be used by the application code
-///
-//template<uint_t s, uint_t e>
-//using ScalarDiscreteSpace  = _ScalarDiscreteSpace<uint_t, s, e>;
+    std::uniform_int_distribution<> dist(IntegralRange<s, e>::S, E);
+    std::mt19937 gen(seed);
+    return dist(gen);
+}
+
+template<uint_t s, uint_t e>
+std::vector<typename ScalarDiscreteSpace<s, e>::space_item_type>
+ScalarDiscreteSpace<s, e>::sample(uint_t seed, uint_t size, bool use_end){
+	
+	auto E = IntegralRange<s, e>::E;
+	
+	if(!use_end){
+		E -= 1;
+	}
+
+	std::vector<typename ScalarDiscreteSpace<s, e>::space_item_type> vals_;
+	vals_.reserve(size);
+	
+	std::uniform_int_distribution<> dist(IntegralRange<s, e>::S, E);
+    std::mt19937 gen(seed);
+	for(uint_t i=0; i<size; ++i){
+		vals_.push_back(dist(gen));
+	}
+	
+    return vals_;
+}
+
+
 
 template<uint_t Size>
 struct ContinuousScalareSpace

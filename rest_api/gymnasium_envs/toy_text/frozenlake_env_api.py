@@ -136,7 +136,7 @@ async def step(action: int = Body(...), cidx: int = Body(...)) -> JSONResponse:
                             step_type=step_type,
                             info=info,
                             discount=1.0)
-            logger.info(f'Step in environment {cidx}')
+            logger.info(f'Step in environment {ENV_NAME} and index {cidx}')
             return JSONResponse(status_code=status.HTTP_202_ACCEPTED,
                                 content={"time_step": step.model_dump()})
 

@@ -59,17 +59,22 @@ void test_frozen_lake(){
         std::cout<<std::get<2>(item)<<std::endl;
         std::cout<<std::get<3>(item)<<std::endl;
     }
+	
+	action = env.sample_action();
+	new_time_step = env.step(action);
 
+    std::cout<<new_time_step<<std::endl;
+	
     // synchronize the environment
     env.sync(std::unordered_map<std::string, std::any>());
 	
-	auto copy_env_ptr = env.make_copy(1);
-	copy_env_ptr -> reset();
+	auto copy_env = env.make_copy(1);
+	copy_env.reset();
 	
 	std::cout<<"Org env cidx: "<<env.cidx()<<std::endl;
-	std::cout<<"Copy env cidx: "<<copy_env_ptr -> cidx()<<std::endl;
+	std::cout<<"Copy env cidx: "<<copy_env.cidx()<<std::endl;
 	
-	copy_env_ptr -> close();
+	copy_env.close();
 
     // close the environment
     env.close();
@@ -124,9 +129,19 @@ void test_taxi(){
     }
 	
 	
+	auto copy_env_1 = env.make_copy(1);
+	copy_env_1.reset();
+	
+	auto copy_env_2 = env.make_copy(2);
+	copy_env_2.reset();
+	std::cout<<"Org env cidx: "<<env.cidx()<<std::endl;
+	std::cout<<"Copy env 1 cidx: "<<copy_env_1.cidx()<<std::endl;
+	std::cout<<"Copy env 2 cidx: "<<copy_env_2.cidx()<<std::endl;
+	
     // close the environment
     env.close();
-
+	copy_env_2.close();
+	copy_env_1.close();
 }
 
 
@@ -152,8 +167,15 @@ void test_black_jack(){
     // synchronize the environment
     env.sync(std::unordered_map<std::string, std::any>());
 
+    auto copy_env = env.make_copy(1);
+	copy_env.reset();
+	
+	std::cout<<"Org env cidx: "<<env.cidx()<<std::endl;
+	std::cout<<"Copy env cidx: "<<copy_env.cidx()<<std::endl;
+	
     // close the environment
     env.close();
+	copy_env.close();
 
 }
 
@@ -208,8 +230,15 @@ void test_cliff_world(){
     // synchronize the environment
     env.sync(std::unordered_map<std::string, std::any>());
 
+    auto copy_env = env.make_copy(1);
+	copy_env.reset();
+	
+	std::cout<<"Org env cidx: "<<env.cidx()<<std::endl;
+	std::cout<<"Copy env cidx: "<<copy_env.cidx()<<std::endl;
+	
     // close the environment
     env.close();
+	copy_env.close();
 
 }
 
@@ -222,14 +251,14 @@ int main(){
     std::cout<<"Testing FrozenLake..."<<std::endl;
     example_1::test_frozen_lake();
     std::cout<<"===================="<<std::endl;
-    //std::cout<<"Testing Taxi..."<<std::endl;
-    //example_1::test_taxi();
-    //std::cout<<"===================="<<std::endl;
-    //std::cout<<"Testing BlackJack..."<<std::endl;
-    //example_1::test_black_jack();
-    //std::cout<<"===================="<<std::endl;
-    //std::cout<<"Testing CliffWorld..."<<std::endl;
-    //example_1::test_cliff_world();
-    //std::cout<<"===================="<<std::endl;
+    std::cout<<"Testing Taxi..."<<std::endl;
+    example_1::test_taxi();
+    std::cout<<"===================="<<std::endl;
+    std::cout<<"Testing BlackJack..."<<std::endl;
+    example_1::test_black_jack();
+    std::cout<<"===================="<<std::endl;
+    std::cout<<"Testing CliffWorld..."<<std::endl;
+    example_1::test_cliff_world();
+    std::cout<<"===================="<<std::endl;
     return 0;
 }

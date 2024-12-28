@@ -85,6 +85,17 @@ public:
 	/// \brief Constructor
 	///
     GymWalk(const std::string& api_base_url);
+	
+	///
+	/// \brief Constructor
+	///
+	GymWalk(const std::string& api_base_url, 
+			const uint_t cidx);
+			
+	///
+	/// \brief copy ctor
+	///
+	GymWalk(const GymWalk& other);
 
     ///
     /// \brief make. Builds the environment. Optionally we can choose if the
@@ -138,12 +149,6 @@ public:
 
 private:
 	
-	///
-	/// \brief Constructor
-	///
-	GymWalk(const std::string& api_base_url, 
-			const uint_t cidx);
-
     ///
     /// \brief build the dynamics from response
     ///
@@ -169,13 +174,23 @@ with_rest_api_mixin<TimeStep<uint_t>>(api_base_url, "/gdrl/gym-walk-env")
 {}
 
 template<uint_t state_size>
-GymWalk(const std::string& api_base_url, 
+GymWalk<state_size>::GymWalk(const std::string& api_base_url, 
 			const uint_t cidx)
 :
 EnvBase<TimeStep<uint_t>, 
 		ScalarDiscreteEnv<state_size, 2, 0, 0>
 	   >(cidx, "GymWalk"),
 with_rest_api_mixin<TimeStep<uint_t>>(api_base_url, "/gdrl/gym-walk-env")
+{}
+
+
+template<uint_t state_size>
+GymWalk<state_size>::GymWalk(const GymWalk<state_size>& other)
+:
+EnvBase<TimeStep<uint_t>, 
+		ScalarDiscreteEnv<state_size, 2, 0, 0>
+	   >(other),
+with_rest_api_mixin<TimeStep<uint_t>>(other)
 {}
 
 template<uint_t state_size>
@@ -342,19 +357,18 @@ GymWalk<state_size>::reset(uint_t seed,
 
     this->create_time_step_from_response_(response);
     return this -> get_current_time_step_();
-
 }
 
 template<uint_t state_size>
-std::unique_ptr<typename GymWalk<state_size>::base_type> 
+GymWalk<state_size>
 GymWalk<state_size>::make_copy(uint_t cidx)const{
 	
 	auto api_base_url = this -> get_api_url();
-	auto ptr = std::unique_ptr<typename GymWalk<state_size>::base_type>(new GymWalk<state_size>(api_base_url,cidx));
+	GymWalk<state_size> copy(api_base_url,cidx);
 	std::unordered_map<std::string, std::any> ops;
 	auto version = this -> version();
-	ptr -> make(version, ops);
-	return ptr;
+	copy.make(version, ops);
+	return copy;
 }
 
 }

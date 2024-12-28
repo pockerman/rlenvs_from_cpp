@@ -117,6 +117,18 @@ public:
     /// \param do_create If true it calls make
     ///
     MountainCar(const std::string& api_base_url);
+	
+	///
+	/// \brief Constructor. Protected so that applications
+	/// cannot explicitly instantiate copies
+	///
+	MountainCar(const std::string& api_base_url, 
+				const uint_t cidx);
+				
+	///
+	/// \brief copy ctor
+	///
+	MountainCar(const MountainCar& other);
 
     ///
     /// \brief ~MountainCar. Destructor.
@@ -139,7 +151,7 @@ public:
 	/// \brief Create a new copy of the environment with the given
 	/// copy index
 	///
-	virtual std::unique_ptr<base_type> make_copy(uint_t cidx)const override final;
+	MountainCar make_copy(uint_t cidx)const;
 
     ///
     /// \brief n_actions. Returns the number of actions
@@ -149,13 +161,6 @@ public:
     
 protected:
 	
-	///
-	/// \brief Constructor. Protected so that applications
-	/// cannot explicitly instantiate copies
-	///
-	MountainCar(const std::string& api_base_url, 
-				const uint_t cidx);
-
     ///
     /// \brief Handle the reset response from the environment server
     ///

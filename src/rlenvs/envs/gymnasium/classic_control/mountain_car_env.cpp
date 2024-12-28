@@ -61,6 +61,13 @@ GymnasiumEnvBase<TimeStep<std::vector<real_t>>,
 												   "/gymnasium/mountain-car-env")
 {}
 
+MountainCar::MountainCar(const MountainCar& other)
+:
+GymnasiumEnvBase<TimeStep<std::vector<real_t>>, 
+				 ContinuousVectorStateDiscreteActionEnv<3, 2, 0, real_t >
+												 >(other)
+{}
+
 void
 MountainCar::make(const std::string& version,
                   const std::unordered_map<std::string, std::any>& /*options*/){
@@ -117,17 +124,15 @@ MountainCar::step(const action_type& action){
 
 }
 
-
-
-std::unique_ptr<MountainCar::base_type> 
+MountainCar 
 MountainCar::make_copy(uint_t cidx)const{
 	auto api_base_url = this -> get_api_url();
-	auto ptr = std::unique_ptr<MountainCar::base_type>(new MountainCar(api_base_url, cidx));
+	MountainCar copy(api_base_url, cidx);
 	
 	std::unordered_map<std::string, std::any> ops;
 	auto version = this -> version();
-	ptr -> make(version, ops);
-	return ptr;
+	copy.make(version, ops);
+	return copy;
 }
 
 }

@@ -150,6 +150,17 @@ public:
     /// \brief Pendulum. Constructor
     ///
     Pendulum(const std::string& api_base_url );
+	
+	///
+	/// \brief Constructor
+	///
+	Pendulum(const std::string& api_base_url, 
+	           const uint_t cidx);
+			   
+	///
+	/// \brief copy ctor
+	///
+	Pendulum(const Pendulum& other);
 
     ///
     /// \brief ~Pendulum. Destructor
@@ -162,7 +173,6 @@ public:
     virtual void make(const std::string& version,
                       const std::unordered_map<std::string, std::any>& /*options*/) override final;
 					  
-	
 	///
     /// \brief step. Step in the environment following the given action
     ///
@@ -172,7 +182,7 @@ public:
 	/// \brief Create a new copy of the environment with the given
 	/// copy index
 	///
-	virtual std::unique_ptr<base_type> make_copy(uint_t cidx)const override final;
+	Pendulum make_copy(uint_t cidx)const;
 
 
     ///
@@ -183,11 +193,7 @@ public:
     
 protected:
 	
-	///
-	/// \brief Constructor
-	///
-	Pendulum(const std::string& api_base_url, 
-	           const uint_t cidx);
+	
 
     ///
     /// \brief Handle the reset response from the environment server
