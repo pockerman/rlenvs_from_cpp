@@ -8,9 +8,9 @@ from time_step_response import TimeStep, TimeStepType
 
 frozenlake_router = APIRouter(prefix="/gymnasium/frozen-lake-env", tags=["frozen-lake-env"])
 
-# the environment to create
-# env = None
+ENV_NAME = "FrozenLake"
 
+# the environments to create
 envs = {
     0: None
 }
@@ -42,7 +42,7 @@ async def close(cidx: int) -> JSONResponse:
         if env is not None:
             env.close()
             envs[cidx] = None
-            logger.info(f'Closed environment {cidx}')
+            logger.info(f'Closed environment {ENV_NAME} and index {cidx}')
             return JSONResponse(status_code=status.HTTP_202_ACCEPTED,
                                 content={"message": "Environment is closed"})
 
@@ -82,7 +82,7 @@ async def make(version: str = Body(default='v1'),
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                                 detail=str(e))
 
-    logger.info(f'Created environment {cidx}')
+    logger.info(f'Created environment  {ENV_NAME} and index {cidx}')
     return JSONResponse(status_code=status.HTTP_201_CREATED,
                         content={"result": True})
 
@@ -157,7 +157,7 @@ async def get_dynamics(cidx: int, stateId: int, actionId: int = None) -> JSONRes
                 return JSONResponse(status_code=status.HTTP_201_CREATED,
                                     content={"dynamics": state_dyns})
             else:
-                dynamics = env.P[stateId][actionId]
+                dynamics = envs[cidx].P[stateId][actionId]
                 return JSONResponse(status_code=status.HTTP_200_OK,
                                     content={"dynamics": dynamics})
 
