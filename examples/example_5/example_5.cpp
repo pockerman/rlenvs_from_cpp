@@ -25,13 +25,14 @@ namespace example_5{
 		rlenvscpp::envs::grid_world::Gridworld<4> env;
 
         std::unordered_map<std::string, std::any> options;
-        options["mode"] = std::any(rlenvscpp::envs::grid_world::to_string(rlenvscpp::envs::grid_world::GridWorldInitType::STATIC));
+        options["mode"] = std::any(GridWorldInitType::STATIC);
 
         env.make("v0", options);
 		
 		std::cout<<"Number of actions: "<<env.n_actions()<<std::endl;
 		std::cout<<"Number of states:  "<<env.n_states()<<std::endl;
-		
+		std::cout<<"Version:  "<<env.version()<<std::endl;
+		std::cout<<"Name:  "<<env.env_name()<<std::endl;
 		env.close();
 	}
 	
@@ -42,13 +43,14 @@ namespace example_5{
 		rlenvscpp::envs::grid_world::Gridworld<4> env;
 
         std::unordered_map<std::string, std::any> options;
-        options["mode"] = std::any(rlenvscpp::envs::grid_world::to_string(rlenvscpp::envs::grid_world::GridWorldInitType::RANDOM));
+        options["mode"] = std::any(GridWorldInitType::RANDOM);
 
         env.make("v0", options);
 		
 		std::cout<<"Number of actions: "<<env.n_actions()<<std::endl;
 		std::cout<<"Number of states:  "<<env.n_states()<<std::endl;
-		
+		std::cout<<"Version:  "<<env.version()<<std::endl;
+		std::cout<<"Name:  "<<env.env_name()<<std::endl;
 		env.close();
 	}
 

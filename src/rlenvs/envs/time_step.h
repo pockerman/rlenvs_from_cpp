@@ -2,7 +2,7 @@
 #define TIME_STEP_H
 
 #include "rlenvs/rlenvs_types_v2.h"
-#include "rlenvs/time_step_type.h"
+#include "rlenvs/envs/time_step_type.h"
 #include "rlenvs/utils/io_utils.h"
 
 #include <string>
@@ -56,11 +56,9 @@ public:
     ///
     TimeStep(const TimeStep& other);
 
-    /**
-     * @brief Assignment operator
-     *
-     *
-     * */
+    ///
+	/// \brief Assignment operator
+	///
     TimeStep& operator=(const TimeStep& other);
 
     ///
@@ -80,19 +78,19 @@ public:
     /// \brief first
     /// \return
     ///
-    bool first()const noexcept{return type_._to_index() == TimeStepTp::FIRST;}
+    bool first()const noexcept{return type_ == TimeStepTp::FIRST;}
 
     ///
     /// \brief mid
     /// \return
     ///
-    bool mid()const noexcept{return type_._to_index() == TimeStepTp::MID;}
+    bool mid()const noexcept{return type_ == TimeStepTp::MID;}
 
     ///
     /// \brief last
     /// \return
     ///
-    bool last()const noexcept{return type_._to_index() == TimeStepTp::LAST;}
+    bool last()const noexcept{return type_ == TimeStepTp::LAST;}
 
     ///
     /// \brief type
@@ -121,7 +119,7 @@ public:
     /// \brief done
     /// \return
     ///
-    bool done()const noexcept{return type_._to_index() == TimeStepTp::LAST;}
+    bool done()const noexcept{return type_ == TimeStepTp::LAST;}
 
     ///
     /// \brief clear
@@ -289,7 +287,7 @@ template<typename StateTp>
 inline
 std::ostream& operator<<(std::ostream& out, const TimeStep<StateTp>& step){
 
-    out<<"Step type....."<<rlenvscpp::to_string(step.type())<<std::endl;
+    out<<"Step type....."<<TimeStepEnumUtils::to_string(step.type())<<std::endl;
     out<<"Reward........"<<step.reward()<<std::endl;
     out<<"Observation..."<<step.observation()<<std::endl;
     out<<"Discount..... "<<step.discount()<<std::endl;
@@ -301,7 +299,7 @@ template<typename T>
 std::ostream& operator<<(std::ostream& out,
                          const TimeStep<std::vector<T>>& step){
 
-    out<<"Step type....."<<rlenvscpp::to_string(step.type())<<std::endl;
+    out<<"Step type....."<<TimeStepEnumUtils::to_string(step.type())<<std::endl;
     out<<"Reward........"<<step.reward()<<std::endl;
 
     auto obs = step.observation();

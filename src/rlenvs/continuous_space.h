@@ -8,17 +8,20 @@
 
 namespace rlenvscpp
 {
+	
+template<uint_t SpaceSize, typename ItemType>
+struct ContinuousSpace;
 
 ///
 /// \brief The ContinuousSpace class.
 ///
-template<uint_t SpaceSize>
+template<uint_t SpaceSize, std::vector<real_t> >
 struct ContinuousSpace
 {
     ///
     /// \brief item_t
     ///
-    typedef std::vector<real_t> item_t;
+    typedef std::vector<real_t> space_item_type;
 
     ///
     /// \brief size. The number of members in the space
@@ -28,13 +31,13 @@ struct ContinuousSpace
 };
 
 template<>
-struct ContinuousSpace<1>
+struct ContinuousSpace<1, Null>
 {
 	
 	///
     /// \brief item_t
     ///
-    typedef real_t item_t;
+    typedef real_t space_item_type;
 
     ///
     /// \brief size. The number of members in the space
@@ -42,6 +45,11 @@ struct ContinuousSpace<1>
     static constexpr uint_t size = 1;
 
 };
+
+template<uint_t SpaceSize>
+using STDVectorContinuousSpace = ContinuousSpace<SpaceSize, std::vector<real_t>>;
+
+using ScalarContinousSpace = ContinuousSpace<1, Null>;
 
 
 }

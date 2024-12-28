@@ -35,8 +35,7 @@ TEST(TestGridworld, TestConstructor4x4) {
         ASSERT_FALSE(env.is_created());
 
         // TODO: Think how to test this
-        ASSERT_TRUE(rlenvscpp::envs::grid_world::to_string(env.init_type()) 
-		== rlenvscpp::envs::grid_world::to_string(GridWorldInitType::INVALID_TYPE));
+        ASSERT_TRUE(env.init_type() == rlenvscpp::envs::grid_world::GridWorldInitType::INVALID_TYPE);
         ASSERT_EQ(env.name, "Gridworld");
         ASSERT_EQ(env.version(), rlenvscpp::consts::INVALID_STR);
 }
@@ -46,7 +45,7 @@ TEST(TestGridworld, TestMake) {
         rlenvscpp::envs::grid_world::Gridworld<4> env;
 
         std::unordered_map<std::string, std::any> options;
-        options["mode"] = std::any(rlenvscpp::envs::grid_world::to_string(GridWorldInitType::STATIC));
+        options["mode"] = std::any(GridWorldInitType::STATIC);
 
         env.make("v0", options);
 
@@ -54,8 +53,7 @@ TEST(TestGridworld, TestMake) {
         ASSERT_EQ(env.n_states(), static_cast<uint_t>(16));
         ASSERT_EQ(env.n_actions(), static_cast<uint_t>(4));
         ASSERT_EQ(env.version(), "v0");
-        ASSERT_TRUE(rlenvscpp::envs::grid_world::to_string(env.init_type()) 
-		== rlenvscpp::envs::grid_world::to_string(GridWorldInitType::STATIC));
+        ASSERT_TRUE(env.init_type() == rlenvscpp::envs::grid_world::GridWorldInitType::STATIC);
 
 }
 
@@ -291,7 +289,7 @@ TEST(TestGridworld, TestMakeRANDOM) {
     rlenvscpp::envs::grid_world::Gridworld<4> env;
 
 	std::unordered_map<std::string, std::any> options;
-	options["mode"] = std::any(rlenvscpp::envs::grid_world::to_string(GridWorldInitType::RANDOM));
+	options["mode"] = std::any(rlenvscpp::envs::grid_world::GridWorldInitType::RANDOM);
 
 	env.make("v0", options);
 
@@ -299,8 +297,7 @@ TEST(TestGridworld, TestMakeRANDOM) {
 	ASSERT_EQ(env.n_states(), static_cast<uint_t>(16));
 	ASSERT_EQ(env.n_actions(), static_cast<uint_t>(4));
 	ASSERT_EQ(env.version(), "v0");
-	ASSERT_TRUE(rlenvscpp::envs::grid_world::to_string(env.init_type()) 
-	== rlenvscpp::envs::grid_world::to_string(GridWorldInitType::RANDOM));
+	ASSERT_TRUE(env.init_type() == rlenvscpp::envs::grid_world::GridWorldInitType::RANDOM);
 
 }
 

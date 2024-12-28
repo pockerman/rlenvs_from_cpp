@@ -3,7 +3,7 @@
 
 
 #include "rlenvs/rlenvs_types_v2.h"
-#include "rlenvs/time_step_type.h"
+#include "rlenvs/envs/time_step_type.h"
 #include "rlenvs/extern/nlohmann/json/json.hpp"
 
 #include <vector>
@@ -65,11 +65,9 @@ public:
     ///
     VectorTimeStep(const VectorTimeStep& other);
 
-    /**
-     * @brief Assignment operator
-     *
-     *
-     * */
+    ///
+	/// \brief Assignment operator
+	///
     VectorTimeStep& operator=(const VectorTimeStep& other);
 
     ///
@@ -85,7 +83,6 @@ public:
     ///
     VectorTimeStep& operator=(VectorTimeStep&& other)noexcept;
 
-    
     ///
     /// \brief type
     /// \return
@@ -254,7 +251,7 @@ VectorTimeStep<StateType>::done()const noexcept{
 	auto done_ = false;
 	
 	for(auto step_type: types_){
-		if(step_type._to_index() == TimeStepTp::LAST){
+		if(step_type == TimeStepTp::LAST){
 			done_ = true;
 			break;
 		}
@@ -282,7 +279,7 @@ std::ostream& operator<<(std::ostream& out, const VectorTimeStep<StateTp>& step)
 	std::vector<std::string> step_to_str(types.size());
 	
 	for(uint_t i =0; i<step_to_str.size(); ++i){
-		step_to_str[i] = rlenvscpp::to_string(types[i]);
+		step_to_str[i] = TimeStepEnumUtils::to_string(types[i]);
 	}
 	
 	j["step_types"] = step_to_str;
