@@ -24,6 +24,18 @@ int_t sign(const T& expr1, const T& expr2){
 }
 
 
+template<typename T>
+T sum_sqr(const DynVec<T>& vec){
+
+	T sum_ = T(0);
+	for(uint_t i = 0; i<vec.size; ++i){
+		sum_ += vec[i] * vec[i];
+	}
+	
+	return sum_;
+}
+
+
 }
 }
 }
