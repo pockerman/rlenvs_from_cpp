@@ -1,7 +1,6 @@
 #include "rlenvs/envs/gymnasium/classic_control/vector/acrobot_vec_env.h"
-#include "rlenvs/envs/gymnasium/classic_control/acrobot_env_actions_enum.h"
-#include "rlenvs/vector_time_step.h"
-#include "rlenvs/time_step_type.h"
+#include "rlenvs/envs/vector_time_step.h"
+#include "rlenvs/envs/time_step_type.h"
 #include "rlenvs/extern/nlohmann/json/json.hpp"
 
 #include <iostream>
@@ -39,8 +38,27 @@ AcrobotV::create_time_step_from_response_(const http::Response& response)const{
 	
 AcrobotV::AcrobotV(const std::string& api_base_url)
 :
-GymnasiumVecEnvBase<AcrobotV::time_step_type>(api_base_url + "/gymnasium/acrobot-env/v")
+GymnasiumVecEnvBase<VectorTimeStep<detail_::AcrobotVEnv::state_type>, detail_::AcrobotVEnv>(0, "Acrobot",
+                                                                                   api_base_url,
+                                                                                    "/gymnasium/acrobot-env/v")
 {}
+
+AcrobotV::AcrobotV(const std::string& api_base_url, const uint_t cidx)
+:
+GymnasiumVecEnvBase<VectorTimeStep<detail_::AcrobotVEnv::state_type>, 
+                    detail_::AcrobotVEnv>(cidx, 
+										 "Acrobot",
+                                         api_base_url,
+                                         "/gymnasium/acrobot-env/v")
+{}
+
+
+AcrobotV::AcrobotV(const AcrobotV& other)
+:
+GymnasiumVecEnvBase<VectorTimeStep<detail_::AcrobotVEnv::state_type>, 
+                    detail_::AcrobotVEnv>(other)
+{}
+
 
 void
 AcrobotV::make(const std::string& version,
@@ -50,7 +68,8 @@ AcrobotV::make(const std::string& version,
         return;
     }
 	
-	this->GymnasiumVecEnvBase<AcrobotV::time_step_type>::make(version, options);
+	this->GymnasiumVecEnvBase<VectorTimeStep<detail_::AcrobotVEnv::state_type>,
+                             detail_::AcrobotVEnv>::make(version, options);
 
     const auto request_url = std::string(this->get_url()) + "/make";
     http::Request request{request_url};
@@ -67,17 +86,17 @@ AcrobotV::make(const std::string& version,
         throw std::runtime_error("Environment server failed to create Environment");
     }
 
-    this->set_version(version);
-    this->make_created();
+    this->set_version_(version);
+    this->make_created_();
 }
 
 
 AcrobotV::time_step_type
-AcrobotV::step(const std::vector<AcrobotActionsEnum>& actions){
+AcrobotV::step(const action_type& action){
 
 	
 #ifdef RLENVSCPP_DEBUG
-     assert(this->is_created_ && "Environment has not been created");
+     assert(this->is_created() && "Environment has not been created");
 #endif
 
      if(this->get_reset_if_any_done() && this->get_current_time_step_().last()){
@@ -89,10 +108,10 @@ AcrobotV::step(const std::vector<AcrobotActionsEnum>& actions){
 
 	using json = nlohmann::json;
 	json j;
-    j["actions"] = AcrobotActionsEnumUtils::actions_to_ints(actions);
-	auto body = j.dump();
+    j["actions"] = action;
+	j["cidx"] = this -> cidx();
 	
-    const auto response = request.send("POST", body);
+    const auto response = request.send("POST", j.dump());
 
     if(response.status.code != 202){
         throw std::runtime_error("Environment server failed to step environment");
@@ -102,18 +121,19 @@ AcrobotV::step(const std::vector<AcrobotActionsEnum>& actions){
     return this->get_current_time_step_();
 }
 
-AcrobotV::time_step_type
-AcrobotV::step(const std::vector<uint_t>& actions){
 
-#ifdef RLENVSCPP_DEBUG
-     assert(this->is_created_ && "Environment has not been created");
-#endif
-
-     auto action_enum = AcrobotActionsEnumUtils::actions_from_ints(actions);
-     return step(action_enum);
-
+AcrobotV
+AcrobotV::make_copy(uint_t cidx)const{
+	auto api_base_url = this -> get_api_url();
+	
+	AcrobotV copy(api_base_url, cidx);
+	
+	std::unordered_map<std::string, std::any> ops;
+	ops["num_envs"] = this -> get_n_envs();
+	auto version = this -> version();
+	copy.make(version, ops);
+	return copy;
 }
-
 	
 }
 }

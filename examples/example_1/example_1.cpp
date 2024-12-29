@@ -21,7 +21,7 @@ void test_frozen_lake(){
 
     // make the environment
     std::unordered_map<std::string, std::any> options;
-    options.insert({"is_slippery", true});
+    options.insert({"is_slippery", false});
     env.make("v1", options);
 
     std::cout<<"Is environment created? "<<env.is_created()<<std::endl;
@@ -40,7 +40,8 @@ void test_frozen_lake(){
     std::cout<<time_step<<std::endl;
 
     // take an action in the environment
-    auto new_time_step = env.step(rlenvscpp::envs::gymnasium::FrozenLakeActionsEnum::RIGHT);
+	// 2 = RIGHT
+    auto new_time_step = env.step(2);
 
     std::cout<<new_time_step<<std::endl;
 
@@ -58,9 +59,22 @@ void test_frozen_lake(){
         std::cout<<std::get<2>(item)<<std::endl;
         std::cout<<std::get<3>(item)<<std::endl;
     }
+	
+	action = env.sample_action();
+	new_time_step = env.step(action);
 
+    std::cout<<new_time_step<<std::endl;
+	
     // synchronize the environment
     env.sync(std::unordered_map<std::string, std::any>());
+	
+	auto copy_env = env.make_copy(1);
+	copy_env.reset();
+	
+	std::cout<<"Org env cidx: "<<env.cidx()<<std::endl;
+	std::cout<<"Copy env cidx: "<<copy_env.cidx()<<std::endl;
+	
+	copy_env.close();
 
     // close the environment
     env.close();
@@ -81,7 +95,8 @@ void test_taxi(){
     std::cout<<"Is environment alive? "<<env.is_alive()<<std::endl;
     std::cout<<"Number of valid actions? "<<env.n_actions()<<std::endl;
     std::cout<<"Number of states? "<<env.n_states()<<std::endl;
-
+	
+	
     // reset the environment
     auto time_step = env.reset(42, std::unordered_map<std::string, std::any>());
 
@@ -93,7 +108,8 @@ void test_taxi(){
     std::cout<<time_step<<std::endl;
 
     // take an action in the environment
-    auto new_time_step = env.step(rlenvscpp::envs::gymnasium::TaxiActionsEnum::RIGHT);
+	// move RIGHT
+    auto new_time_step = env.step(2);
 
     std::cout<<new_time_step<<std::endl;
 
@@ -111,10 +127,21 @@ void test_taxi(){
         std::cout<<std::get<2>(item)<<std::endl;
         std::cout<<std::get<3>(item)<<std::endl;
     }
-
+	
+	
+	auto copy_env_1 = env.make_copy(1);
+	copy_env_1.reset();
+	
+	auto copy_env_2 = env.make_copy(2);
+	copy_env_2.reset();
+	std::cout<<"Org env cidx: "<<env.cidx()<<std::endl;
+	std::cout<<"Copy env 1 cidx: "<<copy_env_1.cidx()<<std::endl;
+	std::cout<<"Copy env 2 cidx: "<<copy_env_2.cidx()<<std::endl;
+	
     // close the environment
     env.close();
-
+	copy_env_2.close();
+	copy_env_1.close();
 }
 
 
@@ -131,14 +158,24 @@ void test_black_jack(){
     auto state = env.reset();
 
     std::cout<<"Environment step..."<<std::endl;
-    env.step(rlenvscpp::envs::gymnasium::BlackJackActionsEnum::HIT);
-    env.step(rlenvscpp::envs::gymnasium::BlackJackActionsEnum::STICK);
+	
+	// 0 = HIT
+	// 1 = STICK
+    env.step(0);
+    env.step(1);
 
     // synchronize the environment
     env.sync(std::unordered_map<std::string, std::any>());
 
+    auto copy_env = env.make_copy(1);
+	copy_env.reset();
+	
+	std::cout<<"Org env cidx: "<<env.cidx()<<std::endl;
+	std::cout<<"Copy env cidx: "<<copy_env.cidx()<<std::endl;
+	
     // close the environment
     env.close();
+	copy_env.close();
 
 }
 
@@ -170,7 +207,8 @@ void test_cliff_world(){
     std::cout<<time_step<<std::endl;
 
     // take an action in the environment
-    auto new_time_step = env.step(rlenvscpp::envs::gymnasium::CliffWorldActionsEnum::UP);
+	// 0 = UP
+    auto new_time_step = env.step(0);
 
     std::cout<<new_time_step<<std::endl;
 
@@ -192,8 +230,15 @@ void test_cliff_world(){
     // synchronize the environment
     env.sync(std::unordered_map<std::string, std::any>());
 
+    auto copy_env = env.make_copy(1);
+	copy_env.reset();
+	
+	std::cout<<"Org env cidx: "<<env.cidx()<<std::endl;
+	std::cout<<"Copy env cidx: "<<copy_env.cidx()<<std::endl;
+	
     // close the environment
     env.close();
+	copy_env.close();
 
 }
 

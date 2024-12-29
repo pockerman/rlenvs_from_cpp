@@ -2,7 +2,6 @@
 #define TIME_STEP_TYPE_H
 
 #include "rlenvs/rlenvs_types_v2.h"
-#include "rlenvs/extern/enum.h"
 #include <string>
 #include <vector>
 
@@ -13,26 +12,16 @@ namespace rlenvscpp
 /// \brief The TimeStepTp enum
 ///
 
-BETTER_ENUM(TimeStepTp, int, FIRST=0, MID, LAST, INVALID_TYPE);
-
-///
-/// \brief to_string
-/// \param type
-/// \return
-///
-inline
-std::string to_string(TimeStepTp type){return type._to_string();}
-
-///
-/// \brief Create a time step type from the given int
-///
-TimeStepTp time_step_type_from_int(int type);
+//BETTER_ENUM(TimeStepTp, int, FIRST=0, MID, LAST, INVALID_TYPE);
+enum class TimeStepTp: uint_t {FIRST=0, MID=1, LAST=2, INVALID_TYPE=3};
 
 ///
 /// \brief Utilities for TimeStepTp 
 ///
 struct TimeStepEnumUtils{
+		static TimeStepTp time_step_type_from_int(int aidx);
 		static TimeStepTp time_step_type_from_int(uint_t aidx);
+		static std::string to_string(TimeStepTp type);
 		static std::vector<TimeStepTp> time_step_type_from_int(const std::vector<uint_t>& types);
 	};
 

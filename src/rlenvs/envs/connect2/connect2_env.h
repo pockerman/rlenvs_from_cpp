@@ -3,14 +3,15 @@
 
 #include "rlenvs/rlenvscpp_config.h"
 #include "rlenvs/rlenvs_types_v2.h"
-#include "rlenvs/discrete_space.h"
-#include "rlenvs/time_step.h"
-#include "rlenvs/envs/synchronized_env_mixin.h"
+#include "rlenvs/envs/time_step.h"
+#include "rlenvs/envs/env_types.h"
+#include "rlenvs/envs/env_base.h"
 
 #include <boost/noncopyable.hpp>
 #include <vector>
 #include <string>
 #include <unordered_map>
+#include <memory>
 
 namespace rlenvscpp{
 namespace envs{
@@ -21,7 +22,9 @@ namespace connect2{
 /// Initially the environment has all its positions set to zero. When a player makes
 /// a move then the position corresponding to this move 
 ///	
-class Connect2 final: private boost::noncopyable, protected synchronized_env_mixin{
+class Connect2 final: public EnvBase<TimeStep<std::vector<uint_t>>,
+									 DiscreteVectorStateDiscreteActionEnv<53, 0, 4, uint_t > >
+{
 	
 public:
 	
@@ -31,77 +34,103 @@ public:
     static  const std::string name;
 	
 	///
-    /// \brief The type of the action space
+	/// \brief The base type
 	///
-    typedef DiscreteSpace<4> action_space_type;
-	
-	///
-	/// \brief The type of the action
-	///
-	typedef typename action_space_type::item_t action_type;
-	
-	///
-	/// \brief The state type
-	///
-	typedef std::vector<int> state_type;
+	typedef EnvBase<TimeStep<std::vector<uint_t> >,
+							 DiscreteVectorStateDiscreteActionEnv<53, 0, 4, uint_t > > base_type;
+							 
 	
 	///
 	/// \brief The type of the time step
 	///
-    typedef TimeStep<state_type> time_step_type;
+    typedef typename base_type::time_step_type time_step_type;
+	
+	///
+	/// \brief The type describing the state space for the environment
+	///
+	typedef typename base_type::state_space_type state_space_type;
+	
+	///
+	/// \brief The type of the action space for the environment
+	///
+	typedef typename base_type::action_space_type action_space_type;
+
+    ///
+	/// \brief The type of the action to be undertaken in the environment
+	///
+    typedef typename base_type::action_type action_type;
+	
+	///
+	/// \brief The state type
+	///
+	typedef typename base_type::state_type state_type;
+	
+	///
+	/// \brief Expose the various reset methods we use from base class
+	///
+	using base_type::reset;
 	
 	///
     /// \brief Constructor
     ///
     Connect2();
-
-    ///
-	/// \brief Expose functionality. Use the default as nothing to
-	/// synchronize
-	///
-    using synchronized_env_mixin::sync;
-
-    ///
-    /// \brief version
-    /// \return
-    ///
-    std::string version()const noexcept{return version_;}
-
-    ///
-    /// \brief is_created
-    /// \return
-    ///
-    bool is_created()const noexcept{return is_created_;}
 	
+	///
+    /// \brief Constructor
+    ///
+    explicit Connect2(uint_t cidx);
+	
+	///
+	///
+	///
+	Connect2(const Connect2& other);
+
     ///
     /// \brief make. Builds the environment. Optionally we can choose if the
     /// environment will be slippery
     ///
-    void make(const std::string& version,
-              const std::unordered_map<std::string, std::any>& options);
-
-    ///
-    /// \brief n_states. Returns the number of states
-    ///
-    uint_t n_states()const noexcept{ return 53; }
-
-    ///
-    /// \brief n_actions. Returns the number of actions
-    ///
-    uint_t n_actions()const noexcept{return action_space_type::size;}
-
-    ///
+    virtual void make(const std::string& version,
+                      const std::unordered_map<std::string, std::any>& options) override final;
+					  
+	///
     /// \brief step. Move in the environment with the given action
 	/// This function always moves player_1
     /// \param action
     /// \return
     ///
-    time_step_type step(action_type action);
-		
+    virtual time_step_type step(const action_type& action)override final;
+	
+	///
+    /// \brief close
+    ///
+    virtual void close()override final;
+
+	///
+	/// \brief Reset the environment
+	///
+    virtual time_step_type reset(uint_t /*seed*/,
+                                 const std::unordered_map<std::string, std::any>& /*options*/)override final;
+					  
+	///
+	/// \brief Create a new copy of the environment with the given
+	/// copy index
+	///
+	Connect2 make_copy(uint_t cidx)const;
+
+    ///
+    /// \brief n_states. Returns the number of states
+    ///
+    uint_t n_states()const noexcept{ return state_space_type::size; }
+
+    ///
+    /// \brief n_actions. Returns the number of actions
+    ///
+    uint_t n_actions()const noexcept{return action_space_type::size;}
+	
 	///
 	/// \brief Make a move for the player with the given id
 	///
-	time_step_type move(const uint_t pid, action_type action);
+	time_step_type move(const uint_t pid, const action_type& action);
 
 	///
 	/// \brief Returns true if the player wins
@@ -113,29 +142,14 @@ public:
 	///
 	bool has_legal_moves()const noexcept;
 
-    ///
-    /// \brief close
-    ///
-    void close();
-
-    ///
-    /// \brief reset the environment
-    ///
-    time_step_type reset();
-	
 	///
 	/// \brief Get the valid moves
 	///
-	std::vector<int> get_valid_moves()const;
+	std::vector<uint_t> get_valid_moves()const;
 
 private:
 	
-	bool is_created_;
 	
-	///
-	/// \brief Version of the environment
-	///
-	std::string version_;
 	
 	///
 	/// \brief The discount factor
@@ -160,7 +174,7 @@ private:
 	///
 	/// \brief The representation of the board
 	///
-	std::vector<int> board_;
+	std::vector<uint_t> board_;
 	
 	///
 	/// \brief Flag indicating if the game is finished
@@ -172,8 +186,8 @@ private:
 inline
 void 
 Connect2::close(){
-	board_ = std::vector<int> ();
-	is_created_ = false;
+	board_ = std::vector<uint_t> ();
+	this -> invalidate_is_created_flag_();
 }
 		
 }

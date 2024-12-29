@@ -2,8 +2,8 @@ CMAKE_MINIMUM_REQUIRED(VERSION 3.6)
 MESSAGE(STATUS "Using CMake ${CMAKE_VERSION}")
 
 SET(RLENVSCPP_VERSION_MAJOR 1)
-SET(RLENVSCPP_VERSION_MINOR 2)
-SET(RLENVSCPP_VERSION_PATCH 2)
+SET(RLENVSCPP_VERSION_MINOR 3)
+SET(RLENVSCPP_VERSION_PATCH 0)
 
 SET(RLENVSCPP_VERSION "${RLENVSCPP_VERSION_MAJOR}.${RLENVSCPP_VERSION_MINOR}.${RLENVSCPP_VERSION_PATCH}")
 MESSAGE(STATUS "rlenvscpplib Version ${RLENVSCPP_VERSION}")
@@ -27,8 +27,8 @@ ENDIF(COMMAND cmake_policy)
 
 
 SET(CMAKE_BUILD_TYPE "Debug")
-SET(CMAKE_CXX_COMPILER /usr/bin/g++-11)
-SET(CMAKE_C_COMPILER /usr/bin/gcc-11)
+#SET(CMAKE_CXX_COMPILER /usr/bin/g++-11)
+#SET(CMAKE_C_COMPILER /usr/bin/gcc-11)
 SET(CMAKE_CXX_STANDARD 20)
 SET(CMAKE_CXX_STANDARD_REQUIRED True)
 SET(CMAKE_LINKER_FLAGS "-pthread")
@@ -92,13 +92,13 @@ INCLUDE_DIRECTORIES(src/)
 
 FILE(GLOB SRCS src/rlenvs/*.cpp
                src/rlenvs/api_server/*.cpp
-               src/rlenvs/detail/*.cpp
+			   src/rlenvs/envs/*.cpp
                src/rlenvs/envs/gymnasium/*.cpp
                src/rlenvs/envs/gymnasium/toy_text/*.cpp
                src/rlenvs/envs/gymnasium/classic_control/*.cpp
                src/rlenvs/envs/gymnasium/classic_control/vector/*.cpp
                src/rlenvs/envs/gdrl/*.cpp
-               src/rlenvs/envs/gym_pybullet_drones/*.cpp
+               #src/rlenvs/envs/gym_pybullet_drones/*.cpp
                src/rlenvs/envs/grid_world/*.cpp
 			   src/rlenvs/envs/connect2/*.cpp
 			   src/rlenvs/dynamics/*.cpp

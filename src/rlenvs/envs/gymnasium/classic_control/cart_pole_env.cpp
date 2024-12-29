@@ -1,6 +1,7 @@
 #include "rlenvs/envs/gymnasium/classic_control/cart_pole_env.h"
 #include "rlenvs/rlenvs_types_v2.h"
-#include "rlenvs/time_step.h"
+#include "rlenvs/envs/time_step.h"
+#include "rlenvs/envs/time_step_type.h"
 #include "rlenvs/rlenvscpp_config.h"
 #include "rlenvs/extern/nlohmann/json/json.hpp"
 
@@ -9,26 +10,13 @@
 #endif
 
 #include <iostream>
-
+#include <memory>
 
 namespace rlenvscpp{
 namespace envs {
 namespace gymnasium{
 	
 const std::string CartPole::name = "CartPole";
-
-CartPoleActionsEnum
-CartPole::action_from_int(uint_t aidx){
-
-    if(aidx==0)
-        return CartPoleActionsEnum::LEFT;
-
-    if(aidx==1)
-        return CartPoleActionsEnum::RIGHT;
-
-    return CartPoleActionsEnum::INVALID_ACTION;
-}
-
 
 
 CartPole::time_step_type
@@ -39,19 +27,37 @@ CartPole::create_time_step_from_response_(const http::Response& response)const{
 
     json j = json::parse(str_response);
 
-    auto step_type = j["time_step"]["step_type"];
+    auto step_type = j["time_step"]["step_type"].template get<uint_t>();
     auto reward = j["time_step"]["reward"];
     auto discount = j["time_step"]["discount"];
     auto observation = j["time_step"]["observation"];
     auto info = j["time_step"]["info"];
-    return CartPole::time_step_type(time_step_type_from_int(step_type),
+    return CartPole::time_step_type(TimeStepEnumUtils::time_step_type_from_int(step_type),
                                                  reward, observation, discount,
                                                  std::unordered_map<std::string, std::any>());
 }
 
 CartPole::CartPole(const std::string& api_base_url)
 :
-GymnasiumEnvBase<CartPoleData::time_step_type>(api_base_url + "/gymnasium/cart-pole-env")
+GymnasiumEnvBase<TimeStep<std::vector<real_t> >,
+				 ContinuousVectorStateDiscreteActionEnv<4, 2, 0, real_t >>(0, "CartPole",
+                                                                             api_base_url,
+																			 "/gymnasium/cart-pole-env")
+{}
+
+CartPole::CartPole(const std::string& api_base_url, 
+				   const uint_t cidx)
+:
+GymnasiumEnvBase<TimeStep<std::vector<real_t> >,
+				 ContinuousVectorStateDiscreteActionEnv<4, 2, 0, real_t >>(cidx, "CartPole",
+                                                                                        api_base_url,
+																			            "/gymnasium/cart-pole-env")
+{}
+
+CartPole::CartPole(const CartPole& other)
+:
+GymnasiumEnvBase<TimeStep<std::vector<real_t> >,
+				 ContinuousVectorStateDiscreteActionEnv<4, 2, 0, real_t >>(other)
 {}
 
 void
@@ -68,6 +74,7 @@ CartPole::make(const std::string& version,
     using json = nlohmann::json;
     json j;
     j["version"] = version;
+	j["cidx"] = this -> cidx();
 
     auto body = j.dump();
     const auto response = request.send("POST", body);
@@ -76,16 +83,16 @@ CartPole::make(const std::string& version,
         throw std::runtime_error("Environment server failed to create Environment");
     }
 
-    this->set_version(version);
-    this->make_created();
+    this->set_version_(version);
+    this->make_created_();
 }
 
 
 CartPole::time_step_type
-CartPole::step(const CartPoleActionsEnum action){
+CartPole::step(const action_type& action){
 
 #ifdef RLENVSCPP_DEBUG
-     assert(this->is_created_ && "Environment has not been created");
+     assert(this->is_created() && "Environment has not been created");
 #endif
 
      if(this->get_current_time_step_().last()){
@@ -95,8 +102,12 @@ CartPole::step(const CartPoleActionsEnum action){
     const auto request_url = std::string(this->get_url()) + "/step";
     http::Request request{request_url};
 
-    auto body = std::to_string(action);
-    const auto response = request.send("POST", body);
+	using json = nlohmann::json;
+    json j;
+	j["cidx"] = this -> cidx();;
+	j["action"] = action;
+	
+    const auto response = request.send("POST", j.dump());
 
     if(response.status.code != 202){
         throw std::runtime_error("Environment server failed to step environment");
@@ -106,19 +117,17 @@ CartPole::step(const CartPoleActionsEnum action){
     return this->get_current_time_step_();
 }
 
-
-
-CartPole::time_step_type
-CartPole::step(uint_t action){
-
-#ifdef RLENVSCPP_DEBUG
-     assert(this->is_created_ && "Environment has not been created");
-#endif
-
-     auto action_enum = CartPole::action_from_int(action);
-     return step(action_enum);
-
+CartPole 
+CartPole::make_copy(uint_t cidx)const{
+	auto api_base_url = this -> get_api_url();
+	
+	CartPole copy(api_base_url, cidx);
+	std::unordered_map<std::string, std::any> ops;
+	auto version = this -> version();
+	copy.make(version, ops);
+	return copy;
 }
+
 
 }
 }

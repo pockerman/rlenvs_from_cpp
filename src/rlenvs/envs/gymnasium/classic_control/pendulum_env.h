@@ -79,11 +79,9 @@
 
 #include "rlenvs/rlenvscpp_config.h"
 #include "rlenvs/rlenvs_types_v2.h"
-#include "rlenvs/discrete_space.h"
-#include "rlenvs/continuous_space.h"
-#include "rlenvs/time_step.h"
+#include "rlenvs/envs/time_step.h"
 #include "rlenvs/envs/gymnasium/gymnasium_env_base.h"
-
+#include "rlenvs/envs/env_types.h"
 
 #include <string>
 #include <vector>
@@ -91,22 +89,18 @@
 #include <any>
 
 namespace rlenvscpp{
-
-/// Forward declaration
-template<typename StateTp> class TimeStep;
-
 namespace envs{
 namespace gymnasium{
 
-	
-//typedef ContinuousSpace<3> state_space_type;
-//typedef state_space_type::item_t state_type;
-typedef TimeStep<ContinuousSpace<3>::item_t> pendulum_time_step_type;
-
 ///
-/// \brief The CartPole class Interface for CartPole environment
+/// \brief The Pendulum class. Interface for Pendulum environment
 ///
-class Pendulum final: public GymnasiumEnvBase<pendulum_time_step_type>
+class Pendulum final: public GymnasiumEnvBase<TimeStep<std::vector<real_t>>, 
+                                              ContinuousVectorStateContinuousScalarBoundedActionEnv<3, 
+											                                                        1, 
+											                                                        RealRange<-2.0, 2.0>, 
+																									0, real_t>
+											 >
 {
 
 public:
@@ -115,71 +109,91 @@ public:
     /// \brief name
     ///
 	static  const std::string name;
-
-	///
-    /// \brief action_space_t. The type of the action space
-    ///
-	typedef ContinuousSpace<1> action_space_type;
+	
 	
 	///
-    /// \brief action_t
-    ///
-    typedef action_space_type::item_t action_type;
-
-    
+	/// \brief Base class type
 	///
-    /// \brief state_space_type (x =cos(theta), y =sin(theta), angular velocity)
-    ///
-    typedef ContinuousSpace<3> state_space_type;
-
-    ///
-    /// \brief state_type
-    ///
-    typedef state_space_type::item_t state_type;
+	typedef GymnasiumEnvBase<TimeStep<std::vector<real_t>>, 
+                                              ContinuousVectorStateContinuousScalarBoundedActionEnv<3, 
+											                                                        1, 
+											                                                        RealRange<-2.0, 2.0>, 
+																									0, real_t>
+											 >::base_type base_type;
+	///
+	/// \brief The time step type we return every time a step in the
+	/// environment is performed
+	///
+    typedef typename base_type::time_step_type time_step_type;
 	
-	 ///
-    /// \brief time_step_t. The type of the time step
-    ///
-    typedef TimeStep<state_type> time_step_type;
+	///
+	/// \brief The type describing the state space for the environment
+	///
+	typedef typename base_type::state_space_type state_space_type;
+	
+	///
+	/// \brief The type of the action space for the environment
+	///
+	typedef typename base_type::action_space_type action_space_type;
 
     ///
-    /// \brief CartPole. Constructor
+	/// \brief The type of the action to be undertaken in the environment
+	///
+    typedef typename base_type::action_type action_type;
+	
+	///
+	/// \brief The type of the state
+	///
+	typedef typename base_type::state_type state_type;
+
+    ///
+    /// \brief Pendulum. Constructor
     ///
     Pendulum(const std::string& api_base_url );
+	
+	///
+	/// \brief Constructor
+	///
+	Pendulum(const std::string& api_base_url, 
+	           const uint_t cidx);
+			   
+	///
+	/// \brief copy ctor
+	///
+	Pendulum(const Pendulum& other);
 
     ///
-    /// \brief ~CartPole. Destructor
+    /// \brief ~Pendulum. Destructor
     ///
     ~Pendulum()=default;
 
     ///
     /// \brief make. Build the environment
     ///
-    void make(const std::string& version,
-              const std::unordered_map<std::string, std::any>& /*options*/ = 
-			  std::unordered_map<std::string, std::any>()) override final;
+    virtual void make(const std::string& version,
+                      const std::unordered_map<std::string, std::any>& /*options*/) override final;
+					  
+	///
+    /// \brief step. Step in the environment following the given action
+    ///
+    virtual time_step_type step(const action_type& action)override final;
+	
+	///
+	/// \brief Create a new copy of the environment with the given
+	/// copy index
+	///
+	Pendulum make_copy(uint_t cidx)const;
+
 
     ///
     /// \brief n_actions. Returns the number of actions
     ///
     uint_t n_actions()const noexcept{return action_space_type::size;}
 
-    ///
-    /// \brief step. Step in the environment following the given action
-    ///
-    time_step_type step(const action_type action);
-
-
-    /**
-     * @brief Synchronize the environment
-     *
-     */
-    void sync(const std::unordered_map<std::string, std::any>& /*options*/=
-	          std::unordered_map<std::string, std::any>()){}
-
-
-
+    
 protected:
+	
+	
 
     ///
     /// \brief Handle the reset response from the environment server
