@@ -19,7 +19,7 @@ Currently, we provide a minimal number of wrappers for some common Gymnasium (fo
 In addition there are wrappers for
 
 - ```GymWalk``` environment from <a href="https://github.com/mimoralea/gym-walk2">gym_walk</a>
-- ```gym-pybullet-drones``` from <a href="https://github.com/utiasDSL/gym-pybullet-drones/tree/main">gym-pybullet-drones</a>
+- ~```gym-pybullet-drones``` from <a href="https://github.com/utiasDSL/gym-pybullet-drones/tree/main">gym-pybullet-drones</a>~
 - ```GridWorld``` from <a href="https://github.com/DeepReinforcementLearning/DeepReinforcementLearningInAction">Deep Reinforcement Learning In Action</a>
 - ```Connect2``` from <a href="https://github.com/JoshVarty/AlphaZeroSimple">AlphaZeroSimple</a> see <a href="examples/example_7/example_7.cpp">example_7</a>
 
@@ -33,7 +33,8 @@ There exist some wrappers for vector environments:
 
 Apart from the exposed environments, ```rlenvscpp``` exposes classes that describe the dynamics of some popular rigid bodies:
 
-- <a href="https://en.wikipedia.org/wiki/Differential_wheeled_robot">Differential drive</a> see <a href="examples/example_9/example_9.cpp">example_9</a>
+- <a href="https://en.wikipedia.org/wiki/Differential_wheeled_robot">Differential drive dynamics</a> see <a href="examples/example_9/example_9.cpp">example_9</a>
+- <a href="https://scholarsarchive.byu.edu/cgi/viewcontent.cgi?article=2324&context=facpub">Quadrotor dynamics</a> see <a href="examples/example_10/example_10.cpp">example_10</a>
 
 In general, the environments exposed by the library  should abide with <a href="https://github.com/deepmind/dm_env/blob/master/docs/index.md">dm_env</a> specification.
 The following snippet shows how to use the ```FrozenLake```  and ```Taxi``` environments from <a href="https://github.com/Farama-Foundation/Gymnasium/tree/main">Gymnasium</a>.
