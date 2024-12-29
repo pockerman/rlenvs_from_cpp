@@ -5,6 +5,7 @@
 #include "rlenvs/dynamics/system_state.h"
 #include "rlenvs/dynamics/motion_model_base.h"
 #include "rlenvs/dynamics/dynamics_matrix_descriptor.h"
+#include "rlenvs/dynamics/system_state.h"
 
 #include <any>
 
@@ -14,6 +15,15 @@ namespace dynamics {
 	
 struct QuadrotorDynamicsConfig
 {
+	///
+	/// \brief flag indicating if gravity is used
+	///
+	bool use_gravity{true};
+	
+	///
+	///
+	///
+	bool use_description_matrices{false};
 	
 	///
 	/// \brief mass
@@ -27,19 +37,43 @@ struct QuadrotorDynamicsConfig
 	
 	///
 	/// \brief Proportionality constant
+	/// to scale the morot velocity
 	///
 	real_t k_1;
 	
 	///
-	/// \brief flag indicating if gravity is used
+	/// \brief Proportionality constant
+	/// to scale the morot velocity used when
+	/// calculating torques
 	///
-	bool use_gravity{true};
+	real_t k_2;
+
+	///
+	/// \brief The time step to ise
+	///
+	real_t dt;
+	
+	///
+	/// \brief
+	///
+	real_t Jx;
+	
+	///
+	/// \brief
+	///
+	real_t Jy;
+	
+	///
+	/// \brief
+	///
+	real_t Jz;
 };
 
 ///
 /// \brief The QuadrotorDynamics class. Implements quadrotor dynamics
 /// The implementation of this class follows the System Modeling
 /// section at https://wilselby.com/research/arducopter/modeling/
+/// and https://scholarsarchive.byu.edu/cgi/viewcontent.cgi?article=2324&context=facpub
 /// The quadrotor is assumed to have four rotors 
 /// Each rotor consists of a brushless DC motor and rotor with a fixed pitch.
 /// It is assumed that the quadrotor can move in 6 degrees of freedom; 3-translational and 3-rotational, 
@@ -53,57 +87,59 @@ struct QuadrotorDynamicsConfig
 /// - Surrounding fluid velocities (wind) are negligible.
 /// - Ground effect is negligible
 ///
+/// The class integrates the translational and rotational dynamics equations
+/// on the body frame
+///
 class QuadrotorDynamics: public MotionModelDynamicsBase<SysState<12>,
-        DynamicsMatrixDescriptor, std::map<std::string, boost::any>>
+                                                        DynamicsMatrixDescriptor, 
+														RealVec>
 {
 public:
+	
+	typedef MotionModelDynamicsBase<SysState<12>,
+									DynamicsMatrixDescriptor, 
+									RealVec> base_type;
 
     ///
     /// \brief The type of the state handled by this dynamics object
     ///
-    typedef MotionModelDynamicsBase<SysState<12>,
-                            DynamicsMatrixDescriptor, 
-							std::map<std::string, std::any>>::state_t state_t;
+    typedef base_type::state_type state_type;
 
     ///
     /// \brief input_t The type of the input for solving the dynamics
     ///
-    typedef MotionModelDynamicsBase<SysState<12>,
-                            DynamicsMatrixDescriptor,
-                            std::map<std::string, std::any>>::input_t input_t;
+    typedef base_type::input_type input_type;
 
     ///
     /// \brief matrix_t Matrix type that describes the dynamics
     ///
-    typedef MotionModelDynamicsBase<SysState<12>,
-                            DynamicsMatrixDescriptor,
-                            std::map<std::string, std::any>>::matrix_t matrix_t;
+    typedef base_type::matrix_type matrix_type;
 
     ///
     /// \brief vector_t
     ///
-    typedef MotionModelDynamicsBase<SysState<12>,
-                            DynamicsMatrixDescriptor,
-                            std::map<std::string, std::any>>::vector_t vector_t;
+    typedef base_type::vector_type vector_type;
 
     ///
     /// \brief QuadrotorDynamics Constructor. 
-	/// Specify the mass and the arm length of the
+	/// Specify the configuration parameters of the
 	/// simulated quadrotor. It is assumed that
 	/// the mass of the quadrotor remains fixed
+	/// and the system state to be tracked
     ///
-    QuadrotorDynamics(QuadrotorDynamicsConfig config );
+    QuadrotorDynamics(QuadrotorDynamicsConfig config,
+					  SysState<12>& state);
 
     ///
     /// \brief Evaluate the new state using the given input
     /// it also updates the various matrices if needed
     ///
-    virtual state_t& evaluate(const input_t& input )override;
+    virtual state_type& evaluate(const input_type& input )override;
 
     ///
     /// \brief Integrate the new state. It also uses error terms
     ///
-    void integrate(const input_t& input);
+    void integrate(const RealVec& motor_w);
 	
 	///
 	/// \brief Implements the translational dynamics.
@@ -113,11 +149,80 @@ public:
 	///
 	void translational_dynamics(const RealVec& motor_w);
 	
+	///
+	/// \brief Implements the translational dynamics.
+	/// It accepts the motors angular velocities.
+	/// Notice that this model will squared and input
+	/// velocities
+	///
+	void rotational_dynamics(const RealVec& torques);
+	
 private:
 	
+	///
+	/// \brief Configuration of the dynamics integrator
+	///
 	QuadrotorDynamicsConfig config_;
-
-
+	
+	///
+	/// \brief The rotation matrix from body
+	/// to inertial frames
+	///
+	RealMat3d rotation_mat_;
+	
+	///
+	/// \brief The rotation matrix from body
+	/// to inertial frames
+	///
+	RealMat3d euler_mat_;
+	
+	///
+	/// \brief The old position
+	///
+	RealColVec3d old_p_;
+	
+	///
+	/// \brief The old translational velocity
+	///
+	RealColVec3d old_v_;
+	
+	///
+	/// The old rotational velocity
+	///
+	RealColVec3d old_omega_;
+	
+	///
+	/// \brief Track the velocity time gradient
+	///
+	RealColVec3d v_dot_;
+	
+	///
+	/// \brief Track the angular velocity time gradient
+	///
+	RealColVec3d omega_dot_;
+	
+	///
+	/// \brief 
+	///
+	RealColVec3d euler_angles_old_;
+	
+	RealColVec3d euler_dot_;
+	
+	///
+	/// Update the position
+	///
+	void update_position_();
+	
+	///
+	/// \brief Update the rotation matrix
+	///
+	void update_rotation_matrix_();
+	
+	void update_euler_angles_();
+	
+	
+	
+	
 };
 
 }
