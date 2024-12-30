@@ -206,7 +206,7 @@ The library has the following general dependencies
 
 - A compiler that supports C++20 e.g. g++-11
 - <a href="https://www.boost.org/">Boost C++</a> 
-- <a href="https://cmake.org/">CMake</a> >= 3.6
+- <a href="https://cmake.org/">CMake</a> >= 3.10
 - <a href="https://github.com/google/googletest">Gtest</a> (if configured with tests)
 - <a href="https://eigen.tuxfamily.org/index.php?title=Main_Page">Eigen3</a>
 
