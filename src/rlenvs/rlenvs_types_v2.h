@@ -40,6 +40,13 @@ typedef std::size_t uint_t;
 template<typename T>
 using DynMat = Eigen::MatrixX<T>;
 
+///
+/// \brief Dynamic×3 matrix of type double. 
+/// 
+using RealMat3d = Eigen::Matrix3<real_t>;
+
+using FloatMat3d = Eigen::Matrix3<float_t>;
+
 
 template<typename T>
 using DynVec = Eigen::RowVectorX<T>;
@@ -63,6 +70,22 @@ using STD_FloatVec = std::vector<float_t>;
 /// \brief double precision std::vector
 ///
 using STD_RealVec = std::vector<real_t>;
+
+///
+/// \brief Column vector. Some maths operations
+/// are easier using column vectors rather than DynVec
+///
+template<typename T>
+using ColVec = Eigen::VectorX<T>;
+
+
+using RealColVec = ColVec<real_t>;
+using FoatColVec = ColVec<float_t>;
+
+///
+
+using RealColVec3d = Eigen::Vector3d;
+using FloatColVec3d = Eigen::Vector3f;
 
 
 ///

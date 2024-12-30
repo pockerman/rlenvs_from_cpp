@@ -136,6 +136,11 @@ protected:
 
     /// \brief Constructor
     explicit MotionModelDynamicsBase(bool update_description_matrices_on_evaluate = true);
+	
+	
+	/// \brief Constructor
+    MotionModelDynamicsBase(const state_type& init_state,
+							bool update_description_matrices_on_evaluate = true);
 
     ///
     /// \brief The object describing the state
@@ -177,6 +182,21 @@ MotionModelDynamicsBase<StateTp,
       update_description_matrices_on_evaluate_(update_description_matrices_on_evaluate),
       dt_(0.0),
       tol_(rlenvscpp::consts::TOLERANCE)
+{}
+
+template<typename StateTp, typename MatrixDescriptor, typename InputTp>
+MotionModelDynamicsBase<StateTp, 
+                        MatrixDescriptor, 
+						InputTp>::MotionModelDynamicsBase(const typename MotionModelDynamicsBase<StateTp, 
+																								 MatrixDescriptor, 
+																								 InputTp>::state_type& init_state,
+							                              bool update_description_matrices_on_evaluate)
+	:
+	state_(init_state),
+	matrix_description_(),
+	update_description_matrices_on_evaluate_(update_description_matrices_on_evaluate),
+	dt_(0.0),
+	tol_(rlenvscpp::consts::TOLERANCE)
 {}
 
 

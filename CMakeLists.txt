@@ -1,4 +1,4 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 3.6)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.20)
 MESSAGE(STATUS "Using CMake ${CMAKE_VERSION}")
 
 SET(RLENVSCPP_VERSION_MAJOR 1)
@@ -103,6 +103,7 @@ FILE(GLOB SRCS src/rlenvs/*.cpp
 			   src/rlenvs/envs/connect2/*.cpp
 			   src/rlenvs/dynamics/*.cpp
 			   src/rlenvs/utils/*.cpp
+			   src/rlenvs/utils/io/*.cpp
    )
 
 ADD_LIBRARY(rlenvscpplib SHARED ${SRCS})
