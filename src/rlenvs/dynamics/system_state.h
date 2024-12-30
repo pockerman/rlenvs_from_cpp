@@ -211,6 +211,13 @@ public:
 	///
 	template<typename Container>
     void set(const Container& container);
+	
+	///
+	/// TODO: Add this in the future
+	/// \brief Returns a view of the values in [start, end)
+	///
+	//template<typename Container>
+	//Container get_values_view(uint_t start, uint_t end)const;
 
 private:
 
@@ -610,7 +617,6 @@ SysState<dim>::add(const std::vector<real_t>& container){
         values_[i].second += container[i];
     }
 }
-
 
 template<int dim>
 inline

@@ -15,11 +15,9 @@ QuadrotorDynamics::QuadrotorDynamics(QuadrotorDynamicsConfig config,
 							  RealVec>(state),
 	config_(config)
 {
-	old_v_ = RealColVec3d::Zero(3);
+	
 	v_dot_ = RealColVec3d::Zero(3);
-	old_omega_ = RealColVec3d::Zero(3);
 	omega_dot_ = RealColVec3d::Zero(3);
-	euler_angles_old_ = RealColVec3d::Zero(3);
 	euler_dot_ = RealColVec3d::Zero(3);
 	
 	rotation_mat_ = RealMat3d::Zero();
@@ -30,6 +28,7 @@ QuadrotorDynamics::QuadrotorDynamics(QuadrotorDynamicsConfig config,
 QuadrotorDynamics::state_type&
 QuadrotorDynamics::evaluate(const input_type& input ){
 	integrate(input);
+	return this->get_state();
 }
 
 
@@ -48,16 +47,25 @@ void
 QuadrotorDynamics::update_position_(){
 	
 	const auto dt = config_.dt;
-	RealColVec3d p = dt * rotation_mat_ * old_v_ + old_p_;
+	const auto old_p = get_position_from_state_();
+	const auto old_v = get_velocity_from_state_();
+	RealColVec3d p = dt * rotation_mat_ * old_v + old_p;
+	
+	// update the position
+	this -> get_state().set("x", p[0]);
+	this -> get_state().set("y", p[1]);
+	this -> get_state().set("z", p[2]);
 }
 
 void 
 QuadrotorDynamics::update_euler_angles_(){
 	
+	RealColVec3d euler_angles_old = get_euler_angles_from_state_();
+	RealColVec3d old_omega = get_angular_velocity_from_state_();
 	const auto dt = config_.dt;
-	const auto phi = euler_angles_old_[0];
-	const auto theta = euler_angles_old_[1];
-	const auto psi = euler_angles_old_[2];
+	const auto phi = euler_angles_old[0];
+	const auto theta = euler_angles_old[1];
+	const auto psi = euler_angles_old[2];
 	
 	euler_mat_(0, 0) = 1.0;
 	euler_mat_(0, 1) = std::sin(phi) * std::tan(theta);
@@ -71,19 +79,22 @@ QuadrotorDynamics::update_euler_angles_(){
 	euler_mat_(2, 1) = std::sin(phi) / std::cos(theta);
 	euler_mat_(2, 2) = std::cos(phi) / std::cos(theta);
 	
-	RealColVec3d euler = dt * euler_mat_ * old_omega_ + euler_angles_old_;
+	RealColVec3d euler = dt * euler_mat_ * old_omega + euler_angles_old;
 	
-	euler_dot_ = (euler - euler_angles_old_) / dt;
-	euler_angles_old_ = euler;
+	euler_dot_ = (euler - euler_angles_old) / dt;
 	
+	this -> set_state_property("phi", euler[0]);
+	this -> set_state_property("theta", euler[1]);
+	this -> set_state_property("psi", euler[2]);
 }
 
 void 
 QuadrotorDynamics::update_rotation_matrix_(){
 	
-	const auto phi = euler_angles_old_[0];
-	const auto theta = euler_angles_old_[1];
-	const auto psi = euler_angles_old_[2];
+	RealColVec3d euler_angles_old = get_euler_angles_from_state_();
+	const auto phi = euler_angles_old[0];
+	const auto theta = euler_angles_old[1];
+	const auto psi = euler_angles_old[2];
 	
 	
 	auto ctheta = std::cos(theta);
@@ -115,9 +126,11 @@ QuadrotorDynamics::rotational_dynamics(const RealVec& motor_w){
 	const auto k_2 = config_.k_2;
 	const auto dt = config_.dt;
 	
-	auto p = old_omega_[0];
-	auto q = old_omega_[1];
-	auto r = old_omega_[2];
+	RealColVec3d old_omega = get_angular_velocity_from_state_();
+	
+	auto p = old_omega[0];
+	auto q = old_omega[1];
+	auto r = old_omega[2];
 	
 	auto Jx = config_.Jx;
 	auto Jy = config_.Jy;
@@ -146,12 +159,14 @@ QuadrotorDynamics::rotational_dynamics(const RealVec& motor_w){
 					   - rlenvscpp::utils::maths::sqr(motor_w[3]));
 	tau[2] *= 1.0 / Jz; 
 	
-	RealColVec3d omega = dt * omega_cross_h + dt * tau - old_omega_;
+	RealColVec3d omega = dt * omega_cross_h + dt * tau - old_omega;
 	
-	omega_dot_ = (omega - old_omega_) / dt;
+	omega_dot_ = (omega - old_omega) / dt;
 	
 	// update the angular velocity
-	old_omega_ = omega;
+	this -> set_state_property("p", omega[0]);
+	this -> set_state_property("q", omega[1]);
+	this -> set_state_property("r", omega[2]);
 }
 
 void 
@@ -171,16 +186,23 @@ QuadrotorDynamics::translational_dynamics(const RealVec& motor_w){
 	RealColVec3d ft = RealColVec3d::Zero(3);
 	ft[2] = config_.k_1 * rlenvscpp::utils::maths::sum_sqr(motor_w);
 	
+	RealColVec3d old_v = get_velocity_from_state_();
+	RealColVec3d old_omega = get_angular_velocity_from_state_();
+	
 	// form the vector ωb/i × v
-	RealColVec3d  omega_cross_v = old_omega_.cross(old_v_);
+	RealColVec3d  omega_cross_v = old_omega.cross(old_v);
 	
 	// compute the velocity increment
-	RealColVec3d v = dt * omega_cross_v  + (1.0 / mass ) * dt *  fg - (1.0 / mass ) * dt * ft - old_v_;
+	RealColVec3d v = dt * omega_cross_v  + (1.0 / mass ) * dt *  fg - (1.0 / mass ) * dt * ft - old_v;
 	
-	v_dot_ = (v - old_v_) / dt;
+	// compute the time velocity derivative
+	v_dot_ = (v - old_v) / dt;
 	
 	// update the old velocity
-	old_v_ = v;
+	this -> set_state_property("u", v[0]);
+	this -> set_state_property("v", v[1]);
+	this -> set_state_property("w", v[2]);
+
 }
 
 }

@@ -155,7 +155,27 @@ public:
 	/// Notice that this model will squared and input
 	/// velocities
 	///
-	void rotational_dynamics(const RealVec& torques);
+	void rotational_dynamics(const RealVec& motor_w);
+	
+	///
+	/// \brief Returns the current position NED frame
+	///
+	RealColVec3d get_position()const{return get_position_from_state_();}
+	
+	///
+	/// \brief Returns the current linear velocity (body frame)
+	///
+	RealColVec3d get_velocity()const{return get_velocity_from_state_();}
+	
+	///
+	/// \brief Returns the current angular velocity (body frame)
+	///
+	RealColVec3d get_angular_velocity()const{return get_angular_velocity_from_state_();}
+	
+	///
+	/// \brief Returns the Euler angles (0: phi, 1: theta, 2:psi)
+	///
+	RealColVec3d get_euler_angles()const{return get_euler_angles_from_state_();}
 	
 private:
 	
@@ -177,21 +197,6 @@ private:
 	RealMat3d euler_mat_;
 	
 	///
-	/// \brief The old position
-	///
-	RealColVec3d old_p_;
-	
-	///
-	/// \brief The old translational velocity
-	///
-	RealColVec3d old_v_;
-	
-	///
-	/// The old rotational velocity
-	///
-	RealColVec3d old_omega_;
-	
-	///
 	/// \brief Track the velocity time gradient
 	///
 	RealColVec3d v_dot_;
@@ -202,10 +207,8 @@ private:
 	RealColVec3d omega_dot_;
 	
 	///
-	/// \brief 
+	/// \brief The time derivative of the euler angles
 	///
-	RealColVec3d euler_angles_old_;
-	
 	RealColVec3d euler_dot_;
 	
 	///
@@ -221,9 +224,60 @@ private:
 	void update_euler_angles_();
 	
 	
+	RealColVec3d get_velocity_from_state_()const;
+	RealColVec3d get_angular_velocity_from_state_()const;
+	RealColVec3d get_position_from_state_()const;
+	RealColVec3d get_euler_angles_from_state_()const;
+	
 	
 	
 };
+
+inline
+RealColVec3d 
+QuadrotorDynamics::get_velocity_from_state_()const{
+	
+	RealColVec3d v = RealColVec3d::Zero();
+	v[0] = this -> get_state_property("u");
+	v[1] = this -> get_state_property("v");
+	v[2] = this -> get_state_property("w");
+	return v;
+	
+}
+
+inline
+RealColVec3d 
+QuadrotorDynamics::get_position_from_state_()const{
+	
+	RealColVec3d v = RealColVec3d::Zero();
+	v[0] = this -> get_state_property("x");
+	v[1] = this -> get_state_property("y");
+	v[2] = this -> get_state_property("z");
+	return v;
+	
+}
+
+inline
+RealColVec3d 
+QuadrotorDynamics::get_angular_velocity_from_state_()const{
+	
+	RealColVec3d v = RealColVec3d::Zero();
+	v[0] = this -> get_state_property("p");
+	v[1] = this -> get_state_property("q");
+	v[2] = this -> get_state_property("r");
+	return v;
+}
+
+inline
+RealColVec3d 
+QuadrotorDynamics::get_euler_angles_from_state_()const{
+	
+	RealColVec3d v = RealColVec3d::Zero();
+	v[0] = this -> get_state_property("phi");
+	v[1] = this -> get_state_property("theta");
+	v[2] = this -> get_state_property("psi");
+	return v;
+}
 
 }
 

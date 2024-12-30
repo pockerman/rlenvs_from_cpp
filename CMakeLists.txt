@@ -103,6 +103,7 @@ FILE(GLOB SRCS src/rlenvs/*.cpp
 			   src/rlenvs/envs/connect2/*.cpp
 			   src/rlenvs/dynamics/*.cpp
 			   src/rlenvs/utils/*.cpp
+			   src/rlenvs/utils/io/*.cpp
    )
 
 ADD_LIBRARY(rlenvscpplib SHARED ${SRCS})

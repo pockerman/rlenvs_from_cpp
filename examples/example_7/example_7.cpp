@@ -1,7 +1,7 @@
 #include "rlenvs/rlenvs_types_v2.h"
 #include "rlenvs/envs/connect2/connect2_env.h"
 #include "rlenvs/rlenvs_consts.h"
-#include "rlenvs/utils/io_utils.h"
+#include "rlenvs/utils/io/io_utils.h"
 
 #include <iostream>
 #include <string>

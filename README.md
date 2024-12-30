@@ -221,7 +221,6 @@ In addition, you need to install
 In addition, the library also incorporates, see ```(src/extern)```, the following libraries
 
 - <a href="https://github.com/elnormous/HTTPRequest">HTTPRequest</a>
-- <a href="http://github.com/aantron/better-enums">better-enums</a>
 - <a href="https://github.com/nlohmann/json">nlohmann/json</a>
 
 There are extra dependencies if you want to generate the documentation. Namely,
