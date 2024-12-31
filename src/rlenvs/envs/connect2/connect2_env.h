@@ -1,3 +1,11 @@
+/*
+ * Connect2 environment from
+ *  <a href="https://github.com/JoshVarty/AlphaZeroSimple">AlphaZeroSimple</a>
+ * 
+ * 
+ * 
+ * 
+ */ 
 #ifndef CONNECT2_ENV_H
 #define CONNECT2_ENV_H
 

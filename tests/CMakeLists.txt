@@ -55,4 +55,5 @@ ADD_SUBDIRECTORY(test_grid_world)
 ADD_SUBDIRECTORY(test_acrobot)
 #ADD_SUBDIRECTORY(test_vector_env_wrapper)
 #ADD_SUBDIRECTORY(test_vector_time_step)
+ADD_SUBDIRECTORY(test_generic_line)
 

@@ -54,8 +54,8 @@ int main(){
     std::cout<<"Number of states? "<<env.n_states()<<std::endl;
 
     auto trajectory = rlenvscpp::envs::create_trajectory(env,
-                                                          random_action_selector,
-                                                          MAX_TRAJECTORY_SIZE);
+														 random_action_selector,
+														 MAX_TRAJECTORY_SIZE);
 
 #ifdef RLENVSCPP_DEBUG
      assert(!trajectory.empty() && "Trajectory is empty");

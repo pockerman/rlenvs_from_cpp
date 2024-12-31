@@ -1,5 +1,12 @@
-// SPDX-FileCopyrightText: 2024 <copyright holder> <email>
-// SPDX-License-Identifier: Apache-2.0
+/*
+ * Quadcopter simulation environment
+ * from 
+ * <a href="https://github.com/utiasDSL/gym-pybullet-drones/tree/main">gym-pybullet-drones</a>
+ * 
+ * 
+ * 
+ * 
+ */ 
 
 #ifndef QUADCOPTER_SIM_ENV_H
 #define QUADCOPTER_SIM_ENV_H

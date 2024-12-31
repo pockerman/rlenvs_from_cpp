@@ -1,5 +1,10 @@
-// SPDX-FileCopyrightText: 2024 <copyright holder> <email>
-// SPDX-License-Identifier: Apache-2.0
+/*
+ * GymWalk environment from
+ * <a href="https://github.com/mimoralea/gym-walk2">gym_walk</a>
+ * 
+ * 
+ * 
+ */ 
 
 #ifndef GYM_WALK_H
 #define GYM_WALK_H
