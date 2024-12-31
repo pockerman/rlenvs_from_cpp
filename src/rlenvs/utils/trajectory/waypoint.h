@@ -1,47 +1,84 @@
+#ifndef WAYPOINT_H
+#define WAYPOINT_H
+
 #include "rlenvs/rlenvs_types_v2.h"
 #include "rlenvs/utils/geometry/geom_point.h"
-
+#include "rlenvs/rlenvs_consts.h"
 namespace rlenvscpp{
 namespace utils{
 namespace trajectory{
 
+
+using rlenvscpp::utils::geom::GeomPoint;
 	
 ///
 /// \brief Helper class to represent a waypoint
 ///
 template<int dim, typename Data>
-struct WayPoint: public kernel::GeomPoint<dim>
+class WayPoint: public GeomPoint<dim>
 {
-    typedef kernel::GeomPoint<dim> position_t;
-    typedef Data data_t;
-    uint_t id;
-    data_t data;
-    bool is_active_point;
-
+public:
+		
+    
+    typedef Data data_type;
+	
+	///
     /// constructor
-    WayPoint(const position_t& p, uint_t id_, const data_t& data_=data_t())
-        :
-          kernel::GeomPoint<dim>(p),
-          id(id_),
-          data(data),
-          is_active_point(true)
-    {}
-
+	///
+    WayPoint();
+    
+	///
+    /// constructor
+	///
+    WayPoint(const GeomPoint<dim>& p, uint_t id, 
+	         const data_type& data_=data_type());
+       
+	///
     /// \brief Return the id of the point
-    uint_t get_id()const{return id;}
+	///
+    uint_t get_id()const{return id_;}
 
+	///
     /// \brief Writable reference to the data
-    data_t& get_data(){return data;}
+	///
+    data_type& get_data(){return data_;}
 
+	///
     /// \brief Read reference to the data
-    const data_t& get_data()const{return data;}
+	///
+    const data_type& get_data()const{return data_;}
 
+	///
     /// \brief Returns true if the waypoint is active
-    bool is_active()const{return is_active_point;}
+	///
+    bool is_active()const{return is_active_point_;}
+	
+private:
+	
+	uint_t id_;
+    data_type data_;
+    bool is_active_point_;
 };
 
 
-			
+
+template<int dim, typename Data>
+WayPoint<dim, Data>::WayPoint(const GeomPoint<dim>& p, uint_t id, 
+        const typename WayPoint<dim, Data>::data_type& data)
+        :
+		GeomPoint<dim>(p),
+		id_(id),
+		data_(data),
+		is_active_point_(true)
+    {}
+	
+template<int dim, typename Data>
+WayPoint<dim, Data>::WayPoint()
+:
+WayPoint(GeomPoint<dim>(),rlenvscpp::consts::INVALID_ID)
+{}		
 }
 }
 }
+
+#endif

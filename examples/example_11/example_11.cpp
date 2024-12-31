@@ -1,15 +1,17 @@
 /*
- * In this example we simulate a quadrotor.
- * The quadrotor data is taken from 
- * https://sal.aalto.fi/publications/pdf-files/eluu11_public.pdf
+ * This example shows how to create
+ * a waypoint trajectory consisting of straight
+ * lines
  * 
  * 
  * 
  */ 
 
 #include "rlenvs/rlenvs_types_v2.h"
-#include "rlenvs/dynamics/quadrotor_dynamics.h"
-#include "rlenvs/utils/io/csv_file_writer.h"
+#include "rlenvs/utils/trajectory/waypoint_trajectory.h"
+#include "rlenvs/utils/trajectory/waypoint.h"
+#include "rlenvs/utils/trajectory/line_segment_link.h"
+#include "rlenvs/utils/geometry/geom_point.h"
 #include "rlenvs/utils/unit_converter.h"
 
 #include <iostream>
@@ -19,134 +21,78 @@
 #include <array>
 #include <vector>
 
-namespace example_10{
+namespace example_11{
 	
-	using namespace rlenvscpp::dynamics;
-	using rlenvscpp::uint_t;
 	using rlenvscpp::real_t;
-	using rlenvscpp::RealVec;
-	using rlenvscpp::utils::io::CSVWriter;
+	using rlenvscpp::uint_t;
+	using rlenvscpp::utils::trajectory::WaypointTrajectory;
+	using rlenvscpp::utils::trajectory::LineSegmentLink;
+	using rlenvscpp::utils::trajectory::WayPoint;
+	using rlenvscpp::utils::geom::GeomPoint;
+	using rlenvscpp::Null;
 	
-	real_t compute_motor_speed(real_t t){
-		
-		if(t <= 0.1){
-			return 500 * t + 625.0;
-		}
-		else if( t > 0.1 && t <= 0.4){
-			return -416.66 * t + 716.66;
-		}
-		else if( t > 0.4 && t <= 0.5){
-			return 750.0 * t + 250.0;
-		}
-		else{
-			return 625.0;
-		}
-		
-	}
+struct LineSegmentData
+{
+    /// \brief The maximum velocity
+    /// allowed on the edge
+    real_t Vmax{0.0};
+
+    /// \brief The orientation of the
+    /// segment with respect to the global coordinate
+    /// frame. This may also dictate the orientation
+    /// that a reference vehicle may have on the segment
+    real_t theta{0.0};
+
+    /// \brief The angular velocity on the segment
+    real_t w{0.0};
+
+    /// \brief The linear velocity on the segement
+    real_t v{0.0};
+
+};
+
+typedef LineSegmentLink<2, Null, LineSegmentData> link_type;
+typedef link_type::w_point_type w_point_type;
 	
 }
 
 
 int main(){
 
-	using namespace example_10;
+	using namespace example_11;
 	
-	QuadrotorDynamicsConfig config;
-	config.dt = 0.0001;
-	config.mass = 0.468;
-	config.l = 0.225;
-	config.k_1 = 2.980e-6; // this is the k coeff
-	config.k_2 = 1.140e-7; // this is the beta coeff
-	config.Jx = 4.856e-3;
-	config.Jy = 4.856e-3;
-	config.Jz = 8.801e-3;
+	// create a trajector of 4 links
+	// the waypoints carry not data
+	// but the the links 
+	// carry objects of type LineSegmentData
+	WaypointTrajectory<link_type> trajectory(3);
 	
+	// start adding the links
+	// that form the trajectory
+	w_point_type p0(GeomPoint<2>({0.0, 0.0}), static_cast<uint_t>(0));
+	w_point_type p1(GeomPoint<2>({1.0, 0.0}), static_cast<uint_t>(1));
+	LineSegmentData data{1.0, 0.0, 0.0, 0.95};
 	
-	// initialize the state variables
-	std::array<std::pair<std::string, real_t>, 12> values;
+	link_type l0(p0, p1, static_cast<uint_t>(0), data);
 	
-	// initial position in NED
-	values[0] = std::make_pair("x", 0.0);
-	values[1] = std::make_pair("y", 0.0);
-	values[2] = std::make_pair("z", 0.0);
+	w_point_type p2(GeomPoint<2>({1.0, 0.0}), static_cast<uint_t>(2));
+	w_point_type p3(GeomPoint<2>({2.0, 2.0}), static_cast<uint_t>(3));
+	data.theta = rlenvscpp::utils::unit_converter::degrees_to_rad(45.0); 
+	link_type l1(p2, p3, static_cast<uint_t>(1), data);
 	
-	// initial translation velocities body coords
-	values[3] = std::make_pair("u", 0.0);
-	values[4] = std::make_pair("v", 0.0);
-	values[5] = std::make_pair("w", 0.0);
+	w_point_type p4(GeomPoint<2>({2.0, 2.0}), static_cast<uint_t>(4));
+	w_point_type p5(GeomPoint<2>({2.0, 3.0}), static_cast<uint_t>(5));
+	data.theta = rlenvscpp::utils::unit_converter::degrees_to_rad(90.0); 
+	link_type l2(p2, p3, static_cast<uint_t>(2), data);
 	
-	// initial rotational velocities body coords
-	values[6] = std::make_pair("p", 0.0);
-	values[7] = std::make_pair("q", 0.0);
-	values[8] = std::make_pair("r", 0.0);
-	
-	// Euler angles
-	values[9]  = std::make_pair("phi", 0.0);
-	values[10] = std::make_pair("theta", 0.0);
-	values[11] = std::make_pair("psi", 0.0);
-	
-	
-	SysState<12> state(std::move(values));
-	QuadrotorDynamics dynamics(config, state);
-	
-	// the motor velocities rad/sec
-	RealVec omegas = RealVec::Zero(4);
-	omegas[0] = omegas[1] = omegas[2] = omegas[3] = 625.0;
-	
-	
-	CSVWriter csv_writer("state");
-	csv_writer.open();
-	
-	std::vector<std::string> names={"t", 
-									"x", "y", "z",
-	                                "u", "v", "w",
-									"p", "q", "r",
-									"phi", "theta", "psi"};
+	trajectory[0] = l0;
+	trajectory[1] = l1;
+	trajectory[2] = l2;
 
-	csv_writer.write_column_names(names);								
+	std::cout<<"Trajectory number of links: "<<trajectory.size()<<std::endl;
 	
-	const real_t T = 2.0;
-	real_t time = 0.0;
-	
-	std::vector<real_t> row(13, 0.0);
-	while(time < T){
-		
-		std::cout<<"Time: "<<time<<std::endl;
-		
-		auto omega_motor = compute_motor_speed(time);
-		omegas[0] = omegas[1] = omegas[2] = omegas[3] = omega_motor;
-		dynamics.integrate(omegas);
-		
-		auto p = dynamics.get_position();
-		auto v = dynamics.get_velocity();
-		auto omega = dynamics.get_angular_velocity();
-		auto euler = dynamics.get_euler_angles();
-		
-		row[0] = time;
-		row[1] = p[0];
-		row[2] = p[1];
-		row[3] = p[2];
-		
-		row[4] = v[0];
-		row[5] = v[1];
-		row[6] = v[2];
-		
-		row[7] = omega[0];
-		row[8] = omega[1];
-		row[9] = omega[2];
-		
-		row[10] = rlenvscpp::utils::unit_converter::rad_to_degrees(euler[0]);
-		row[11] = rlenvscpp::utils::unit_converter::rad_to_degrees(euler[1]);
-		row[12] = rlenvscpp::utils::unit_converter::rad_to_degrees(euler[2]);
-		
-		csv_writer.write_row(row);
-		std::cout<<"Current position: ";
-		std::cout<<p<<std::endl;
-		std::cout<<euler<<std::endl;
-		time += config.dt;
+	for(const auto& link: trajectory){
+		std::cout<<link.get_id()<<std::endl;
 	}
-	
-	csv_writer.close();
-	
     return 0;
 }

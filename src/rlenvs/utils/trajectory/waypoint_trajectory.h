@@ -1,9 +1,11 @@
-#ifndef WAYPOINT_LINE_TRAJECTORY_H
-#define WAYPOINT_LINE_TRAJECTORY_H
+#ifndef WAYPOINT_TRAJECTORY_H
+#define WAYPOINT_TRAJECTORY_H
 #include "rlenvs/rlenvs_types_v2.h"
 
 #include <vector>
 #include <utility>
+#include <limits>
+#include <type_traits>
 
 namespace rlenvscpp{
 namespace utils{
@@ -20,9 +22,12 @@ class WaypointTrajectory
 {
 public:
 	
+	static_assert(std::is_default_constructible<LinkType>::value,
+				  "LinkType must have default constructor");
+	
 	typedef LinkType link_type;
 	
-	typedef typename link_type::waypoint_type waypoint_type;
+	typedef typename link_type::w_point_type w_point_type;
 	
 	///
 	/// \brief point iteration
@@ -44,7 +49,7 @@ public:
 	/// \brief Computes the minimum distance of the 
 	/// given point from the trajectory
 	///
-	std::pair<real_t, link_type> distance(const waypoint_type& p)const;
+	std::pair<real_t, link_type> distance(const w_point_type& p)const;
 	
 	///
 	/// \brief How many waypoints the pah has
@@ -54,12 +59,12 @@ public:
 	///
 	/// \brief Reserve space for waypoints
 	///
-    void reserve(uint_t n){links_.reserve(n)};
+    void reserve(uint_t n){links_.reserve(n);}
 	
 	///
 	/// \brief clear the memory allocated for points and
     /// edges
-    void clear(){links_.clear()};
+    void clear(){links_.clear();}
 	
 	///
 	/// \brief Returns true if the trajectory is empty
@@ -89,22 +94,17 @@ public:
 	///
 	/// \brief Raw node iteration
 	///
-    link_iterator links_begin(){return links_.begin();}
-    link_iterator links_end(){return links_.end();}
+    link_iterator begin(){return links_.begin();}
+    link_iterator end(){return links_.end();}
 
 	///
     /// \brief Raw node iteration
 	///
-    const_link_iterator links_begin()const{return links_.begin();}
-    const_link_iterator links_end()const{return links_.end();}
+    const_link_iterator begin()const{return links_.begin();}
+    const_link_iterator end()const{return links_.end();}
 	
 private:
 	
-	///
-	/// \brief The Waypoints of the path
-	///
-    //std::vector<waypoint_type> waypoints_;
-
 	///
     /// \brief The segments of the path
 	///
@@ -120,14 +120,16 @@ links_()
 template<typename LinkType>
 WaypointTrajectory<LinkType>::WaypointTrajectory(uint_t n)
 :
-links_(n)
-{}
+links_()
+{
+ links_.resize(n);	
+}
 
 template<typename LinkType>
 std::pair<real_t, typename WaypointTrajectory<LinkType>::link_type> 
-WaypointTrajectory<LinkType>::distance(const waypoint_type& p)const{
+WaypointTrajectory<LinkType>::distance(const typename WaypointTrajectory<LinkType>::w_point_type& p)const{
 	
-	real_t = dist_;
+	real_t dist_ = std::numeric_limits<real_t>::max();
 	link_type link_;
 	
 	for(const auto& link: links_){

@@ -77,14 +77,20 @@ public:
     ///
     GeomPoint& operator=(const std::initializer_list<T>& list);
 
+	///
     /// \brief scale with a given factor
+	///
     void scale(T factor);
 
+	///
     /// \brief  scale this object by the given factors
     /// p factors should have size at least \p spacedim
+	///
     void scale(const std::vector<T>& factors);
 
+	///
     /// \brief Zero the entries of the tensor
+	///
     void zero();
 
     /// \brief Add the coordinates of the given point to this scaled by factor
@@ -102,20 +108,28 @@ public:
     /// \brief Get a copy of the data of this object
     auto coordinates()const{return data_;}
 
+	///
     /// \brief Get the max element in the point
+	///
     T max()const;
 
+	///
     /// \brief Get the min element in the point
+	///
     T min()const;
 
     /// \brief Get the distance from the given point
     T distance(const GeomPoint&)const;
 
+	///
     /// \brief Return the distance from the origin
+	///
     T L2_norm()const{return distance(GeomPoint(static_cast<T>(0)));}
 
+	///
     /// \brief Returns the dot product of this point
     /// and the given point
+	///
     T dot(const GeomPoint& other)const;
 
     ///

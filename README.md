@@ -6,65 +6,49 @@ Currently, we provide a minimal number of wrappers for some common Gymnasium (fo
 
 ### Scalar environments
 
-| Environment         |   REST   | Example |
-| :----------------   | :------: | :----: |
-| FrozenLake 4x4 map  |   Yes    | 23.99  |
-| FrozenLake 4x4 map  |   Yes    | 23.99  |
-| Blackjack           |   Yes    | 19.99  |
-| CliffWalking        |   Yes    | 42.99  |
-| CartPole            |   Yes    | 42.99  |
-| MountainCar         |   Yes    | 42.99  |
-| Taxi                |   Yes    | 42.99  |
-| Pendulum            |   Yes    | 42.99  |
-| Acrobot             |   Yes    | 42.99  |
-| GymWalk             |   No     | 42.99  |
-| gym-pybullet-drones |  TODO    | TODO   |
-| GridWorld           |   No     | |
-| Connect2            |   No     | <a href="examples/example_7/example_7.cpp">example_7</a> |
+| Environment         |   REST   | Example                                                   |
+| :----------------   | :------: | :----:                                                    |
+| FrozenLake 4x4 map  |   Yes    | <a href="examples/example_1/example_1.cpp">example_1</a>  |
+| FrozenLake 8x8 map  |   Yes    | TODO                                                      |
+| Blackjack           |   Yes    | <a href="examples/example_1/example_1.cpp">example_1</a>  |
+| CliffWalking        |   Yes    | <a href="examples/example_1/example_1.cpp">example_1</a>  |
+| CartPole            |   Yes    | TODO                                                     |
+| MountainCar         |   Yes    | TODO                                                     |
+| Taxi                |   Yes    | <a href="examples/example_1/example_1.cpp">example_1</a>  |
+| Pendulum            |   Yes    | <a href="examples/example_6/example_6.cpp">example_6</a>  |
+| Acrobot             |   Yes    | TODO                                                      |
+| GymWalk             |   No     | TODO                                                      |
+| gym-pybullet-drones |  TODO    | TODO                                                      |
+| GridWorld           |   No     | <a href="examples/example_5/example_5.cpp">example_5</a>  |
+| Connect2            |   No     | <a href="examples/example_7/example_7.cpp">example_7</a>  |
 
 ### Vector environments
 
 There exist some wrappers for vector environments: 
 
 | Environment         |   REST   | Example |
-| :----------------   | :------: | :----: |
-| AcrobotV            |   Yes    | 23.99  |
+| :----------------   | :------: | :----:  |
+| AcrobotV            |   Yes    |  TODO   |
+
+Various RL algorithms using the environments can be found at <a href="https://github.com/pockerman/cuberl/tree/master">cuberl</a>
 
 ### Dynamics 
 
-Apart from the exposed environments, ```rlenvscpp``` exposes classes that describe the dynamics of some popular rigid bodies:
+Apart from the exposed environments, ```rlenvscpp``` exposes classes that 
+describe the dynamics of some popular rigid bodies:
 
 | Dynamics            |                       Example                                |
 | :----------------   | :----------------------------------------------------------: | 
 | Differential drive  |  <a href="examples/example_9/example_9.cpp">example_9</a>    |
 | Quadrotor           |  <a href="examples/example_10/example_10.cpp">example_10</a> |
 
+### Miscellaneous
 
+| Item                   |                       Example                                |
+| :----------------      | :----------------------------------------------------------: | 
+| Environment trajectory |  <a href="examples/example_3/example_3.cpp">example_3</a>    |
+| WaypointTrajectory     |  <a href="examples/example_11/example_11.cpp">example_11</a> |
 
-
-
-
-
-
-
-- ```FrozenLake``` with ```4x4``` map
-- ```FrozenLake``` with ```8x8``` map
-- ```Blackjack```
-- ```CliffWalking```
-- ```CartPole```
-- ```MountainCar```
-- ```Taxi```
-- ```Pendulum```: https://gymnasium.farama.org/environments/classic_control/pendulum/
-- ```Acrobot```: https://gymnasium.farama.org/environments/classic_control/acrobot/
-- ~```StateAggregationCartPole``` (implements state aggregation for ```CartPole```)~
-- ~```SerialVectorEnvWrapper``` a vector wrapper for various environments~
-
-In addition there are wrappers for
-
-- ```GymWalk``` environment from <a href="https://github.com/mimoralea/gym-walk2">gym_walk</a>
-- ~```gym-pybullet-drones``` from <a href="https://github.com/utiasDSL/gym-pybullet-drones/tree/main">gym-pybullet-drones</a>~
-- ```GridWorld``` from <a href="https://github.com/DeepReinforcementLearning/DeepReinforcementLearningInAction">Deep Reinforcement Learning In Action</a>
-- ```Connect2``` from <a href="https://github.com/JoshVarty/AlphaZeroSimple">AlphaZeroSimple</a> see <a href="examples/example_7/example_7.cpp">example_7</a>
 
 ## How to use
 
@@ -139,74 +123,16 @@ void test_frozen_lake(){
 
 }
 
-void test_taxi(){
-
-    rlenvs_cpp::envs::gymnasium::Taxi env(SERVER_URL);
-
-    std::cout<<"Environame URL: "<<env.get_url()<<std::endl;
-
-    // make the environment
-    std::unordered_map<std::string, std::any> options;
-    env.make("v3", options);
-
-    std::cout<<"Is environment created? "<<env.is_created()<<std::endl;
-    std::cout<<"Is environment alive? "<<env.is_alive()<<std::endl;
-    std::cout<<"Number of valid actions? "<<env.n_actions()<<std::endl;
-    std::cout<<"Number of states? "<<env.n_states()<<std::endl;
-
-    // reset the environment
-    auto time_step = env.reset(42);
-
-    std::cout<<"Reward on reset: "<<time_step.reward()<<std::endl;
-    std::cout<<"Observation on reset: "<<time_step.observation()<<std::endl;
-    std::cout<<"Is terminal state: "<<time_step.done()<<std::endl;
-
-    //...print the time_step
-    std::cout<<time_step<<std::endl;
-
-    // take an action in the environment
-    auto new_time_step = env.step(rlenvs_cpp::envs::gymnasium::TaxiActionsEnum::RIGHT);
-
-    std::cout<<new_time_step<<std::endl;
-
-    // get the dynamics of the environment for the given state and action
-    auto state = 0;
-    auto action = 1;
-    auto dynamics = env.p(state, action);
-
-    std::cout<<"Dynamics for state="<<state<<" and action="<<action<<std::endl;
-
-    for(auto item:dynamics){
-
-        std::cout<<std::get<0>(item)<<std::endl;
-        std::cout<<std::get<1>(item)<<std::endl;
-        std::cout<<std::get<2>(item)<<std::endl;
-        std::cout<<std::get<3>(item)<<std::endl;
-    }
-
-    // close the environment
-    env.close();
-}
-}
-
 int main(){
 
 
     std::cout<<"Testing FrozenLake..."<<std::endl;
     example_1::test_frozen_lake();
     std::cout<<"===================="<<std::endl;
-    std::cout<<"Testing Taxi..."<<std::endl;
-    example_1::test_taxi();
-    std::cout<<"===================="<<std::endl;
     return 0;
 }
 
 ```
-
-
-Some algorithms, such as Monte Carlo, require that we should generate a trajectory, <a href="examples/example_3/example_3.cpp">example 3</a>
-shows how to do this. Various RL algorithms using the environments can be found at <a href="https://github.com/pockerman/cuberl/tree/master">cuberl</a>
-
 
 
 The general use case is to build the library and link it with your driver code to access its functionality.
@@ -232,7 +158,7 @@ launch several instances of uvirocrn (listening on different ports). However in 
 all the interactions logic yourself as currently no implementation exists to handle such a scenario.
 
 
-## Dependencies
+### Dependencies
 
 The library has the following general dependencies
 
@@ -263,7 +189,7 @@ There are extra dependencies if you want to generate the documentation. Namely,
 - breathe
 - m2r2
 
-## Installation
+### Installation
 
 The usual CMake based installation process is used. Namely
 
@@ -272,15 +198,29 @@ mkdir build && cd build && cmake ..
 make install
 ```
 
+You toggle the following variables
 
-## Run the tests
+- CMAKE_BUILD_TYPE (default is RELEASE)
+- ENABLE_TESTS_FLAG (default is OFF)
+- ENABLE_EXAMPLES_FLAG (default is OFF)
+- ENABLE_DOC_FLAG (default is OFF)
+
+For example enbling the examples 
+
+```
+cmake -DENABLE_EXAMPLES_FLAG=ON ..
+make install
+```
+
+
+### Run the tests
 
 You can execute all the tests by running the helper script ```execute_tests.sh```.
 
-## Issues
+### Issues
 
 
-### Could not find ```boost_system```
+#### Could not find ```boost_system```
 
 It is likely that you are missing the boost_system library with your local Boost installation. This may be the case
 is you installed boost via a package manager. On a Ubuntu machine the following should resolve the issue
