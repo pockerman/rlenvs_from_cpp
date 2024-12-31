@@ -1,7 +1,8 @@
 #ifndef BOUNDING_BOX_TYPE_H
 #define BOUNDING_BOX_TYPE_H
 
-namespace kernel{
+namespace rlenvscpp{
+namespace utils{
 namespace geom{
 
 ///
@@ -14,6 +15,7 @@ enum class BBType{
     CIRCLE,
     SPHERE
 };
+}
 }
 }
 
