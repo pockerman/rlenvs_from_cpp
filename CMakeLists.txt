@@ -104,6 +104,8 @@ FILE(GLOB SRCS src/rlenvs/*.cpp
 			   src/rlenvs/dynamics/*.cpp
 			   src/rlenvs/utils/*.cpp
 			   src/rlenvs/utils/io/*.cpp
+			   src/rlenvs/utils/geometry/*.cpp
+			   src/rlenvs/utils/trajectory/*.cpp
    )
 
 ADD_LIBRARY(rlenvscpplib SHARED ${SRCS})

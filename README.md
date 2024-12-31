@@ -4,6 +4,49 @@
 ```rlenvscpp``` is an effort to provide implementations and wrappers of environments for reinforcement learning algorithms to be used by C++ drivers. 
 Currently, we provide a minimal number of wrappers for some common Gymnasium (former OpenAI-Gym) environments. Namely
 
+### Scalar environments
+
+| Environment         |   REST   | Example |
+| :----------------   | :------: | :----: |
+| FrozenLake 4x4 map  |   Yes    | 23.99  |
+| FrozenLake 4x4 map  |   Yes    | 23.99  |
+| Blackjack           |   Yes    | 19.99  |
+| CliffWalking        |   Yes    | 42.99  |
+| CartPole            |   Yes    | 42.99  |
+| MountainCar         |   Yes    | 42.99  |
+| Taxi                |   Yes    | 42.99  |
+| Pendulum            |   Yes    | 42.99  |
+| Acrobot             |   Yes    | 42.99  |
+| GymWalk             |   No     | 42.99  |
+| gym-pybullet-drones |  TODO    | TODO   |
+| GridWorld           |   No     | |
+| Connect2            |   No     | <a href="examples/example_7/example_7.cpp">example_7</a> |
+
+### Vector environments
+
+There exist some wrappers for vector environments: 
+
+| Environment         |   REST   | Example |
+| :----------------   | :------: | :----: |
+| AcrobotV            |   Yes    | 23.99  |
+
+### Dynamics 
+
+Apart from the exposed environments, ```rlenvscpp``` exposes classes that describe the dynamics of some popular rigid bodies:
+
+| Dynamics            |                       Example                                |
+| :----------------   | :----------------------------------------------------------: | 
+| Differential drive  |  <a href="examples/example_9/example_9.cpp">example_9</a>    |
+| Quadrotor           |  <a href="examples/example_10/example_10.cpp">example_10</a> |
+
+
+
+
+
+
+
+
+
 - ```FrozenLake``` with ```4x4``` map
 - ```FrozenLake``` with ```8x8``` map
 - ```Blackjack```
@@ -23,18 +66,7 @@ In addition there are wrappers for
 - ```GridWorld``` from <a href="https://github.com/DeepReinforcementLearning/DeepReinforcementLearningInAction">Deep Reinforcement Learning In Action</a>
 - ```Connect2``` from <a href="https://github.com/JoshVarty/AlphaZeroSimple">AlphaZeroSimple</a> see <a href="examples/example_7/example_7.cpp">example_7</a>
 
-### Vectorised environemtns
-
-There exist some wrappers for vector environments: 
-
-- ```AcrobotV```: <a href="examples/example_8/example_8.cpp">example_8</a>
-
-### Simple dynamics
-
-Apart from the exposed environments, ```rlenvscpp``` exposes classes that describe the dynamics of some popular rigid bodies:
-
-- <a href="https://en.wikipedia.org/wiki/Differential_wheeled_robot">Differential drive dynamics</a> see <a href="examples/example_9/example_9.cpp">example_9</a>
-- <a href="https://scholarsarchive.byu.edu/cgi/viewcontent.cgi?article=2324&context=facpub">Quadrotor dynamics</a> see <a href="examples/example_10/example_10.cpp">example_10</a>
+## How to use
 
 In general, the environments exposed by the library  should abide with <a href="https://github.com/deepmind/dm_env/blob/master/docs/index.md">dm_env</a> specification.
 The following snippet shows how to use the ```FrozenLake```  and ```Taxi``` environments from <a href="https://github.com/Farama-Foundation/Gymnasium/tree/main">Gymnasium</a>.
@@ -175,7 +207,7 @@ int main(){
 Some algorithms, such as Monte Carlo, require that we should generate a trajectory, <a href="examples/example_3/example_3.cpp">example 3</a>
 shows how to do this. Various RL algorithms using the environments can be found at <a href="https://github.com/pockerman/cuberl/tree/master">cuberl</a>
 
-## How to use
+
 
 The general use case is to build the library and link it with your driver code to access its functionality.
 Furthermore, the ```Gymnasium```, ```gym_pybullet_drones``` environments are accessed via a client/server pattern.
