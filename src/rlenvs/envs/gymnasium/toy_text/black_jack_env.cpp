@@ -117,17 +117,15 @@ BlackJack::step(const action_type& action){
 BlackJack
 BlackJack::make_copy(uint_t cidx)const{
 	
-//	auto api_base_url = this -> get_api_url();
-//	
-//	BlackJack copy(api_base_url, cidx);
-//										   
-//	std::unordered_map<std::string, std::any> ops;
-//	ops["natural"] = this->is_natural();
-//	ops["sab"] = this->is_sab();
-//										   
-//	auto version = this -> version();
-//	copy.make(version, ops);
-//	return copy;
+	BlackJack copy(this -> get_api_server(), cidx);
+										   
+	std::unordered_map<std::string, std::any> ops;
+	ops["natural"] = this->is_natural();
+	ops["sab"] = this->is_sab();
+										   
+	auto version = this -> version();
+	copy.make(version, ops);
+	return copy;
 												   
 }
 

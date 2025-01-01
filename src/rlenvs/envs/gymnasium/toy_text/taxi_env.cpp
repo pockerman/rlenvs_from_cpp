@@ -93,15 +93,11 @@ Taxi::step(const action_type& action){
 Taxi
 Taxi::make_copy(uint_t cidx)const{
 	
-//	auto api_base_url = this -> get_api_url();
-//	
-//	Taxi copy(api_base_url, cidx);
-//	
-//	std::unordered_map<std::string, std::any> ops;
-//	auto version = this -> version();
-//	
-//	copy.make(version, ops);
-//	return copy;
+	Taxi copy(this -> get_api_server(), cidx);
+	std::unordered_map<std::string, std::any> ops;
+	auto version = this -> version();
+	copy.make(version, ops);
+	return copy;
 												   
 }
 

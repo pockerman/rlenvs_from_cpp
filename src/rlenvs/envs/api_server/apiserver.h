@@ -129,6 +129,14 @@ public:
 							const uint_t cidx,
 	                        const uint_t sidx, 
 							const uint_t aidx)const;
+	
+	///
+	/// \brief Make the cidx copy of the environment
+	///
+	nlohmann::json copy(const std::string& env_name,
+						const uint_t cidx,
+	                    const std::string& version,
+	                    const nlohmann::json& options)const{return make(env_name, cidx, version, options);}
 
     ///
     ///

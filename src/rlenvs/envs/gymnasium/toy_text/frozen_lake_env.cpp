@@ -123,16 +123,15 @@ template<uint_t side_size>
 FrozenLake<side_size> 
 FrozenLake<side_size>::make_copy(uint_t cidx)const{
 	
-//	auto api_base_url = this -> get_api_url();
-//	auto slippery = this -> is_slippery();
-//	FrozenLake<side_size> copy(api_base_url,
-//							   cidx,slippery);
-//	
-//	std::unordered_map<std::string, std::any> ops;
-//	ops["is_slippery"] = this -> is_slippery();
-//	auto version = this -> version();
-//	copy.make(version, ops);
-//	return copy;
+	auto slippery = this -> is_slippery();
+	FrozenLake<side_size> copy(this -> get_api_server(),
+							   cidx, slippery);
+	
+	std::unordered_map<std::string, std::any> ops;
+	ops["is_slippery"] = this -> is_slippery();
+	auto version = this -> version();
+	copy.make(version, ops);
+	return copy;
 												
 }
 

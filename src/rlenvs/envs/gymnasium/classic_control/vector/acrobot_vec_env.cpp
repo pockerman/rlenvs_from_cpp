@@ -101,15 +101,14 @@ AcrobotV::step(const action_type& action){
 
 AcrobotV
 AcrobotV::make_copy(uint_t cidx)const{
-//	auto api_base_url = this -> get_api_url();
-//	
-//	AcrobotV copy(api_base_url, cidx);
-//	
-//	std::unordered_map<std::string, std::any> ops;
-//	ops["num_envs"] = this -> get_n_envs();
-//	auto version = this -> version();
-//	copy.make(version, ops);
-//	return copy;
+	
+	AcrobotV copy(this->get_api_server(), cidx);
+	
+	std::unordered_map<std::string, std::any> ops;
+	ops["num_envs"] = this -> get_n_envs();
+	auto version = this -> version();
+	copy.make(version, ops);
+	return copy;
 }
 	
 }
