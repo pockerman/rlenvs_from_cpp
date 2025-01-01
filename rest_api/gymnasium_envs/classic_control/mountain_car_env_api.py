@@ -63,10 +63,11 @@ async def close(cidx: int) -> JSONResponse:
 @mountain_car_router.post("/make")
 async def make(version: str = Body(default="v0"),
                cidx: int = Body(...),
-               max_episode_steps: int = Body(default=200)
+               options: dict[str, Any] = Body(default={"max_episode_steps": 200})
                ) -> JSONResponse:
     global envs
     env_type = f"{ENV_NAME}-{version}"
+    max_episode_steps = options.get("max_episode_steps", 200)
     if cidx in envs:
         env = envs[cidx]
 

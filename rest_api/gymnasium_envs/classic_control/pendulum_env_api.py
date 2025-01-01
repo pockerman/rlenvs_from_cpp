@@ -70,10 +70,11 @@ async def close(cidx: int) -> JSONResponse:
 @pendulum_router.post("/make")
 async def make(version: str = Body(default="v1"),
                cidx: int = Body(...),
-               g: float = Body(default=10.0),
-               max_episode_steps: int = Body(default=200)) -> JSONResponse:
+               options: dict[str, Any] = Body(default={"g": 10.0, "max_episode_steps": 200})) -> JSONResponse:
     global envs
     env_type = f"{ENV_NAME}-{version}"
+    g = options.get("g", 10.0)
+    max_episode_steps = options.get("max_episode_steps", 200)
     if cidx in envs:
         env = envs[cidx]
 

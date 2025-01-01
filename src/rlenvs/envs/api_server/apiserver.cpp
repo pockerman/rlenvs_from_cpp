@@ -32,6 +32,7 @@ RESTApiServerWrapper::init_(){
 	envs_["Acrobot"] = "/gymnasium/acrobot-env";
 	envs_["Pendulum"] = "/gymnasium/pendulum-env";
 	envs_["AcrobotV"] = "/gymnasium/acrobot-env/v";
+	envs_["GymWalk"]= "/gdrl/gym-walk-env";
 	
 }
 

@@ -59,10 +59,19 @@ async def close(cidx: int) -> JSONResponse:
 @gym_walk_env_router.post("/make")
 async def make(version: str = Body(default="v1"),
                cidx: int = Body(...),
-               n_states: int = Body(default=7, ge=2),
-               p_stay: float = Body(default=0.0, ge=0.0, le=1.0),
-               p_backward: float = Body(default=0.5, le=1.0, ge=0.0)) -> JSONResponse:
+               options: dict[str, Any] = Body(default={"n_states": 7,
+                                                       "p_stay": 0.0,
+                                                       "p_backward": 0.5}),
+              ) -> JSONResponse:
     global envs
+
+    # n_states: int = Body(default=7, ge=2),
+    # p_stay: float = Body(default=0.0, ge=0.0, le=1.0),
+    # p_backward: float = Body(default=0.5, le=1.0, ge=0.0)
+
+    n_states = options.get("n_states", 7)
+    p_stay = options.get("p_stay", 0.0)
+    p_backward = options.get("p_backward", 0.5)
 
     if cidx in envs:
         env = envs[cidx]
