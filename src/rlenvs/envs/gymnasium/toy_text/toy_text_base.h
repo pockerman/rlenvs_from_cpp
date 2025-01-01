@@ -1,10 +1,11 @@
 #ifndef TOY_TEXT_BASE_ENV_H
 #define TOY_TEXT_BASE_ENV_H
 
-#include "rlenvs/rlenvs_types_v2.h"
-#include "rlenvs/extern/HTTPRequest.hpp"
-#include "rlenvs/rlenvscpp_config.h"
 #include "rlenvs/envs/gymnasium/gymnasium_env_base.h"
+#include "rlenvs/rlenvs_types_v2.h"
+#include "rlenvs/extern/nlohmann/json/json.hpp"
+#include "rlenvs/rlenvscpp_config.h"
+#include "rlenvs/envs/api_server/apiserver.h"
 #include "rlenvs/envs/env_types.h"
 
 #include <string>
@@ -12,7 +13,6 @@
 #include <tuple>
 #include <unordered_map>
 #include <any>
-#include <boost/noncopyable.hpp>
 
 #ifdef RLENVSCPP_DEBUG
 #include <cassert>
@@ -88,8 +88,7 @@ public:
     uint_t n_actions()const noexcept{return action_space_type::size;}
 	
 	///
-    /// \brief Number of states. Hardcoded from here:
-    /// https://github.com/Farama-Foundation/Gymnasium/blob/6baf8708bfb08e37ce3027b529193169eaa230fd/gymnasium/envs/toy_text/taxi.py#L165C9-L165C19
+    /// \brief Number of states. 
     ///
     uint_t n_states()const noexcept{return state_space_type::size;}
 
@@ -99,10 +98,9 @@ protected:
     ///
     /// \brief Constructor
     ///
-    ToyTextEnvBase(const uint_t cidx, 
-	               const std::string& name, 
-	               const std::string& api_url,
-				   const std::string& resource_path);
+    ToyTextEnvBase(const RESTApiServerWrapper& api_server,
+	               const uint_t cidx, 
+	               const std::string& name);
 				   
 	///
 	/// \brief Copy constructor
@@ -112,22 +110,26 @@ protected:
     ///
     /// \brief build the dynamics from response
     ///
-    virtual dynamics_t build_dynamics_from_response_(const http::Response& response)const=0;
+    virtual dynamics_t build_dynamics_from_response_(const nlohmann::json& response)const;
 
 };
 
 template<typename TimeStepType, uint_t state_end,  uint_t action_end>
-ToyTextEnvBase<TimeStepType, state_end, action_end>::ToyTextEnvBase(const uint_t cidx, 
-																		 const std::string& name, 
-																		 const std::string& api_url, 
-																		 const std::string& resource_path)
+ToyTextEnvBase<TimeStepType, state_end, action_end>::ToyTextEnvBase(const RESTApiServerWrapper& api_server,
+                                                                    const uint_t cidx, 
+																	const std::string& name)
 :
 GymnasiumEnvBase<TimeStepType, 
-				 ScalarDiscreteEnv<state_end, action_end>>(cidx, name, api_url, resource_path)
+				 ScalarDiscreteEnv<state_end, action_end>>(api_server, 
+				                                           cidx, 
+														   name)
 {}
 
 template<typename TimeStepType, uint_t state_end,  uint_t action_end>
-ToyTextEnvBase<TimeStepType, state_end, action_end>::ToyTextEnvBase(const ToyTextEnvBase<TimeStepType, state_end, action_end>& other)
+ToyTextEnvBase<TimeStepType, 
+               state_end, 
+			   action_end>::ToyTextEnvBase(const ToyTextEnvBase<TimeStepType, 
+			                                                    state_end, action_end>& other)
 :
 GymnasiumEnvBase<TimeStepType, 
 				 ScalarDiscreteEnv<state_end, action_end>>(other)
@@ -142,18 +144,20 @@ ToyTextEnvBase<TimeStepType, state_end, action_end>::p(uint_t sidx, uint_t aidx)
     assert(this->is_created() && "Environment has not been created");
 #endif
 
-    const std::string url(this->get_url());
-    const auto request_url = url + "/dynamics?cidx="+std::to_string(this -> cidx())
-	                                                +"&stateId="+std::to_string(sidx)
-													+"&actionId="+std::to_string(aidx);
-    http::Request request{request_url};
-    const auto response = request.send("GET");
-
-    if(response.status.code != 200){
-        throw std::runtime_error("Environment server failed to return  environment dynamics");
-    }
-
+	auto response = this -> get_api_server().dynamics(this->env_name(),
+	                                                  this->cidx(),
+													  sidx, aidx);
     return build_dynamics_from_response_(response);
+}
+
+
+template<typename TimeStepType, uint_t state_end,  uint_t action_end>
+typename ToyTextEnvBase<TimeStepType, state_end, action_end>::dynamics_t
+ToyTextEnvBase<TimeStepType, 
+				state_end, 
+				action_end>::build_dynamics_from_response_(const nlohmann::json& response)const{
+    auto dynamics = response["dynamics"];
+    return dynamics;
 }
 
 

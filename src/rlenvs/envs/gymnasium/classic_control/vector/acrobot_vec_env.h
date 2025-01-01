@@ -13,7 +13,8 @@
 #include "rlenvs/envs/vector_time_step.h"
 #include "rlenvs/envs/space_type.h"
 #include "rlenvs/envs/gymnasium/gymnasium_vector_env_base.h"
-#include "rlenvs/extern/HTTPRequest.hpp"
+#include "rlenvs/envs/api_server/apiserver.h"
+#include "rlenvs/extern/nlohmann/json/json.hpp"
 
 
 #include <string>
@@ -74,6 +75,11 @@ public:
 	static  const std::string name;
 	
 	///
+	/// \brief The URI for accessing the environment
+	///
+	static const std::string URI;
+	
+	///
 	/// \brief Base class type
 	///
 	typedef GymnasiumVecEnvBase<VectorTimeStep<detail_::AcrobotVEnv::state_type>, 
@@ -108,12 +114,12 @@ public:
     ///
     /// \brief Acrobot. Constructor
     ///
-    AcrobotV(const std::string& api_base_url);
+    AcrobotV(const RESTApiServerWrapper& api_server );
 	
 	///
     /// \brief CartPole. Constructor
     ///
-    AcrobotV(const std::string& api_base_url, 
+    AcrobotV(const RESTApiServerWrapper& api_server , 
 		     const uint_t cidx);
 			 
 	///
@@ -154,7 +160,7 @@ protected:
     ///
     /// \brief Handle the reset response from the environment server
     ///
-    virtual time_step_type create_time_step_from_response_(const http::Response& response) const override final;
+    virtual time_step_type create_time_step_from_response_(const nlohmann::json& response) const override final;
 
 };
 

@@ -6,7 +6,8 @@
 #include "rlenvs/envs/gymnasium/gymnasium_env_base.h"
 #include "rlenvs/envs/time_step.h"
 #include "rlenvs/envs/env_types.h"
-
+#include "rlenvs/envs/api_server/apiserver.h"
+#include "rlenvs/extern/nlohmann/json/json.hpp"
 
 #include <string>
 #include <vector>
@@ -17,48 +18,6 @@
 namespace rlenvscpp{
 namespace envs{
 namespace gymnasium{
-
-	/*
-BETTER_ENUM(MountainCarActionsEnum, int, ACCELERATE_LEFT=0, 
-										 DO_NOT_ACCELERATE=1, 
-										 ACCELERATE_RIGHT=2, 
-										 INVALID_ACTION=3);
-
-///
-/// \brief The MountainCarData struct. Wrapper for the environment data
-///
-struct MountainCarData
-{
-    ///
-    /// \brief action_space_t. The type of the action space
-    ///
-    typedef DiscreteSpace<3> action_space_type;
-
-    ///
-    /// \brief action_t
-    ///
-    typedef action_space_type::item_t action_type;
-
-    ///
-    /// \brief state_space_t
-    ///
-    typedef ContinuousSpace<3> state_space_type;
-
-    ///
-    /// \brief state_t
-    ///
-    typedef state_space_type::item_t state_type;
-
-    
-
-    ///
-    /// \brief time_step_t. The type of the time step
-    ///
-    typedef TimeStep<state_type> time_step_type;
-
-
-};
-*/
 
 ///
 /// \brief The MountainCar class
@@ -74,6 +33,11 @@ public:
     /// \brief name
     ///
     static  const std::string name;
+	
+	///
+	/// \brief The URI for accessing the environment
+	///
+	static const std::string URI;
 
     ///
 	/// \brief Base class type
@@ -116,13 +80,13 @@ public:
     /// \param gym_namespace The boost::python open-ai gym namespace
     /// \param do_create If true it calls make
     ///
-    MountainCar(const std::string& api_base_url);
+    MountainCar(const RESTApiServerWrapper& api_server );
 	
 	///
 	/// \brief Constructor. Protected so that applications
 	/// cannot explicitly instantiate copies
 	///
-	MountainCar(const std::string& api_base_url, 
+	MountainCar(const RESTApiServerWrapper& api_server , 
 				const uint_t cidx);
 				
 	///
@@ -164,7 +128,7 @@ protected:
     ///
     /// \brief Handle the reset response from the environment server
     ///
-    virtual time_step_type create_time_step_from_response_(const http::Response& response) const override final;
+    virtual time_step_type create_time_step_from_response_(const nlohmann::json& response) const override final;
 
 
 

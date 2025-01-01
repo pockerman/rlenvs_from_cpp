@@ -66,7 +66,7 @@ async def close(cidx: int) -> JSONResponse:
 
 @acrobot_router.post("/make")
 async def make(version: str = Body(default="v1"), cidx: int = Body(...),
-               max_episode_steps: int = Body(default=500)) -> JSONResponse:
+               options: dict[str, Any] = Body(default={})) -> JSONResponse:
     global envs
     env_type = f"{ENV_NAME}-{version}"
     if cidx in envs:

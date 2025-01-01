@@ -86,14 +86,13 @@ async def close(cidx: int) -> JSONResponse:
 @acrobot_v_router.post("/make")
 async def make(version: str = Body(default="v1"),
                cidx: int = Body(...),
-               num_envs: int = Body(default=2),
-               max_episode_steps: int = Body(default=500)) -> JSONResponse:
+               options: dict[str, Any] = Body(default={"num_envs": 2})) -> JSONResponse:
     global env
     global NUM_COPIES
     global envs
 
     env_type = f"{ENV_NAME}-{version}"
-
+    num_envs = options.get("num_envs", 2)
     if cidx in envs:
         env = envs[cidx]
 
@@ -164,11 +163,11 @@ async def reset(seed: int = Body(default=42), cidx: int = Body(...),
 
 
 @acrobot_v_router.post("/step")
-async def step(actions: dict[str, list[int]] = Body(title='actions'), cidx: int = Body(...)) -> JSONResponse:
+async def step(action: dict[str, list[int]] = Body(title='actions'), cidx: int = Body(...)) -> JSONResponse:
 
     global NUM_COPIES
 
-    actions = actions['actions']
+    actions = action['actions']
     if len(actions) != NUM_COPIES:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                             detail=f"actions length should be {NUM_COPIES} ")

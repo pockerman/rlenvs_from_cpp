@@ -1,6 +1,7 @@
 
 #include "rlenvs/rlenvs_types_v2.h"
 #include "rlenvs/envs/gymnasium/toy_text/frozen_lake_env.h"
+#include "rlenvs/envs/api_server/apiserver.h"
 #include "rlenvs/envs/envs_utils.h"
 #include "rlenvs/rlenvscpp_config.h"
 
@@ -16,6 +17,7 @@
 namespace example{
 
 using rlenvscpp::uint_t;
+using rlenvscpp::envs::RESTApiServerWrapper;
 const std::string SERVER_URL = "http://0.0.0.0:8001/api";
 const uint_t MAX_TRAJECTORY_SIZE = 10;
 
@@ -38,7 +40,8 @@ int main(){
 
     using namespace example;
 
-    env_type env(SERVER_URL);
+	RESTApiServerWrapper server(SERVER_URL, true);
+    env_type env(server);
 
     std::cout<<"Environame URL: "<<env.get_url()<<std::endl;
 

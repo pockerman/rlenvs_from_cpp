@@ -61,9 +61,7 @@ async def close(cidx: int) -> JSONResponse:
 @cart_pole_router.post("/make")
 async def make(version: str = Body(default="v1"),
                cidx: int = Body(...),
-               natural: bool = Body(default=False),
-               sab: bool = Body(default=False),
-               max_episode_steps: int = Body(default=500)) -> JSONResponse:
+               options: dict[str, Any] = Body(default={})) -> JSONResponse:
     global envs
     env_type = f"{ENV_NAME}-{version}"
     if cidx in envs:
@@ -73,7 +71,7 @@ async def make(version: str = Body(default="v1"),
             envs[cidx].close()
 
         try:
-            env = gym.make(env_type, natural, sab)
+            env = gym.make(env_type,)
             envs[cidx] = env
         except Exception as e:
             logger.error('An exception was raised')
@@ -82,7 +80,7 @@ async def make(version: str = Body(default="v1"),
                                 detail=str(e))
     else:
         try:
-            env = gym.make(env_type, natural, sab)
+            env = gym.make(env_type)
             envs[cidx] = env
         except Exception as e:
             logger.error('An exception was raised')

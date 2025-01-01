@@ -3,11 +3,10 @@
 
 
 #include "rlenvs/rlenvs_types_v2.h"
-#include "rlenvs/extern/HTTPRequest.hpp"
 #include "rlenvs/rlenvscpp_config.h"
 #include "rlenvs/extern/nlohmann/json/json.hpp"
-#include "rlenvs/envs/with_rest_api_mixin.h"
 #include "rlenvs/envs/env_base.h"
+#include "rlenvs/envs/api_server/apiserver.h"
 
 
 #include <boost/noncopyable.hpp>
@@ -28,8 +27,7 @@ namespace envs{
 namespace gymnasium {
 
 template<typename TimeStepType, typename SpaceType>
-class GymnasiumEnvBase: public EnvBase<TimeStepType, SpaceType>, 
-                        public with_rest_api_mixin<TimeStepType>{
+class GymnasiumEnvBase: public EnvBase<TimeStepType, SpaceType>{
 public:
 	
 	
@@ -77,7 +75,7 @@ public:
 	///
 	/// \brief
 	///
-	virtual bool is_alive()const override;
+	virtual bool is_alive()const;
 
     ///
     /// \brief close the environment
@@ -89,6 +87,16 @@ public:
 	///
     virtual time_step_type reset(uint_t seed,
                                  const std::unordered_map<std::string, std::any>& options)override;
+								 
+	///
+	/// \brief Returns read reference to the underlying API server wrapper
+	///
+	const RESTApiServerWrapper& get_api_server()const{return api_server_;}
+	
+	///
+	/// \brief Returns the full path on the server for this environment
+	///
+	std::string get_url()const;
 
 
 protected:
@@ -96,31 +104,42 @@ protected:
     ///
     /// \brief Constructor
     ///
-    GymnasiumEnvBase(const uint_t cidx, 
-	                 const std::string& name, 
-					 const std::string& api_url,
-					 const std::string& resource_path);
+    GymnasiumEnvBase(const RESTApiServerWrapper& api_server,
+                     const uint_t cidx, 
+	                 const std::string& name);
 					 
 	///
 	/// \brief Copy constructor
 	///
 	GymnasiumEnvBase(const GymnasiumEnvBase&);
+	
+	
+	///
+	/// \brief Pointer to the api server that handles the requests
+	///
+	RESTApiServerWrapper api_server_;
+	
+	
+	///
+	/// \brief read reference to the api server instance
+	///
+	RESTApiServerWrapper& get_api_server(){return api_server_;}
 					 
 	///
     /// \brief build the time step from the server response
     ///
-    virtual time_step_type create_time_step_from_response_(const http::Response& response)const=0;
+    virtual time_step_type create_time_step_from_response_(const nlohmann::json& response)const=0;
 
 };
 
 template<typename TimeStepType, typename SpaceType>
 GymnasiumEnvBase<TimeStepType, 
-                 SpaceType>::GymnasiumEnvBase(const uint_t cidx, const std::string& name, 
-											  const std::string& api_url, 
-											  const std::string& resource_path)
+                 SpaceType>::GymnasiumEnvBase(const RESTApiServerWrapper& api_server,
+				                              const uint_t cidx,
+				                              const std::string& name)
 :
 EnvBase<TimeStepType, SpaceType>(cidx, name),
-with_rest_api_mixin<TimeStepType>(api_url, resource_path)
+api_server_(api_server)
 {}
 
 template<typename TimeStepType, typename SpaceType>
@@ -128,33 +147,26 @@ GymnasiumEnvBase<TimeStepType,
                  SpaceType>::GymnasiumEnvBase(const GymnasiumEnvBase<TimeStepType, SpaceType>& other)
 				 :
 EnvBase<TimeStepType, SpaceType>(other),
-with_rest_api_mixin<TimeStepType>(other)
+api_server_(other.api_server_)
 {}
 			 
 
 template<typename TimeStepType, typename SpaceType>
 GymnasiumEnvBase<TimeStepType, SpaceType>::~GymnasiumEnvBase(){
-    close();
+	
+	try{
+		close();
+	}
+	catch(...){
+		
+	}
 }
 
 template<typename TimeStepType, typename SpaceType>
 bool
 GymnasiumEnvBase<TimeStepType, SpaceType>::is_alive()const{
-	
-	
-	auto url_ = this->get_url();
-	auto copy_idx_str = std::to_string(this -> cidx());
-	
-    http::Request request{url_ + "/is-alive?cidx="+copy_idx_str};
-    const auto response = request.send("GET");
-    const auto str_response = std::string(response.body.begin(), response.body.end());
-	
-	 using json = nlohmann::json;
-
-	// parse the response
-    json j = json::parse(str_response);
-	return j["result"];
-
+	auto response = this -> api_server_.is_alive(this->env_name(), this -> cidx());
+	return response["result"];
 }
 
 template<typename TimeStepType, typename SpaceType>
@@ -163,12 +175,9 @@ GymnasiumEnvBase<TimeStepType, SpaceType>::close(){
 
      if(!this->is_created()){
         return;
-    }
-
-	auto url = this -> get_url();
+     }
 	
-    http::Request request{url + "/close?cidx="+std::to_string(this -> cidx())};
-    const auto response = request.send("POST");
+	auto response = this -> api_server_.close(this->env_name(), this -> cidx());
     this -> invalidate_is_created_flag_();
 
 }
@@ -185,28 +194,19 @@ GymnasiumEnvBase<TimeStepType, SpaceType>::reset(uint_t seed,
      return time_step_type();
     }
 	
-	auto copy_idx = this -> cidx();
-	
-	auto url = this -> get_url();
-    const auto request_url = url + "/reset";
-    http::Request request{request_url};
-
-
-    using json = nlohmann::json;
-    json j;
-    j["seed"] = seed;
-	j["cidx"] = copy_idx;
-	
-    auto body = j.dump();
-    const auto response = request.send("POST", body);
-
-     if(response.status.code != 202){
-        throw std::runtime_error("Environment server failed to reset environment");
-    }
-
-    this -> get_current_time_step_() = this->create_time_step_from_response_(response);
+	auto response = this -> api_server_.reset(this->env_name(), 
+	                                         this -> cidx(), seed,
+											  nlohmann::json());
+											  
+	this -> get_current_time_step_() = this->create_time_step_from_response_(response);
     return this -> get_current_time_step_();
+}
 
+
+template<typename TimeStepType, typename SpaceType>
+std::string 
+GymnasiumEnvBase<TimeStepType, SpaceType>::get_url()const{
+	return api_server_.get_env_url(this -> env_name());
 }
 
 

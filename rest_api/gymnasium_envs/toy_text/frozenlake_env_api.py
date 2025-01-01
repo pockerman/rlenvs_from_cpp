@@ -53,11 +53,17 @@ async def close(cidx: int) -> JSONResponse:
 @frozenlake_router.post("/make")
 async def make(version: str = Body(default='v1'),
                cidx: int = Body(...),
-               map_name: str = Body(default="4x4"),
-               is_slippery: bool = Body(default=True), max_episode_steps: int = Body(default=500)) -> JSONResponse:
+               options: dict[str, Any] = Body(default={"map_name": "4x4",
+                                                       "is_slippery": True,
+                                                       "max_episode_steps": 500})
+               ) -> JSONResponse:
 
     global envs
 
+    map_name = options.get("map_name", "4x4")
+    is_slippery = options.get("is_slippery", True)
+    max_episode_steps = options.get("max_episode_steps", 500)
+    env_tag = f"FrozenLake-{version}"
     if cidx in envs:
         env = envs[cidx]
 
@@ -65,7 +71,7 @@ async def make(version: str = Body(default='v1'),
             env.close()
 
         try:
-            env = gym.make(f"FrozenLake-{version}",
+            env = gym.make(id=env_tag,
                            map_name=map_name, is_slippery=is_slippery,
                            max_episode_steps=max_episode_steps)
             envs[cidx] = env
@@ -74,7 +80,7 @@ async def make(version: str = Body(default='v1'),
                                 detail=str(e))
     else:
         try:
-            env = gym.make(f"FrozenLake-{version}",
+            env = gym.make(id=env_tag,
                            map_name=map_name, is_slippery=is_slippery,
                            max_episode_steps=max_episode_steps)
             envs[cidx] = env

@@ -16,54 +16,38 @@ namespace envs{
 namespace gymnasium{
 
 const std::string Taxi::name = "Taxi";
+const std::string Taxi::URI = "/gymnasium/taxi-env";
 
-
-Taxi::Taxi(const std::string& api_base_url)
+Taxi::Taxi(const RESTApiServerWrapper& api_server)
     :
-     ToyTextEnvBase<TimeStep<uint_t>, 500, 6>(0, 
-											  "Taxi", 
-	                                          api_base_url, 
-											  "/gymnasium/taxi-env")
-{}
+     ToyTextEnvBase<TimeStep<uint_t>, 500, 6>(api_server, 0, Taxi::name)
+{
+
+	this ->get_api_server().register_if_not(Taxi::name,Taxi::URI); 
+}
 
 
-Taxi::Taxi(const std::string& api_base_url, 
+Taxi::Taxi(const RESTApiServerWrapper& api_server, 
 		   const uint_t cidx)
 		   :
-ToyTextEnvBase<TimeStep<uint_t>, 500, 6>(cidx, 
-                                         "Taxi",
-										 api_base_url, 
-										 "/gymnasium/taxi-env")
-{}
+ToyTextEnvBase<TimeStep<uint_t>, 500, 6>(api_server, cidx,Taxi::name)
+{
+	this ->get_api_server().register_if_not(Taxi::name,Taxi::URI); 
+}
 Taxi::Taxi(const Taxi& other)
 :
 ToyTextEnvBase<TimeStep<uint_t>, 500, 6>(other)
 {}
 
-Taxi::dynamics_t
-Taxi::build_dynamics_from_response_(const http::Response& response)const{
-
-    auto str_response = std::string(response.body.begin(), response.body.end());
-    using json = nlohmann::json;
-    json j = json::parse(str_response);
-
-    auto dynamics = j["dynamics"];
-    return dynamics;
-}
 
 Taxi::time_step_type
-Taxi::create_time_step_from_response_(const http::Response& response)const{
+Taxi::create_time_step_from_response_(const nlohmann::json& response)const{
 
-    auto str_response = std::string(response.body.begin(), response.body.end());
-    using json = nlohmann::json;
-
-    json j = json::parse(str_response);
-
-    auto step_type = j["time_step"]["step_type"].template get<uint_t>();
-    auto reward = j["time_step"]["reward"];
-    auto discount = j["time_step"]["discount"];
-    auto observation = j["time_step"]["observation"];
-    auto info = j["time_step"]["info"];
+    auto step_type = response["time_step"]["step_type"].template get<uint_t>();
+    auto reward = response["time_step"]["reward"];
+    auto discount = response["time_step"]["discount"];
+    auto observation = response["time_step"]["observation"];
+    auto info = response["time_step"]["info"];
     return Taxi::time_step_type(TimeStepEnumUtils::time_step_type_from_int(step_type),
                                 reward, observation, discount,
                                 std::unordered_map<std::string, std::any>());
@@ -76,24 +60,11 @@ Taxi::make(const std::string& version,
      if(this->is_created()){
         return;
     }
-
-    const auto request_url = std::string(this->get_url()) + "/make";
-
-    http::Request request{request_url};
-
-	auto copy_idx = this -> cidx();
 	
-	using json = nlohmann::json;
-    json j;
-    j["version"] = version;
-	j["cidx"] = copy_idx;
-	auto body = j.dump();
-	
-    const auto response = request.send("POST", body);
-
-    if(response.status.code != 201){
-        throw std::runtime_error("Environment server failed to create Environment");
-    }
+	this -> get_api_server().make(this->env_name(),
+	                              this->cidx(),
+								  version, 
+								  nlohmann::json());
 
 	this->set_version_(version);
     this->make_created_();
@@ -110,22 +81,10 @@ Taxi::step(const action_type& action){
      if(this->get_current_time_step_().last()){
          return this->reset(42, std::unordered_map<std::string, std::any>());
      }
-
-    const auto request_url = std::string(this->get_url()) + "/step";
-    http::Request request{request_url};
-
-	auto copy_idx = this -> cidx();
-   
-	using json = nlohmann::json;
-    json j;
-	j["cidx"] = copy_idx;
-	j["action"] = action;
-
-    const auto response = request.send("POST", j.dump());
-
-     if(response.status.code != 202){
-        throw std::runtime_error("Environment server failed to step environment");
-    }
+	 
+	 auto response = this -> get_api_server().step(this->env_name(),
+												   this->cidx(),
+								                   action);
 
     this->get_current_time_step_() = this->create_time_step_from_response_(response);
     return this->get_current_time_step_();
@@ -134,13 +93,9 @@ Taxi::step(const action_type& action){
 Taxi
 Taxi::make_copy(uint_t cidx)const{
 	
-	auto api_base_url = this -> get_api_url();
-	
-	Taxi copy(api_base_url, cidx);
-	
+	Taxi copy(this -> get_api_server(), cidx);
 	std::unordered_map<std::string, std::any> ops;
 	auto version = this -> version();
-	
 	copy.make(version, ops);
 	return copy;
 												   

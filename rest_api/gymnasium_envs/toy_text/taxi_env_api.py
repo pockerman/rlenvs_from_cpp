@@ -53,9 +53,12 @@ async def close(cidx: int) -> JSONResponse:
 @taxi_router.post("/make")
 async def make(version: str = Body(default="v3"),
                cidx: int = Body(...),
-               max_episode_steps: int = Body(default=500)) -> JSONResponse:
+               options: dict[str, Any] = Body(default={"max_episode_steps": 500})
+               ) -> JSONResponse:
     global envs
     env_type = f"{ENV_NAME}-{version}"
+
+    max_episode_steps = options.get("max_episode_steps", 500)
 
     if cidx in envs:
         env = envs[cidx]

@@ -117,9 +117,9 @@
 #include "rlenvs/rlenvs_types_v2.h"
 #include "rlenvs/envs/time_step.h"
 #include "rlenvs/envs/gymnasium/gymnasium_env_base.h"
+#include "rlenvs/envs/api_server/apiserver.h"
 #include "rlenvs/envs/env_types.h"
-#include "rlenvs/extern/HTTPRequest.hpp"
-
+#include "rlenvs/extern/nlohmann/json/json.hpp"
 
 #include <string>
 #include <vector>
@@ -146,10 +146,15 @@ public:
 	static  const std::string name;
 	
 	///
+	/// \brief The URI for accessing the environment
+	///
+	static const std::string URI;
+	
+	///
 	/// \brief Base class type
 	///
 	typedef GymnasiumEnvBase<TimeStep<std::vector<real_t> >,
-							 ContinuousVectorStateDiscreteActionEnv< 6, // size of state
+							 ContinuousVectorStateDiscreteActionEnv< 6, // size of state space
 							                                         2, // end of action space
 																	 0, // start of action space
 																	 real_t> // type of state
@@ -183,12 +188,12 @@ public:
     ///
     /// \brief Acrobot. Constructor
     ///
-    Acrobot(const std::string& api_base_url );
+    Acrobot(const RESTApiServerWrapper& api_server );
 	
 	///
     /// \brief CartPole. Constructor
     ///
-    Acrobot(const std::string& api_base_url, 
+    Acrobot(const RESTApiServerWrapper& api_server, 
 		     const uint_t cidx);
 			 
 	///
@@ -223,15 +228,12 @@ public:
     ///
     uint_t n_actions()const noexcept{return action_space_type::size;}
 
-
 protected:
 	
-	
-
     ///
     /// \brief Handle the reset response from the environment server
     ///
-    virtual time_step_type create_time_step_from_response_(const http::Response& response) const override final;
+    virtual time_step_type create_time_step_from_response_(const nlohmann::json& response) const override final;
 
 };
 

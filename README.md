@@ -12,8 +12,8 @@ Currently, we provide a minimal number of wrappers for some common Gymnasium (fo
 | FrozenLake 8x8 map  |   Yes    | TODO                                                      |
 | Blackjack           |   Yes    | <a href="examples/example_1/example_1.cpp">example_1</a>  |
 | CliffWalking        |   Yes    | <a href="examples/example_1/example_1.cpp">example_1</a>  |
-| CartPole            |   Yes    | TODO                                                     |
-| MountainCar         |   Yes    | TODO                                                     |
+| CartPole            |   Yes    | TODO                                                      |
+| MountainCar         |   Yes    | TODO                                                      |
 | Taxi                |   Yes    | <a href="examples/example_1/example_1.cpp">example_1</a>  |
 | Pendulum            |   Yes    | <a href="examples/example_6/example_6.cpp">example_6</a>  |
 | Acrobot             |   Yes    | TODO                                                      |
@@ -26,9 +26,9 @@ Currently, we provide a minimal number of wrappers for some common Gymnasium (fo
 
 There exist some wrappers for vector environments: 
 
-| Environment         |   REST   | Example |
-| :----------------   | :------: | :----:  |
-| AcrobotV            |   Yes    |  TODO   |
+| Environment         |   REST   | Example                                                    |
+| :----------------   | :------: | :----:                                                     |
+| AcrobotV            |   Yes    |  <a href="examples/example_8/example_8.cpp">example_8</a>  |
 
 Various RL algorithms using the environments can be found at <a href="https://github.com/pockerman/cuberl/tree/master">cuberl</a>
 

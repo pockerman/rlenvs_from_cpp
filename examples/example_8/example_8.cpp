@@ -1,5 +1,6 @@
 #include "rlenvs/rlenvs_types_v2.h"
 #include "rlenvs/envs/gymnasium/classic_control/vector/acrobot_vec_env.h"
+#include "rlenvs/envs/api_server/apiserver.h"
 #include "rlenvs/rlenvs_consts.h"
 
 #include <iostream>
@@ -14,11 +15,14 @@ int main(){
 
 	using namespace rlenvscpp::envs::gymnasium;
 	using rlenvscpp::uint_t;
+	using rlenvscpp::envs::RESTApiServerWrapper;
 	
-	const std::string url = "http://0.0.0.0:8001/api";
+	const std::string SERVER_URL = "http://0.0.0.0:8001/api";
     
+	RESTApiServerWrapper server(SERVER_URL, true);
+	
 	// Acrobot vector environment
-	AcrobotV env(url);
+	AcrobotV env(server);
 	
 	std::cout<<"Name: "<<env.name<<std::endl;
 	std::cout<<"Number of actions: "<<env.n_actions()<<std::endl;

@@ -57,10 +57,11 @@ async def close(cidx: int) -> JSONResponse:
 @black_jack_router.post("/make")
 async def make(version: str = Body(default="v1"),
                cidx: int = Body(...),
-               natural: bool = Body(default=False),
-               sab: bool = Body(default=False)):
+               options: dict[str, Any] = Body(default={"natural": False, "sab": False})) -> JSONResponse:
     global envs
 
+    natural = options.get("natural", False)
+    sab = options.get("sab", False)
     if cidx in envs:
         env = envs[cidx]
 
