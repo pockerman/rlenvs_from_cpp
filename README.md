@@ -53,12 +53,13 @@ describe the dynamics of some popular rigid bodies:
 ## How to use
 
 In general, the environments exposed by the library  should abide with <a href="https://github.com/deepmind/dm_env/blob/master/docs/index.md">dm_env</a> specification.
-The following snippet shows how to use the ```FrozenLake```  and ```Taxi``` environments from <a href="https://github.com/Farama-Foundation/Gymnasium/tree/main">Gymnasium</a>.
+The following snippet shows how to use the ```FrozenLake```   environment from <a href="https://github.com/Farama-Foundation/Gymnasium/tree/main">Gymnasium</a>.
 
 ```cpp
 #include "rlenvs/rlenvs_types_v2.h"
 #include "rlenvs/envs/gymnasium/toy_text/frozen_lake_env.h"
-#include "rlenvs/envs/gymnasium/toy_text/taxi_env.h"
+#include "rlenvs/envs/api_server/apiserver.h"
+
 #include <iostream>
 #include <string>
 #include <unordered_map>
@@ -68,15 +69,19 @@ namespace example_1{
 
 const std::string SERVER_URL = "http://0.0.0.0:8001/api";
 
-void test_frozen_lake(){
+using rlenvscpp::envs::gymnasium::FrozenLake;
+using rlenvscpp::envs::RESTApiServerWrapper;
 
-    rlenvs_cpp::envs::gymnasium::FrozenLake<4> env(SERVER_URL);
+
+void test_frozen_lake(const RESTApiServerWrapper& server){
+
+    FrozenLake<4> env(server);
 
     std::cout<<"Environame URL: "<<env.get_url()<<std::endl;
 
     // make the environment
     std::unordered_map<std::string, std::any> options;
-    options.insert({"is_slippery", true});
+    options.insert({"is_slippery", false});
     env.make("v1", options);
 
     std::cout<<"Is environment created? "<<env.is_created()<<std::endl;
@@ -85,7 +90,7 @@ void test_frozen_lake(){
     std::cout<<"Number of states? "<<env.n_states()<<std::endl;
 
     // reset the environment
-    auto time_step = env.reset(42);
+    auto time_step = env.reset(42, std::unordered_map<std::string, std::any>());
 
     std::cout<<"Reward on reset: "<<time_step.reward()<<std::endl;
     std::cout<<"Observation on reset: "<<time_step.observation()<<std::endl;
@@ -95,7 +100,8 @@ void test_frozen_lake(){
     std::cout<<time_step<<std::endl;
 
     // take an action in the environment
-    auto new_time_step = env.step(rlenvs_cpp::envs::gymnasium::FrozenLakeActionsEnum::RIGHT);
+	// 2 = RIGHT
+    auto new_time_step = env.step(2);
 
     std::cout<<new_time_step<<std::endl;
 
@@ -113,21 +119,39 @@ void test_frozen_lake(){
         std::cout<<std::get<2>(item)<<std::endl;
         std::cout<<std::get<3>(item)<<std::endl;
     }
+	
+	action = env.sample_action();
+	new_time_step = env.step(action);
 
-    // synchronize the environment. environment knows how
-    // to cast std::any
+    std::cout<<new_time_step<<std::endl;
+	
+    // synchronize the environment
     env.sync(std::unordered_map<std::string, std::any>());
+	
+	auto copy_env = env.make_copy(1);
+	copy_env.reset();
+	
+	std::cout<<"Org env cidx: "<<env.cidx()<<std::endl;
+	std::cout<<"Copy env cidx: "<<copy_env.cidx()<<std::endl;
+	
+	copy_env.close();
 
     // close the environment
     env.close();
 
 }
 
+}
+
+
 int main(){
 
+	using namespace example_1;
+	
+	RESTApiServerWrapper server(SERVER_URL, true);
 
     std::cout<<"Testing FrozenLake..."<<std::endl;
-    example_1::test_frozen_lake();
+    example_1::test_frozen_lake(server);
     std::cout<<"===================="<<std::endl;
     return 0;
 }
