@@ -5,16 +5,12 @@
 #include "rlenvs/rlenvs_types_v2.h"
 #include "rlenvs/envs/gymnasium/toy_text/toy_text_base.h"
 #include "rlenvs/envs/time_step.h"
-//#include "rlenvs/envs/space_type.h"
-#include "rlenvs/extern/HTTPRequest.hpp"
+#include "rlenvs/envs/api_server/apiserver.h"
+#include "rlenvs/extern/nlohmann/json/json.hpp"
 
-
-#include <map>
 #include <string>
 #include <any>
 #include <unordered_map>
-#include <memory>
-
 
 namespace rlenvscpp{
 namespace envs {
@@ -31,6 +27,11 @@ public:
     /// \brief name
     ///
     static  const std::string name;
+	
+	///
+	/// \brief The URI for accessing the environment
+	///
+	static const std::string URI;
 	
     ///
 	/// \brief The base type
@@ -66,12 +67,12 @@ public:
     ///
     /// \brief Taxi
     ///
-    Taxi(const std::string& api_base_url);
+    Taxi(const RESTApiServerWrapper& api_server);
 	
 	///
 	/// \brief Constructor
 	///
-	Taxi(const std::string& api_base_url, 
+	Taxi(const RESTApiServerWrapper& api_server, 
 		 const uint_t cidx);
 		 
 	///
@@ -110,12 +111,12 @@ protected:
      ///
     /// \brief build the dynamics from response
     ///
-    virtual dynamics_t build_dynamics_from_response_(const http::Response& response)const override final;
+    //virtual dynamics_t build_dynamics_from_response_(const nlohmann::json& response)const override final;
 
     ///
     /// \brief Handle the reset response from the environment server
     ///
-    virtual time_step_type create_time_step_from_response_(const http::Response& response) const override final;
+    virtual time_step_type create_time_step_from_response_(const nlohmann::json& response) const override final;
 
 
 

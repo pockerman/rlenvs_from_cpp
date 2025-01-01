@@ -81,6 +81,8 @@
 #include "rlenvs/rlenvs_types_v2.h"
 #include "rlenvs/envs/time_step.h"
 #include "rlenvs/envs/gymnasium/gymnasium_env_base.h"
+#include "rlenvs/envs/api_server/apiserver.h"
+#include "rlenvs/extern/nlohmann/json/json.hpp"
 #include "rlenvs/envs/env_types.h"
 
 #include <string>
@@ -109,6 +111,11 @@ public:
     /// \brief name
     ///
 	static  const std::string name;
+	
+	///
+	/// \brief The URI for accessing the environment
+	///
+	static const std::string URI;
 	
 	
 	///
@@ -149,13 +156,13 @@ public:
     ///
     /// \brief Pendulum. Constructor
     ///
-    Pendulum(const std::string& api_base_url );
+    Pendulum(const RESTApiServerWrapper& api_server );
 	
 	///
 	/// \brief Constructor
 	///
-	Pendulum(const std::string& api_base_url, 
-	           const uint_t cidx);
+	Pendulum(const RESTApiServerWrapper& api_server, 
+			 const uint_t cidx);
 			   
 	///
 	/// \brief copy ctor
@@ -193,12 +200,10 @@ public:
     
 protected:
 	
-	
-
     ///
     /// \brief Handle the reset response from the environment server
     ///
-    virtual time_step_type create_time_step_from_response_(const http::Response& response) const override final;
+    virtual time_step_type create_time_step_from_response_(const nlohmann::json& response) const override final;
 
 };
 

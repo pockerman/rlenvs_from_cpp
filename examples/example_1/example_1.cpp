@@ -3,6 +3,7 @@
 #include "rlenvs/envs/gymnasium/toy_text/taxi_env.h"
 #include "rlenvs/envs/gymnasium/toy_text/black_jack_env.h"
 #include "rlenvs/envs/gymnasium/toy_text/cliff_world_env.h"
+#include "rlenvs/envs/api_server/apiserver.h"
 
 #include <iostream>
 #include <string>
@@ -13,9 +14,16 @@ namespace example_1{
 
 const std::string SERVER_URL = "http://0.0.0.0:8001/api";
 
-void test_frozen_lake(){
+using rlenvscpp::envs::gymnasium::FrozenLake;
+using rlenvscpp::envs::gymnasium::Taxi;
+using rlenvscpp::envs::gymnasium::BlackJack;
+using rlenvscpp::envs::gymnasium::CliffWorld;
+using rlenvscpp::envs::RESTApiServerWrapper;
 
-    rlenvscpp::envs::gymnasium::FrozenLake<4> env(SERVER_URL);
+
+void test_frozen_lake(const RESTApiServerWrapper& server){
+
+    FrozenLake<4> env(server);
 
     std::cout<<"Environame URL: "<<env.get_url()<<std::endl;
 
@@ -81,9 +89,9 @@ void test_frozen_lake(){
 
 }
 
-void test_taxi(){
+void test_taxi(const RESTApiServerWrapper& server){
 
-    rlenvscpp::envs::gymnasium::Taxi env(SERVER_URL);
+    Taxi env(server);
 
     std::cout<<"Environame URL: "<<env.get_url()<<std::endl;
 
@@ -145,9 +153,9 @@ void test_taxi(){
 }
 
 
-void test_black_jack(){
+void test_black_jack(const RESTApiServerWrapper& server){
 
-    rlenvscpp::envs::gymnasium::BlackJack env(SERVER_URL);
+    BlackJack env(server);
     std::unordered_map<std::string, std::any> options;
     options["natural"] = true;
 
@@ -180,9 +188,9 @@ void test_black_jack(){
 }
 
 
-void test_cliff_world(){
+void test_cliff_world(const RESTApiServerWrapper& server){
 
-	rlenvscpp::envs::gymnasium::CliffWorld env(SERVER_URL);
+	CliffWorld env(server);
 
     std::cout<<"Environment URL: "<<env.get_url()<<std::endl;
 
@@ -247,18 +255,21 @@ void test_cliff_world(){
 
 int main(){
 
+	using namespace example_1;
+	
+	RESTApiServerWrapper server(SERVER_URL, true);
 
     std::cout<<"Testing FrozenLake..."<<std::endl;
-    example_1::test_frozen_lake();
+    example_1::test_frozen_lake(server);
     std::cout<<"===================="<<std::endl;
     std::cout<<"Testing Taxi..."<<std::endl;
-    example_1::test_taxi();
+    example_1::test_taxi(server);
     std::cout<<"===================="<<std::endl;
     std::cout<<"Testing BlackJack..."<<std::endl;
-    example_1::test_black_jack();
+    example_1::test_black_jack(server);
     std::cout<<"===================="<<std::endl;
     std::cout<<"Testing CliffWorld..."<<std::endl;
-    example_1::test_cliff_world();
+    example_1::test_cliff_world(server);
     std::cout<<"===================="<<std::endl;
     return 0;
 }

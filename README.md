@@ -26,9 +26,9 @@ Currently, we provide a minimal number of wrappers for some common Gymnasium (fo
 
 There exist some wrappers for vector environments: 
 
-| Environment         |   REST   | Example |
-| :----------------   | :------: | :----:  |
-| AcrobotV            |   Yes    |  TODO   |
+| Environment         |   REST   | Example                                                    |
+| :----------------   | :------: | :----:                                                     |
+| AcrobotV            |   Yes    |  <a href="examples/example_8/example_8.cpp">example_8</a>  |
 
 Various RL algorithms using the environments can be found at <a href="https://github.com/pockerman/cuberl/tree/master">cuberl</a>
 

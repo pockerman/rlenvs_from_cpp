@@ -1,4 +1,4 @@
-#include "rlenvs/api_server/apiserver.h"
+#include "rlenvs/envs/api_server/apiserver.h"
 #include <iostream>
 #include <string>
 
@@ -6,7 +6,7 @@ int main(){
 
     const std::string SERVER_URL = "http://0.0.0.0:8001/api";
 
-    rlenvscpp::ApiServerWrapper server_wrapper(SERVER_URL);
+    rlenvscpp::envs::RESTApiServerWrapper server_wrapper(SERVER_URL);
 
     auto has_gym = server_wrapper.has_gymnasium();
     std::cout<<"Has environment server Gymnasium? "<<has_gym<<std::endl;

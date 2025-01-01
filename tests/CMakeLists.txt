@@ -56,4 +56,5 @@ ADD_SUBDIRECTORY(test_acrobot)
 #ADD_SUBDIRECTORY(test_vector_env_wrapper)
 #ADD_SUBDIRECTORY(test_vector_time_step)
 ADD_SUBDIRECTORY(test_generic_line)
+ADD_SUBDIRECTORY(test_rest_api_server_wrapper)
 

@@ -10,24 +10,19 @@ namespace envs{
 namespace gymnasium{
 	
 
-const std::string AcrobotV::name = "Acrobot";
+const std::string AcrobotV::name = "AcrobotV";
+const std::string AcrobotV::URI = "/gymnasium/acrobot-env/v";
 
 
 AcrobotV::time_step_type
-AcrobotV::create_time_step_from_response_(const http::Response& response)const{
+AcrobotV::create_time_step_from_response_(const nlohmann::json& response)const{
 
-    auto str_response = std::string(response.body.begin(), response.body.end());
-    using json = nlohmann::json;
-
-	// parse the response
-    json j = json::parse(str_response);
-
-    auto step_types = j["time_step"]["step_types"].template get<std::vector<uint_t> >(); 
-	auto time_step_types = TimeStepEnumUtils::time_step_type_from_int(step_types);
-    auto reward_response = j["time_step"]["rewards"];
-    auto discount_response = j["time_step"]["discounts"];
-    auto observation = j["time_step"]["observations"];
-    auto info = j["time_step"]["infos"];
+    auto step_types        = response["time_step"]["step_types"].template get<std::vector<uint_t> >(); 
+	auto time_step_types   = TimeStepEnumUtils::time_step_type_from_int(step_types);
+    auto reward_response   = response["time_step"]["rewards"];
+    auto discount_response = response["time_step"]["discounts"];
+    auto observation       = response["time_step"]["observations"];
+    auto info              = response["time_step"]["infos"];
     return AcrobotV::time_step_type(time_step_types,
 									reward_response, 
 									observation, 
@@ -36,21 +31,22 @@ AcrobotV::create_time_step_from_response_(const http::Response& response)const{
 }
 	
 	
-AcrobotV::AcrobotV(const std::string& api_base_url)
-:
-GymnasiumVecEnvBase<VectorTimeStep<detail_::AcrobotVEnv::state_type>, detail_::AcrobotVEnv>(0, "Acrobot",
-                                                                                   api_base_url,
-                                                                                    "/gymnasium/acrobot-env/v")
-{}
-
-AcrobotV::AcrobotV(const std::string& api_base_url, const uint_t cidx)
+AcrobotV::AcrobotV(const RESTApiServerWrapper& api_server )
 :
 GymnasiumVecEnvBase<VectorTimeStep<detail_::AcrobotVEnv::state_type>, 
-                    detail_::AcrobotVEnv>(cidx, 
-										 "Acrobot",
-                                         api_base_url,
-                                         "/gymnasium/acrobot-env/v")
-{}
+					detail_::AcrobotVEnv>(api_server, 0, AcrobotV::name)
+{
+	this -> get_api_server().register_if_not(AcrobotV::name,AcrobotV::URI);
+}
+
+AcrobotV::AcrobotV(const RESTApiServerWrapper& api_server , const uint_t cidx)
+:
+GymnasiumVecEnvBase<VectorTimeStep<detail_::AcrobotVEnv::state_type>, 
+                    detail_::AcrobotVEnv>(api_server, cidx, 
+										  AcrobotV::name)
+{
+	this -> get_api_server().register_if_not(AcrobotV::name,AcrobotV::URI);
+}
 
 
 AcrobotV::AcrobotV(const AcrobotV& other)
@@ -70,21 +66,12 @@ AcrobotV::make(const std::string& version,
 	
 	this->GymnasiumVecEnvBase<VectorTimeStep<detail_::AcrobotVEnv::state_type>,
                              detail_::AcrobotVEnv>::make(version, options);
-
-    const auto request_url = std::string(this->get_url()) + "/make";
-    http::Request request{request_url};
-
-    using json = nlohmann::json;
-    json j;
-    j["version"] = version;
-	j["num_envs"] = this->get_n_envs();
-
-    auto body = j.dump();
-    const auto response = request.send("POST", body);
-
-    if(response.status.code != 201){
-        throw std::runtime_error("Environment server failed to create Environment");
-    }
+			
+	nlohmann::json ops;
+	ops["num_envs"] = this->get_n_envs();
+	auto response = this -> get_api_server().make(this -> env_name(),
+	                                              this -> cidx(),
+												  version, ops);
 
     this->set_version_(version);
     this->make_created_();
@@ -102,20 +89,10 @@ AcrobotV::step(const action_type& action){
      if(this->get_reset_if_any_done() && this->get_current_time_step_().last()){
          return this->reset(42, std::unordered_map<std::string, std::any>());
      }
-
-    const auto request_url = std::string(this->get_url()) + "/step";
-    http::Request request{request_url};
-
-	using json = nlohmann::json;
-	json j;
-    j["actions"] = action;
-	j["cidx"] = this -> cidx();
-	
-    const auto response = request.send("POST", j.dump());
-
-    if(response.status.code != 202){
-        throw std::runtime_error("Environment server failed to step environment");
-    }
+	 
+	 auto response = this -> get_api_server().step(this -> env_name(),
+	                                              this -> cidx(),
+												  action);
 
     this->get_current_time_step_() = this->create_time_step_from_response_(response);
     return this->get_current_time_step_();
@@ -124,15 +101,15 @@ AcrobotV::step(const action_type& action){
 
 AcrobotV
 AcrobotV::make_copy(uint_t cidx)const{
-	auto api_base_url = this -> get_api_url();
-	
-	AcrobotV copy(api_base_url, cidx);
-	
-	std::unordered_map<std::string, std::any> ops;
-	ops["num_envs"] = this -> get_n_envs();
-	auto version = this -> version();
-	copy.make(version, ops);
-	return copy;
+//	auto api_base_url = this -> get_api_url();
+//	
+//	AcrobotV copy(api_base_url, cidx);
+//	
+//	std::unordered_map<std::string, std::any> ops;
+//	ops["num_envs"] = this -> get_n_envs();
+//	auto version = this -> version();
+//	copy.make(version, ops);
+//	return copy;
 }
 	
 }

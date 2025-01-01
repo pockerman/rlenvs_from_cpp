@@ -1,5 +1,6 @@
 
 #include "rlenvs/envs/gymnasium/classic_control/pendulum_env.h"
+#include "rlenvs/envs/api_server/apiserver.h"
 #include "rlenvs/rlenvs_types_v2.h"
 #include "rlenvs/rlenvs_consts.h"
 
@@ -19,10 +20,13 @@
 int main(){
 
 	using namespace rlenvscpp::envs::gymnasium;
+	using rlenvscpp::envs::RESTApiServerWrapper;
 	
-	const std::string url = "http://0.0.0.0:8001/api";
+	const std::string SERVER_URL = "http://0.0.0.0:8001/api";
     
-	Pendulum env(url);
+	RESTApiServerWrapper server(SERVER_URL, true);
+	
+	Pendulum env(server);
 	
 	std::cout<<"Name: "<<env.name<<std::endl;
 	std::cout<<"Number of actions: "<<env.n_actions()<<std::endl;

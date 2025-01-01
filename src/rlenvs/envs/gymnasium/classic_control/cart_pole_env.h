@@ -42,14 +42,14 @@
 #include "rlenvs/envs/time_step.h"
 #include "rlenvs/envs/gymnasium/gymnasium_env_base.h"
 #include "rlenvs/envs/env_types.h"
-#include "rlenvs/extern/HTTPRequest.hpp"
-
+#include "rlenvs/envs/api_server/apiserver.h"
+#include "rlenvs/extern/nlohmann/json/json.hpp"
 
 #include <string>
 #include <vector>
 #include <tuple>
 #include <any>
-#include <memory>
+
 
 namespace rlenvscpp{
 
@@ -76,6 +76,11 @@ public:
     /// \brief name
     ///
     static const std::string name;
+	
+	///
+	/// \brief The URI for accessing the environment
+	///
+	static const std::string URI;
 	
 	///
 	/// \brief Base class type
@@ -117,12 +122,12 @@ public:
     ///
     /// \brief CartPole. Constructor
     ///
-    CartPole(const std::string& api_base_url );
+    CartPole(const RESTApiServerWrapper& api_server );
 	
 	///
     /// \brief CartPole. Constructor
     ///
-    CartPole(const std::string& api_base_url, 
+    CartPole(const RESTApiServerWrapper& api_server, 
 		     const uint_t cidx);
 	
 	///
@@ -164,13 +169,9 @@ protected:
     ///
     /// \brief Handle the reset response from the environment server
     ///
-    virtual time_step_type create_time_step_from_response_(const http::Response& response) const override final;
+    virtual time_step_type create_time_step_from_response_(const nlohmann::json& response) const override final;
 
 };
-
-//inline
-//CartPole::~CartPole()
-//{}
 
 
 }

@@ -95,8 +95,8 @@ INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIRS})
 INCLUDE_DIRECTORIES(src/)
 
 FILE(GLOB SRCS src/rlenvs/*.cpp
-               src/rlenvs/api_server/*.cpp
 			   src/rlenvs/envs/*.cpp
+               src/rlenvs/envs/api_server/*.cpp
                src/rlenvs/envs/gymnasium/*.cpp
                src/rlenvs/envs/gymnasium/toy_text/*.cpp
                src/rlenvs/envs/gymnasium/classic_control/*.cpp

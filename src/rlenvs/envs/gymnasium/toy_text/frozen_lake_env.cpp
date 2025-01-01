@@ -19,23 +19,30 @@ template<uint_t side_size>
 const std::string FrozenLake<side_size>::name = "FrozenLake";
 
 template<uint_t side_size>
-FrozenLake<side_size>::FrozenLake(const std::string& api_base_url)
+const std::string FrozenLake<side_size>::URI = "/gymnasium/frozen-lake-env";
+
+template<uint_t side_size>
+FrozenLake<side_size>::FrozenLake(const RESTApiServerWrapper& api_server)
 :
 ToyTextEnvBase<TimeStep<uint_t>,
 			   frozenlake_state_size<side_size>::size, 
-			   4>(0, "FrozenLake", api_base_url,"/gymnasium/frozen-lake-env"),
+			   4>(api_server, 0, FrozenLake<side_size>::name),
 is_slippery_(true)
-{}
+{
+		this -> get_api_server().register_if_not(FrozenLake<side_size>::name,FrozenLake<side_size>::URI);
+}
  
 template<uint_t side_size>
-FrozenLake<side_size>::FrozenLake(const std::string& api_base_url, 
+FrozenLake<side_size>::FrozenLake(const RESTApiServerWrapper& api_server, 
 		                          const uint_t cidx, bool slippery)
 		   :
 ToyTextEnvBase<TimeStep<uint_t>,
 			   frozenlake_state_size<side_size>::size, 
-			   4>(cidx, "FrozenLake", api_base_url, "/gymnasium/frozen-lake-env"),
+			   4>(api_server, cidx, FrozenLake<side_size>::name),
 is_slippery_(slippery)
-{}
+{
+	this -> get_api_server().register_if_not(FrozenLake<side_size>::name,FrozenLake<side_size>::URI);
+}
 
 template<uint_t side_size>
 FrozenLake<side_size>::FrozenLake(const FrozenLake<side_size>& other)
@@ -47,32 +54,15 @@ is_slippery_(other.is_slippery_)
 {}		
 			   
 template<uint_t side_size>
-typename FrozenLake<side_size>::dynamics_t
-FrozenLake<side_size>::build_dynamics_from_response_(const http::Response& response)const{
-
-    auto str_response = std::string(response.body.begin(), response.body.end());
-    using json = nlohmann::json;
-    json j = json::parse(str_response);
-
-    auto dynamics = j["dynamics"];
-    return dynamics;
-}
-
-template<uint_t side_size>
 typename FrozenLake<side_size>::time_step_type
-FrozenLake<side_size>::create_time_step_from_response_(const http::Response& response)const{
+FrozenLake<side_size>::create_time_step_from_response_(const nlohmann::json& response)const{
 
-    auto str_response = std::string(response.body.begin(), response.body.end());
-    using json = nlohmann::json;
-
-    json j = json::parse(str_response);
-
-    auto step_type = j["time_step"]["step_type"].template get<uint_t>();
+    auto step_type = response["time_step"]["step_type"].template get<uint_t>();
 	auto step_type_val = TimeStepEnumUtils::time_step_type_from_int(step_type);
-    auto reward = j["time_step"]["reward"];
-    auto discount = j["time_step"]["discount"];
-    auto observation = j["time_step"]["observation"];
-    auto info = j["time_step"]["info"];
+    auto reward = response["time_step"]["reward"];
+    auto discount = response["time_step"]["discount"];
+    auto observation = response["time_step"]["observation"];
+    auto info = response["time_step"]["info"];
 	
 	auto time_step = FrozenLake<side_size>::time_step_type(step_type_val,
                                                  reward, observation, discount,
@@ -97,24 +87,13 @@ FrozenLake<side_size>::make(const std::string& version,
         is_slippery_ = std::any_cast<bool>(slip_itr->second);
     }
 	
-	auto copy_idx = this -> cidx();
-    const auto request_url = std::string(this->get_url()) + "/make";
-    http::Request request{request_url};
-
-    using json = nlohmann::json;
-    json j;
-    j["version"] = version;
-    j["map_name"] = map_type();
-    j["is_slippery"]  = is_slippery_;
-	j["cidx"] = copy_idx;
-
-    auto body = j.dump();
-    const auto response = request.send("POST", body);
-
-    if(response.status.code != 201){
-        throw std::runtime_error("Environment server failed to create Environment");
-    }
-
+	nlohmann::json ops;
+	ops["map_name"] = map_type();
+	ops["is_slippery"] = is_slippery_;
+    auto response = this -> get_api_server().make(this -> env_name(),
+												  this -> cidx(),
+												  version, ops);
+												  
     this->set_version_(version);
     this->make_created_();
 }
@@ -130,23 +109,10 @@ FrozenLake<side_size>::step(const action_type& action){
      if(this->get_current_time_step_().last()){
          return this->reset(42, std::unordered_map<std::string, std::any>());
      }
-
-    const auto request_url = std::string(this->get_url()) + "/step";
-    http::Request request{request_url};
-	
-	auto copy_idx = this -> cidx();
-	
-	using json = nlohmann::json;
-    json j;
-	j["cidx"] = copy_idx;
-	j["action"] = action;
-	auto body = j.dump();
-
-    const auto response = request.send("POST", body);
-
-    if(response.status.code != 202){
-        throw std::runtime_error("Environment server failed to step environment");
-    }
+	 
+	 auto response = this -> get_api_server().step(this -> env_name(),
+												  this -> cidx(),
+												  action);
 
     this->get_current_time_step_() = this->create_time_step_from_response_(response);
     return this->get_current_time_step_();
@@ -157,16 +123,16 @@ template<uint_t side_size>
 FrozenLake<side_size> 
 FrozenLake<side_size>::make_copy(uint_t cidx)const{
 	
-	auto api_base_url = this -> get_api_url();
-	auto slippery = this -> is_slippery();
-	FrozenLake<side_size> copy(api_base_url,
-							   cidx,slippery);
-	
-	std::unordered_map<std::string, std::any> ops;
-	ops["is_slippery"] = this -> is_slippery();
-	auto version = this -> version();
-	copy.make(version, ops);
-	return copy;
+//	auto api_base_url = this -> get_api_url();
+//	auto slippery = this -> is_slippery();
+//	FrozenLake<side_size> copy(api_base_url,
+//							   cidx,slippery);
+//	
+//	std::unordered_map<std::string, std::any> ops;
+//	ops["is_slippery"] = this -> is_slippery();
+//	auto version = this -> version();
+//	copy.make(version, ops);
+//	return copy;
 												
 }
 

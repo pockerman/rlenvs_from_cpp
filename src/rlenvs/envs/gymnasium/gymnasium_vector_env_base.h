@@ -13,7 +13,8 @@
 #include "rlenvs/envs/gymnasium/gymnasium_env_base.h"
 #include "rlenvs/rlenvs_types_v2.h"
 #include "rlenvs/envs/env_types.h"
-
+#include "rlenvs/envs/api_server/apiserver.h"
+#include "rlenvs/extern/nlohmann/json/json.hpp"
 
 #ifdef RLENVSCPP_DEBUG
 #include <cassert>
@@ -88,10 +89,9 @@ protected:
 	///
     /// \brief Constructor
     ///
-    GymnasiumVecEnvBase(const uint_t cidx,
-	                    const std::string& name, 
-					    const std::string& api_url,
-					    const std::string& resource_path);
+    GymnasiumVecEnvBase(const RESTApiServerWrapper& api_server,
+						const uint_t cidx,
+	                    const std::string& name);
 						
 	GymnasiumVecEnvBase(const GymnasiumVecEnvBase& other);
 					  
@@ -110,12 +110,11 @@ private:
 
 
 template<typename VectorTimeStepType, typename SpaceType>
-GymnasiumVecEnvBase<VectorTimeStepType, SpaceType>::GymnasiumVecEnvBase(const uint_t cidx,
-															const std::string& name, 
-															const std::string& api_url,
-															const std::string& resource_path)
+GymnasiumVecEnvBase<VectorTimeStepType, SpaceType>::GymnasiumVecEnvBase(const RESTApiServerWrapper& api_server,
+                                                                        const uint_t cidx,
+															            const std::string& name)
 :
-GymnasiumEnvBase<VectorTimeStepType, SpaceType>(cidx, name, api_url, resource_path)
+GymnasiumEnvBase<VectorTimeStepType, SpaceType>(api_server, cidx, name)
 {}
 
 
