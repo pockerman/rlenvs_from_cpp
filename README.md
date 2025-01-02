@@ -1,59 +1,47 @@
 [![Build rlenvs](https://github.com/pockerman/rlenvs_from_cpp/actions/workflows/build.yml/badge.svg)](https://github.com/pockerman/rlenvs_from_cpp/actions/workflows/build.yml)
 # rlenvscpp
 
-```rlenvscpp``` is an effort to provide implementations and wrappers of environments for reinforcement learning algorithms to be used by C++ drivers. 
-Currently, we provide a minimal number of wrappers for some common Gymnasium (former OpenAI-Gym) environments. Namely
+```rlenvscpp``` is an effort to provide implementations and wrappers of environments suitable for training reinforcement learning agents
+using  C++. In addition, the library provides various utilities such as experiment tracking,
+representing trajectories  via waypoints and simple implementation of popular dynamics such as 
+quadrotor dynamics.
 
-### Scalar environments
+## Environments
 
-| Environment         |   REST   | Example                                                   |
-| :----------------   | :------: | :----:                                                    |
-| FrozenLake 4x4 map  |   Yes    | <a href="examples/example_1/example_1.cpp">example_1</a>  |
-| FrozenLake 8x8 map  |   Yes    | TODO                                                      |
-| Blackjack           |   Yes    | <a href="examples/example_1/example_1.cpp">example_1</a>  |
-| CliffWalking        |   Yes    | <a href="examples/example_1/example_1.cpp">example_1</a>  |
-| CartPole            |   Yes    | TODO                                                      |
-| MountainCar         |   Yes    | TODO                                                      |
-| Taxi                |   Yes    | <a href="examples/example_1/example_1.cpp">example_1</a>  |
-| Pendulum            |   Yes    | <a href="examples/example_6/example_6.cpp">example_6</a>  |
-| Acrobot             |   Yes    | TODO                                                      |
-| GymWalk             |   No     | TODO                                                      |
-| gym-pybullet-drones |  TODO    | TODO                                                      |
-| GridWorld           |   No     | <a href="examples/example_5/example_5.cpp">example_5</a>  |
-| Connect2            |   No     | <a href="examples/example_7/example_7.cpp">example_7</a>  |
+Currently, ```rlenvscpp``` provides the following environments:
 
-### Vector environments
+| Environment         |   Use REST   | Example                                                   |
+| :----------------   | :----------: | :----:                                                    |
+| FrozenLake 4x4 map  |   Yes        | <a href="examples/example_1/example_1.cpp">example_1</a>  |
+| FrozenLake 8x8 map  |   Yes        | TODO                                                      |
+| Blackjack           |   Yes        | <a href="examples/example_1/example_1.cpp">example_1</a>  |
+| CliffWalking        |   Yes        | <a href="examples/example_1/example_1.cpp">example_1</a>  |
+| CartPole            |   Yes        | TODO                                                      |
+| MountainCar         |   Yes        | TODO                                                      |
+| Taxi                |   Yes        | <a href="examples/example_1/example_1.cpp">example_1</a>  |
+| Pendulum            |   Yes        | <a href="examples/example_6/example_6.cpp">example_6</a>  |
+| Acrobot             |   Yes        | TODO                                                      |
+| GymWalk             |   Yes        | TODO                                                      |
+| gym-pybullet-drones |  TODO        | TODO                                                      |
+| GridWorld           |   No         | <a href="examples/example_5/example_5.cpp">example_5</a>  |
+| Connect2            |   No         | <a href="examples/example_7/example_7.cpp">example_7</a>  |
 
-There exist some wrappers for vector environments: 
+The Gymnasium (former OpenAI-Gym) environments utilise a REST API to communicate requests to/from the 
+environment and ```rlenvscpp```.
 
-| Environment         |   REST   | Example                                                    |
-| :----------------   | :------: | :----:                                                     |
-| AcrobotV            |   Yes    |  <a href="examples/example_8/example_8.cpp">example_8</a>  |
+Some environments have a vector implementation meaning multiple instances of the same
+environment. Currently, ```rlenvscpp``` provides the following vector environments: 
 
-Various RL algorithms using the environments can be found at <a href="https://github.com/pockerman/cuberl/tree/master">cuberl</a>
+| Environment         |   Use REST   | Example                                                    |
+| :----------------   | :----------: | :----:                                                     |
+| AcrobotV            |   Yes        |  <a href="examples/example_8/example_8.cpp">example_8</a>  |
 
-### Dynamics 
+Various RL algorithms using the environments can be found at <a href="https://github.com/pockerman/cuberl/tree/master">cuberl</a>.
 
-Apart from the exposed environments, ```rlenvscpp``` exposes classes that 
-describe the dynamics of some popular rigid bodies:
+### How to use
 
-| Dynamics            |                       Example                                |
-| :----------------   | :----------------------------------------------------------: | 
-| Differential drive  |  <a href="examples/example_9/example_9.cpp">example_9</a>    |
-| Quadrotor           |  <a href="examples/example_10/example_10.cpp">example_10</a> |
-
-### Miscellaneous
-
-| Item                   |                       Example                                |
-| :----------------      | :----------------------------------------------------------: | 
-| Environment trajectory |  <a href="examples/example_3/example_3.cpp">example_3</a>    |
-| WaypointTrajectory     |  <a href="examples/example_11/example_11.cpp">example_11</a> |
-
-
-## How to use
-
-In general, the environments exposed by the library  should abide with <a href="https://github.com/deepmind/dm_env/blob/master/docs/index.md">dm_env</a> specification.
-The following snippet shows how to use the ```FrozenLake```   environment from <a href="https://github.com/Farama-Foundation/Gymnasium/tree/main">Gymnasium</a>.
+The following is an example how to use the 
+```FrozenLake```   environment from <a href="https://github.com/Farama-Foundation/Gymnasium/tree/main">Gymnasium</a>.
 
 ```cpp
 #include "rlenvs/rlenvs_types_v2.h"
@@ -158,11 +146,15 @@ int main(){
 
 ```
 
+In general, the environments exposed by the library  follow the  <a href="https://github.com/deepmind/dm_env/blob/master/docs/index.md">dm_env</a> specification.
+For more details see the <a href="doc/env_spec.md">```rlenvscpp``` environment specification</a> document.
 
 The general use case is to build the library and link it with your driver code to access its functionality.
-Furthermore, the ```Gymnasium```, ```gym_pybullet_drones``` environments are accessed via a client/server pattern.
-Namely, they are exposed via an API developed using FastAPI.
-You need to fire up the server, see dependencies, before using the environments in your code. To do so
+The environments specified as using REST in the tables above, that is all ```Gymnasium```, ```gym_pybullet_drones``` and ```GymWalk``` 
+environments are accessed via a client/server pattern. Namely, they are exposed via an API developed using 
+<a href="https://fastapi.tiangolo.com/">FastAPI</a>.
+You need to fire up the FastAPI server, see dependencies, before using the environments in your code. 
+To do so
 
 ```
 ./start_uvicorn.sh
@@ -176,13 +168,33 @@ http://0.0.0.0:8001/docs
 
 Note that currently the implementation is not thread/process safe i.e. if multiple threads/processes access the environment
 a global instance of the environment is manipulated. Thus no session based environment exists.
+However, you can create copies of the same environment and access this via its dedicate index.
+If just one thread/process touches this specific environment you should be ok.
+Notice that the FastAPI server only uses a single process to manage all the environments.
+In addition, if  you need multiple instances of the same environment you can also  use one 
+of the exissting vectorised environments (see table above).
 
-If you need multiple instances of the same environment you can either use one of the exissting vectorised environments (see list above) or 
-launch several instances of uvirocrn (listening on different ports). However in this case you need to implement
-all the interactions logic yourself as currently no implementation exists to handle such a scenario.
+Finally,   you can choose to launch several instances of ```uvirocrn``` (listening on different ports). 
+However in this case you need to implement all the interactions logic yourself as currently no implementation exists to handle such a scenario.
 
+## Dynamics 
 
-### Dependencies
+Apart from the exposed environments, ```rlenvscpp``` exposes classes that 
+describe the dynamics of some popular rigid bodies:
+
+| Dynamics            |                       Example                                |
+| :----------------   | :----------------------------------------------------------: | 
+| Differential drive  |  <a href="examples/example_9/example_9.cpp">example_9</a>    |
+| Quadrotor           |  <a href="examples/example_10/example_10.cpp">example_10</a> |
+
+## Miscellaneous
+
+| Item                   |                       Example                                |
+| :----------------      | :----------------------------------------------------------: | 
+| Environment trajectory |  <a href="examples/example_3/example_3.cpp">example_3</a>    |
+| WaypointTrajectory     |  <a href="examples/example_11/example_11.cpp">example_11</a> |
+
+## Dependencies
 
 The library has the following general dependencies
 
@@ -199,6 +211,7 @@ In addition, you need to install
 - <a href="https://www.uvicorn.org/">Uvicorn</a>
 - <a href="https://docs.pydantic.dev/latest/">Pydantic</a>
 
+By installing the requirement under ```requirements.txt``` should set your Python environment  up correctly.
 
 In addition, the library also incorporates, see ```(src/extern)```, the following libraries
 
@@ -213,7 +226,7 @@ There are extra dependencies if you want to generate the documentation. Namely,
 - breathe
 - m2r2
 
-### Installation
+## Installation
 
 The usual CMake based installation process is used. Namely
 
@@ -222,7 +235,7 @@ mkdir build && cd build && cmake ..
 make install
 ```
 
-You toggle the following variables
+You can toggle the following variables
 
 - CMAKE_BUILD_TYPE (default is RELEASE)
 - ENABLE_TESTS_FLAG (default is OFF)
@@ -243,7 +256,6 @@ You can execute all the tests by running the helper script ```execute_tests.sh``
 
 ### Issues
 
-
 #### Could not find ```boost_system```
 
 It is likely that you are missing the boost_system library with your local Boost installation. This may be the case
@@ -253,4 +265,9 @@ is you installed boost via a package manager. On a Ubuntu machine the following 
 sudo apt-get update -y
 sudo apt-get install -y libboost-system-dev
 ```
+
+#### FastAPI throws 422 Unpocessable entity
+
+Typically, this is a problem with how the client (400-range error) specified the data
+to be sent to the server. 
 
